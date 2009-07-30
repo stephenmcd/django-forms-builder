@@ -1,0 +1,23 @@
+<html>
+
+<head>
+	<title>{{ built_form.title }}</title>
+	<style>
+		body {font-family:sans-serif; padding:1em 2em;}
+		p {width:50em;}
+		label {display:block; float:left; width:10em;}
+		.errorlist {color:#f00;}
+	</style>
+</head>
+
+<body>
+	
+	<h1>{{ built_form.title }}</h1>
+	<p>{{ built_form.intro }}</p>
+	
+	<form method="post" enctype="multipart/form-data">
+		{{ built_form_form.as_p }}
+		<input type="submit" />
+	</form>
+	
+</body>
