@@ -24,7 +24,7 @@ class BuiltForm(models.Model):
 	response = models.TextField(max_length=2000)
 	mandatory_extra_fields = models.CharField(max_length=2000)
 	optional_extra_fields = models.CharField(max_length=2000)
-	status = models.IntegerField(choices=STATUS_CHOICES, default=2)
+	status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_PUBLIC)
 	send_email = models.BooleanField(default=True)
 	
 	def __unicode__(self):
