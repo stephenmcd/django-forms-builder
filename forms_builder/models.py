@@ -1,7 +1,8 @@
 
 from django.db import models
 from django.template.defaultfilters import slugify
-from settings import UPLOAD_TO
+
+from forms_builder.settings import UPLOAD_TO
 
 
 STATUS_DRAFT = 1
@@ -48,7 +49,6 @@ class BuiltForm(models.Model):
 				temp = "%s-%s" (slug, index)
 			self.slug = temp
 		super(BuiltForm, self).save(*args, **kwargs)
-
 		
 	@models.permalink
 	def get_absolute_url(self):

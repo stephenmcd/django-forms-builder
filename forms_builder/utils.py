@@ -1,6 +1,7 @@
 
 from django.shortcuts import get_object_or_404
-from models import BuiltForm, BuiltFormSubmission, STATUS_PUBLIC
+
+from forms_builder.models import BuiltForm, BuiltFormSubmission, STATUS_PUBLIC
 
 
 def form_builder_optional_fields():

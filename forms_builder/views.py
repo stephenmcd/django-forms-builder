@@ -1,16 +1,18 @@
 
+from datetime import datetime
+from os.path import join
+
 from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
-from datetime import datetime
-from os.path import join
-from models import BuiltForm, BuiltFormSubmission
-from utils import get_built_form
-from forms import get_built_form_form
-from settings import UPLOAD_TO, EMAIL_TO
+
+from forms_builder.models import BuiltForm, BuiltFormSubmission
+from forms_builder.utils import get_built_form
+from forms_builder.forms import get_built_form_form
+from forms_builder.settings import UPLOAD_TO, EMAIL_TO
 
 
 def built_form_detail(request, slug, 
