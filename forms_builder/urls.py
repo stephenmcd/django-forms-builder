@@ -1,7 +1,7 @@
 
 
 from django.conf.urls.defaults import patterns, url
-from views import built_form_detail, built_form_sent
+from forms_builder.views import built_form_detail, built_form_sent
 
 urlpatterns = patterns("",
     url(r'(?P<slug>.*)/sent/$', built_form_sent, name="built_form_sent"),

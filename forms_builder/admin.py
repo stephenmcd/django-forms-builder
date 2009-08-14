@@ -2,8 +2,9 @@
 from django.contrib import admin
 from django.forms import MultipleChoiceField, ModelForm
 from django.forms.widgets import CheckboxSelectMultiple
-from models import BuiltForm, BuiltFormSubmission
-from utils import form_builder_optional_fields
+
+from forms_builder.models import BuiltForm, BuiltFormSubmission
+from forms_builder.utils import form_builder_optional_fields
 
 
 class OptionalFieldsField(MultipleChoiceField):
