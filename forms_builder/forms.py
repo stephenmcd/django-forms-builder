@@ -47,5 +47,7 @@ def get_built_form_form(built_form):
 			super(BuiltFormForm, self).__init__(*args, **kwargs)
 			for field in built_form.extra_fields("mandatory"):
 				self.fields[field].required = True
+				if hasattr(self.fields[field], "choices"):
+					self.fields[field].choices = self.fields[field].choices[1:]
 
 	return BuiltFormForm
