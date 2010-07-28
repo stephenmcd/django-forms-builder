@@ -1,53 +1,25 @@
 
-from datetime import date
-
 from django import forms
-from django.forms.extras import SelectDateWidget
-
-from forms_builder.forms.models import BuiltForm, BuiltFormSubmission
-from forms_builder.forms.utils import form_builder_optional_fields
+from django.utils.importlib import import_module
 
 
-class DobWidget(SelectDateWidget):
-	"""
-	populate the years of a SelectDateWidget for selecting dob
-	"""
-	
-	def __init__(self, attrs=None):
-		year = date.today().year
-		self.attrs = attrs
-		self.years = range(year, year - 100, -1)
-		super(SelectDateWidget, self).__init__()
+class FormForForm(forms.Form):
 
-
-def get_built_form_form(built_form):
-	"""
-	return a model form for a BuiltFormSubmission, excluding the extra
-	fields that haven't been selected as optional or mandatory for the given 
-	BuiltForm, and setting the extra mandatory fields that have been selected 
-	as mandatory fields
-	"""
-	
-	dob_field = None
-	extra_fields = (built_form.extra_fields("mandatory") + 
-		built_form.extra_fields("optional"))
-	if "dob" in extra_fields:
-		dob_field = forms.DateField(widget=DobWidget)
-
-	class BuiltFormForm(forms.ModelForm):
-	
-		class Meta:
-			model = BuiltFormSubmission
-			exclude = ["submission_date","built_form"] + [field[0] for field in 
-				form_builder_optional_fields() if field[0] not in extra_fields]
-			
-		dob = dob_field
-		
-		def __init__(self, *args, **kwargs):
-			super(BuiltFormForm, self).__init__(*args, **kwargs)
-			for field in built_form.extra_fields("mandatory"):
-				self.fields[field].required = True
-				if hasattr(self.fields[field], "choices"):
-					self.fields[field].choices = self.fields[field].choices[1:]
-
-	return BuiltFormForm
+    def __init__(self, *args, **kwargs):
+        form = kwargs.pop("form")
+        super(FormForForm, self).__init__(*args, **kwargs)
+        for field in form.fields.all():
+            if "/" in field.field_type:
+                field_class, field_widget = field.field_type.split("/")
+            else:
+                field_class, field_widget = field.field_type, None
+            field_class = getattr(forms, field_class)
+            field_args = {"label": field.label, "required": field.required}
+            if field_widget is not None:
+                module, widget = field_widget.rsplit(".", 1)
+                field_args["widget"] = getattr(import_module(module), widget)
+            if field.choices:
+                choices = field.choices.split(",")
+                field_args["choices"] = zip(choices, choices)
+            self.fields["field_%s" % field.id] = field_class(**field_args)
+    
