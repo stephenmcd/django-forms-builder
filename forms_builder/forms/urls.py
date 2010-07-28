@@ -1,11 +1,11 @@
 
 
-from django.conf.urls.defaults import patterns, url
-from forms_builder.forms.views import built_form_detail, built_form_sent
+from django.conf.urls.defaults import *
 
-urlpatterns = patterns("",
-    url(r'(?P<slug>.*)/sent/$', built_form_sent, name="built_form_sent"),
-    url(r'(?P<slug>.*)/$', built_form_detail, name="built_form_detail"),
+
+urlpatterns = patterns("forms_builder.forms.views",
+    url(r"(?P<slug>.*)/sent/$", "form_sent", name="form_sent"),
+    url(r"(?P<slug>.*)/$", "form_detail", name="form_detail"),
 )
 
 
