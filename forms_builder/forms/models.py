@@ -2,7 +2,7 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 
-from forms_builder.settings import UPLOAD_TO
+from forms_builder.forms.settings import UPLOAD_TO
 
 
 STATUS_DRAFT = 1
