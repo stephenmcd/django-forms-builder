@@ -3,6 +3,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
+FIELD_MAX_LENGTH = 2000
 
 STATUS_DRAFT = 1
 STATUS_PUBLIC = 2
@@ -37,8 +38,10 @@ class Form(models.Model):
     response = models.TextField(_("Response"), max_length=2000)
     status = models.IntegerField(_("Status"), choices=STATUS_CHOICES, 
         default=STATUS_PUBLIC)
-    send_email = models.BooleanField(_("Send email response"), default=True)
-    send_copy = models.CharField(_("Send copies to"), max_length=200, 
+    email_from = models.EmailField(_("Send email from"), blank=True, 
+        help_text=_("Entering a 'from' address here will send a confirmation "
+            "email to the person entering the form"))
+    email_copy = models.CharField(_("Send copies to"), max_length=200, 
         help_text=_("One or more email addresses, separated by commas"), 
         blank=True)
     
@@ -50,7 +53,6 @@ class Form(models.Model):
         Create a unique slug from title - append an index and increment if it 
         already exists.
         """
-
         if not self.slug:
             slug = temp = slugify(self.title)
             index = 0
@@ -74,6 +76,7 @@ class Field(models.Model):
     """
     
     form = models.ForeignKey("Form", related_name="fields")
+    visible = models.BooleanField(_("Visible"), default=True)
     label = models.CharField(_("Label"), max_length=20)
     field_type = models.CharField(_("Type"), choices=FIELD_CHOICES, 
         max_length=50)
@@ -88,3 +91,25 @@ class Field(models.Model):
     
     def __unicode__(self):
         return self.label
+
+class FormEntry(models.Model):
+    """
+    An entry submitted via a user-built form.
+    """
+
+    form = models.ForeignKey("Form", related_name="entries")
+    entry_time = models.DateTimeField()
+    
+    class Meta:
+        verbose_name = _("Form entry")
+        verbose_name_plural = _("Form entries")
+
+class FieldEntry(models.Model):
+    """
+    A single field value for a form entry submitted via a user-built form.
+    """
+    
+    entry = models.ForeignKey("FormEntry", related_name="fields")
+    field_id = models.IntegerField()
+    value = models.CharField(max_length=FIELD_MAX_LENGTH)
+
