@@ -1,9 +1,10 @@
 
 from django.db import models
 from django.template.defaultfilters import slugify
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext, ugettext_lazy as _
 
 FIELD_MAX_LENGTH = 2000
+LABEL_MAX_LENGTH = 20
 
 STATUS_DRAFT = 1
 STATUS_PUBLIC = 2
@@ -38,12 +39,13 @@ class Form(models.Model):
     response = models.TextField(_("Response"), max_length=2000)
     status = models.IntegerField(_("Status"), choices=STATUS_CHOICES, 
         default=STATUS_PUBLIC)
-    email_from = models.EmailField(_("Send email from"), blank=True, 
-        help_text=_("Entering a 'from' address here will send a confirmation "
-            "email to the person entering the form"))
-    email_copy = models.CharField(_("Send copies to"), max_length=200, 
+    send_email = models.BooleanField(_("Send email"), default=True, help_text=
+        _("If checked, the person entering the form will be sent an email"))
+    email_from = models.EmailField(_("From address"), blank=True, 
+        help_text=_("The address the email will be sent from"))
+    email_copies = models.CharField(_("Send copies to"), blank=True, 
         help_text=_("One or more email addresses, separated by commas"), 
-        blank=True)
+        max_length=200)
     
     def __unicode__(self):
         return self.title
@@ -70,6 +72,12 @@ class Form(models.Model):
     def get_absolute_url(self):
         return ("form_detail", (), {"slug": self.slug})
 
+    def admin_link(self):
+        return "<a href='%s'>%s</a>" % (self.get_absolute_url(), 
+            ugettext("View on site"))
+    admin_link.allow_tags = True
+    admin_link.short_description = ""
+
 class Field(models.Model):
     """
     A field for a user-built form.
@@ -77,7 +85,7 @@ class Field(models.Model):
     
     form = models.ForeignKey("Form", related_name="fields")
     visible = models.BooleanField(_("Visible"), default=True)
-    label = models.CharField(_("Label"), max_length=20)
+    label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     field_type = models.CharField(_("Type"), choices=FIELD_CHOICES, 
         max_length=50)
     required = models.BooleanField(_("Required"), default=True)
@@ -104,6 +112,12 @@ class FormEntry(models.Model):
         verbose_name = _("Form entry")
         verbose_name_plural = _("Form entries")
 
+    def __unicode__(self):
+        """
+        Used as the email subject.
+        """
+        return "%s - %s" % (self.form, self.entry_time)
+
 class FieldEntry(models.Model):
     """
     A single field value for a form entry submitted via a user-built form.
@@ -111,5 +125,16 @@ class FieldEntry(models.Model):
     
     entry = models.ForeignKey("FormEntry", related_name="fields")
     field_id = models.IntegerField()
+    label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     value = models.CharField(max_length=FIELD_MAX_LENGTH)
+
+    class Meta:
+        verbose_name = _("Form field entry")
+        verbose_name_plural = _("Form field entries")
+
+    def __unicode__(self):
+        """
+        Used in the email body.
+        """
+        return "%s: %s" % (self.label, self.value)
 
