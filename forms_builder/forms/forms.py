@@ -18,14 +18,19 @@ class FormForForm(forms.ModelForm):
         Dynamically add each of the form fields for the given form model 
         instance and its related field model instances.
         """
-        self._form = form
-        self._formfields = form.fields.filter(visible=True)
+        self.form = form
+        self.form_fields = form.fields.filter(visible=True)
+        self.field_values = []
+        self.email_field = None
         super(FormForForm, self).__init__(*args, **kwargs)
-        for field in self._formfields:
+        for field in self.form_fields:
+            field_key = "field_%s" % field.id
             if "/" in field.field_type:
                 field_class, field_widget = field.field_type.split("/")
             else:
                 field_class, field_widget = field.field_type, None
+            if self.email_field is None and field_class == "EmailField":
+                self.email_field = field_key
             field_class = getattr(forms, field_class)
             field_args = {"label": field.label, "required": field.required, 
                 "max_length": FIELD_MAX_LENGTH}
@@ -35,17 +40,31 @@ class FormForForm(forms.ModelForm):
             if field.choices:
                 choices = field.choices.split(",")
                 field_args["choices"] = zip(choices, choices)
-            self.fields["field_%s" % field.id] = field_class(**field_args)
+            self.fields[field_key] = field_class(**field_args)
 
     def save(self, **kwargs):
         """
-        Create a FormEntry instance.
+        Create a FormEntry instance and related FieldEntry instances for each 
+        form field.
         """
         entry = super(FormForForm, self).save(commit=False)
-        entry.form = self._form
+        entry.form = self.form
         entry.entry_time = datetime.now()
         entry.save()
-        for field in self._formfields:
-            entry.fields.create(field_id=field.id, 
-                value=self.cleaned_data["field_%s" % field.id])
+        self.field_values = []
+        for field in self.form_fields:
+            value = self.cleaned_data["field_%s" % field.id]
+            field = entry.fields.create(field_id=field.id, label=field.label, 
+                value=value)
+            print field
+            self.field_values.append(field)
         return entry
+        
+    def email_to(self):
+        """
+        Return the value entered for the first field of type EmailField.
+        """
+        if self.email_field is None:
+            return None
+        return self.cleaned_data.get("field_%s" % self.email_field)
+        
