@@ -32,14 +32,16 @@ class FormForForm(forms.ModelForm):
             if self.email_field is None and field_class == "EmailField":
                 self.email_field = field_key
             field_class = getattr(forms, field_class)
-            field_args = {"label": field.label, "required": field.required, 
-                "max_length": FIELD_MAX_LENGTH}
+            field_args = {"label": field.label, "required": field.required}
+            arg_names = field_class.__init__.im_func.func_code.co_varnames
+            if "max_length" in arg_names:
+                field_args["max_length"] = FIELD_MAX_LENGTH
+            if "choices" in arg_names:
+                choices = field.choices.split(",")
+                field_args["choices"] = zip(choices, choices)
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
-            if field.choices:
-                choices = field.choices.split(",")
-                field_args["choices"] = zip(choices, choices)
             self.fields[field_key] = field_class(**field_args)
 
     def save(self, **kwargs):
