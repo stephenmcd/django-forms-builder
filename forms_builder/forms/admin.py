@@ -1,9 +1,13 @@
 
 from csv import writer
 from datetime import datetime
+from mimetypes import guess_type
+from os.path import join
 
 from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
+from django.core.files.storage import FileSystemStorage
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.template import loader, Context
@@ -11,6 +15,10 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from forms_builder.forms.models import Form, Field, FieldEntry
+from forms_builder.forms.settings import UPLOAD_ROOT
+
+
+fs = FileSystemStorage(location=UPLOAD_ROOT)
 
     
 class FieldAdmin(admin.TabularInline):
@@ -41,6 +49,9 @@ class FormAdmin(admin.ModelAdmin):
             url("^export/(?P<form_id>\d+)/$", 
                 self.admin_site.admin_view(self.export_view), 
                 name="form_export"),
+            url("^file/(?P<field_entry_id>\d+)/$", 
+                self.admin_site.admin_view(self.file_view), 
+                name="form_file"),
         )
         return extra_urls + urls
 
@@ -54,12 +65,17 @@ class FormAdmin(admin.ModelAdmin):
         response["Content-Disposition"] = "attachment; filename=%s" % csvname
         csv = writer(response)
         # Write out the column names and store the index of each field 
-        # against its ID for building each entry row.
+        # against its ID for building each entry row. Also store the IDs of 
+        # fields with a type of FileField for converting their field values 
+        # into download URLs.
         columns = []
         field_indexes = {}
+        file_field_ids = []
         for field in form.fields.all():
             columns.append(field.label.encode("utf-8"))
             field_indexes[field.id] = len(field_indexes)
+            if field.field_type == "FileField":
+                file_field_ids.append(field.id)
         csv.writerow(columns)
         # Loop through each field value order by entry, building up each  
         # entry as a row.
@@ -73,8 +89,12 @@ class FormAdmin(admin.ModelAdmin):
                 if current_row is not None:
                     csv.writerow(current_row)
                 current_row = [""] * len(columns)
-            # Only use values for fields that currently exist for the form.
             value = field_entry.value.encode("utf-8")
+            # Create download URL for file fields.
+            if field_entry.field_id in file_field_ids:
+                url = reverse("admin:form_file", args=(field_entry.id,))
+                value = request.build_absolute_uri(url)
+            # Only use values for fields that currently exist for the form.
             try:
                 current_row[field_indexes[field_entry.field_id]] = value
             except KeyError:
@@ -83,6 +103,19 @@ class FormAdmin(admin.ModelAdmin):
         if current_row is not None:
             csv.writerow(current_row)
         return response        
+
+    def file_view(self, request, field_entry_id):
+        """
+        Output the file for the requested field entry.
+        """
+        field_entry = get_object_or_404(FieldEntry, id=field_entry_id)
+        path = join(fs.location, field_entry.value)
+        response = HttpResponse(mimetype=guess_type(path)[0])
+        f = open(path, "r+b")
+        response["Content-Disposition"] = "attachment; filename=%s" % f.name
+        response.write(f.read())
+        f.close()
+        return response
 
 admin.site.register(Form, FormAdmin)
 
