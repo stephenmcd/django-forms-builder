@@ -139,12 +139,6 @@ class FormEntry(models.Model):
         verbose_name = _("Form entry")
         verbose_name_plural = _("Form entries")
 
-    def __unicode__(self):
-        """
-        Used as the email subject.
-        """
-        return "%s - %s" % (self.form, self.entry_time)
-
 class FieldEntry(models.Model):
     """
     A single field value for a form entry submitted via a user-built form.
@@ -152,16 +146,9 @@ class FieldEntry(models.Model):
     
     entry = models.ForeignKey("FormEntry", related_name="fields")
     field_id = models.IntegerField()
-    label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     value = models.CharField(max_length=FIELD_MAX_LENGTH)
 
     class Meta:
         verbose_name = _("Form field entry")
         verbose_name_plural = _("Form field entries")
-
-    def __unicode__(self):
-        """
-        Used in the email body.
-        """
-        return "%s: %s" % (self.label, self.value)
 

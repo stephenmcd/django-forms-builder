@@ -20,7 +20,6 @@ class FormForForm(forms.ModelForm):
         """
         self.form = form
         self.form_fields = form.fields.visible()
-        self.field_values = []
         self.email_field = None
         super(FormForForm, self).__init__(*args, **kwargs)
         for field in self.form_fields:
@@ -53,13 +52,9 @@ class FormForForm(forms.ModelForm):
         entry.form = self.form
         entry.entry_time = datetime.now()
         entry.save()
-        self.field_values = []
         for field in self.form_fields:
             value = self.cleaned_data["field_%s" % field.id]
-            field = entry.fields.create(field_id=field.id, label=field.label, 
-                value=value)
-            print field
-            self.field_values.append(field)
+            entry.fields.create(field_id=field.id, value=value)
         return entry
         
     def email_to(self):

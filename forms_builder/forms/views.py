@@ -19,17 +19,20 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     if request.method == "POST":
         if form_for_form.is_valid():
             entry = form_for_form.save()
-            fields = "\n".join([unicode(f) for f in form_for_form.field_values])
+            fields = ["%s: %s" % (v.label, form_for_form.cleaned_data[k]) 
+                for (k, v) in form_for_form.fields.items()]
+            subject = "%s - %s" % (form.title, entry.entry_time)
+            body = "\n".join(fields)
             email_from = form.email_from or settings.DEFAULT_FROM_EMAIL
             email_to = form_for_form.email_to()
             if email_to and form.send_email:
-                msg = EmailMessage(entry, fields, email_from, [email_to])
+                msg = EmailMessage(subject, body, email_from, [email_to])
                 msg.send()
             email_copies = form.email_copies.split(",")
             email_copies = filter(None, [e.strip() for e in email_copies])
             email_from = email_to or email_from # Send from the email entered.
             if email_copies:
-                msg = EmailMessage(entry, fields, email_from, email_copies)
+                msg = EmailMessage(subject, body, email_from, email_copies)
                 msg.send()
             return redirect(reverse("form_sent", kwargs={"slug": form.slug}))
     context = {"form": form, "form_for_form": form_for_form}
