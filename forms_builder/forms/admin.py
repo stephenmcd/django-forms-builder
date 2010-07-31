@@ -11,7 +11,6 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from forms_builder.forms.models import Form, Field, FieldEntry
-from forms_builder.forms.utils import FormEntryExport
 
     
 class FieldAdmin(admin.TabularInline):

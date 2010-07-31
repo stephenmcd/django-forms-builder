@@ -19,7 +19,7 @@ class FormForForm(forms.ModelForm):
         instance and its related field model instances.
         """
         self.form = form
-        self.form_fields = form.fields.filter(visible=True)
+        self.form_fields = form.fields.visible()
         self.field_values = []
         self.email_field = None
         super(FormForForm, self).__init__(*args, **kwargs)

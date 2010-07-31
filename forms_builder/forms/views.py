@@ -3,18 +3,18 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage
 from django.template import RequestContext
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import get_object_or_404, redirect, render_to_response
 
 from forms_builder.forms.forms import FormForForm
 from forms_builder.forms.models import Form
-from forms_builder.forms.utils import get_form
 
 
 def form_detail(request, slug, template="forms/form_detail.html"):
     """
     Display a built form and handle submission.
     """    
-    form = get_form(request, slug)
+    published = Form.objects.published(for_user=request.user)
+    form = get_object_or_404(published, slug=slug)
     form_for_form = FormForForm(form, request.POST or None)
     if request.method == "POST":
         if form_for_form.is_valid():
@@ -39,5 +39,7 @@ def form_sent(request, slug, template="forms/form_sent.html"):
     """
     Show the response message.
     """
-    context = {"form": get_form(request, slug)}
+    published = Form.objects.published(for_user=request.user)
+    form = get_object_or_404(published, slug=slug)
+    context = {"form": form}
     return render_to_response(template, context, RequestContext(request))
