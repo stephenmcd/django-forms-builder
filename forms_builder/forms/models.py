@@ -1,4 +1,5 @@
 
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -72,11 +73,17 @@ class Form(models.Model):
     def get_absolute_url(self):
         return ("form_detail", (), {"slug": self.slug})
 
-    def admin_link(self):
-        return "<a href='%s'>%s</a>" % (self.get_absolute_url(), 
-            ugettext("View on site"))
-    admin_link.allow_tags = True
-    admin_link.short_description = ""
+    def admin_link_view(self):
+        url = self.get_absolute_url()
+        return "<a href='%s'>%s</a>" % (url, ugettext("View on site"))
+    admin_link_view.allow_tags = True
+    admin_link_view.short_description = ""
+
+    def admin_link_export(self):
+        url = reverse("admin:form_export", args=(self.id,))
+        return "<a href='%s'>%s</a>" % (url, ugettext("Export entries"))
+    admin_link_export.allow_tags = True
+    admin_link_export.short_description = ""
 
 class Field(models.Model):
     """
