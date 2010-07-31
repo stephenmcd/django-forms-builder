@@ -25,6 +25,15 @@ FIELD_CHOICES = (
     ("DateTimeField", _("Date/time")),
 )
 
+class FormManager(models.Manager):
+    """
+    Only show published forms for non-staff users.
+    """
+    def published(self, for_user=None):
+        if for_user is not None and for_user.is_staff:
+            return self.all()
+        return self.filter(status=STATUS_PUBLISHED)
+
 class Form(models.Model):
     """
     A user-built form.
@@ -43,6 +52,8 @@ class Form(models.Model):
     email_copies = models.CharField(_("Send copies to"), blank=True, 
         help_text=_("One or more email addresses, separated by commas"), 
         max_length=200)
+
+    objects = FormManager()
 
     class Meta:
         verbose_name = _("Form")
@@ -85,6 +96,13 @@ class Form(models.Model):
     admin_link_export.allow_tags = True
     admin_link_export.short_description = ""
 
+class FieldManager(models.Manager):
+    """
+    Only show visible fields when displaying actual form..
+    """
+    def visible(self):
+        return self.filter(visible=True)
+
 class Field(models.Model):
     """
     A field for a user-built form.
@@ -98,6 +116,8 @@ class Field(models.Model):
     required = models.BooleanField(_("Required"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
         help_text="Comma separated options where applicable")
+        
+    objects = FieldManager()
 
     class Meta:
         verbose_name = _("Field")
