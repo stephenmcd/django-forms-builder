@@ -15,7 +15,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     """    
     published = Form.objects.published(for_user=request.user)
     form = get_object_or_404(published, slug=slug)
-    form_for_form = FormForForm(form, request.POST or None)
+    form_for_form = FormForForm(form, request.POST or None, request.FILES or None)
     if request.method == "POST":
         if form_for_form.is_valid():
             entry = form_for_form.save()
@@ -28,11 +28,14 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             if email_to and form.send_email:
                 msg = EmailMessage(subject, body, email_from, [email_to])
                 msg.send()
-            email_copies = form.email_copies.split(",")
-            email_copies = filter(None, [e.strip() for e in email_copies])
             email_from = email_to or email_from # Send from the email entered.
+            email_copies = [e.strip() for e in form.email_copies.split(",") 
+                if e.strip()]
             if email_copies:
                 msg = EmailMessage(subject, body, email_from, email_copies)
+                for f in form_for_form.files.values():
+                    f.seek(0)
+                    msg.attach(f.name, f.read())
                 msg.send()
             return redirect(reverse("form_sent", kwargs={"slug": form.slug}))
     context = {"form": form, "form_for_form": form_for_form}

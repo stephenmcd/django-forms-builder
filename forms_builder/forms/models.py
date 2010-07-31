@@ -4,8 +4,8 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext, ugettext_lazy as _
 
-FIELD_MAX_LENGTH = 2000
-LABEL_MAX_LENGTH = 20
+from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
+
 
 STATUS_DRAFT = 1
 STATUS_PUBLISHED = 2
@@ -21,6 +21,7 @@ FIELD_CHOICES = (
     ("BooleanField", _("Check box")),
     ("ChoiceField", _("Drop down")),
     ("MultipleChoiceField", _("Multi select")),
+    ("FileField", _("File upload")),
     ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
     ("DateTimeField", _("Date/time")),
 )
@@ -109,11 +110,11 @@ class Field(models.Model):
     """
     
     form = models.ForeignKey("Form", related_name="fields")
-    visible = models.BooleanField(_("Visible"), default=True)
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     field_type = models.CharField(_("Type"), choices=FIELD_CHOICES, 
         max_length=50)
     required = models.BooleanField(_("Required"), default=True)
+    visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
         help_text="Comma separated options where applicable")
         

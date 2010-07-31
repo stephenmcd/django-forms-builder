@@ -1,10 +1,17 @@
 
 from datetime import datetime
+from os.path import join
+from uuid import uuid4
 
 from django import forms
+from django.core.files.storage import FileSystemStorage
 from django.utils.importlib import import_module
 
-from forms_builder.forms.models import FormEntry, FIELD_MAX_LENGTH
+from forms_builder.forms.models import FormEntry
+from forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
+
+
+fs = FileSystemStorage(location=UPLOAD_ROOT)
 
 
 class FormForForm(forms.ModelForm):
@@ -50,7 +57,10 @@ class FormForForm(forms.ModelForm):
         entry.entry_time = datetime.now()
         entry.save()
         for field in self.form_fields:
-            value = self.cleaned_data["field_%s" % field.id]
+            field_key = "field_%s" % field.id
+            value = self.cleaned_data[field_key]
+            if self.fields[field_key].widget.needs_multipart_form:
+                value = fs.save(join("forms", str(uuid4()), value.name), value)
             entry.fields.create(field_id=field.id, value=value)
         return entry
         
@@ -59,7 +69,8 @@ class FormForForm(forms.ModelForm):
         Return the value entered for the first field of type EmailField.
         """
         for field in self.form_fields:
-            if field.field_type.split("/")[0] == "EmailField":
+            field_class = field.field_type.split("/")[0]
+            if field_class == "EmailField":
                 return self.cleaned_data["field_%s" % field.id]
         return None
         
