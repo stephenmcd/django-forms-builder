@@ -20,7 +20,6 @@ class FormForForm(forms.ModelForm):
         """
         self.form = form
         self.form_fields = form.fields.visible()
-        self.email_field = None
         super(FormForForm, self).__init__(*args, **kwargs)
         for field in self.form_fields:
             field_key = "field_%s" % field.id
@@ -28,8 +27,6 @@ class FormForForm(forms.ModelForm):
                 field_class, field_widget = field.field_type.split("/")
             else:
                 field_class, field_widget = field.field_type, None
-            if self.email_field is None and field_class == "EmailField":
-                self.email_field = field_key
             field_class = getattr(forms, field_class)
             field_args = {"label": field.label, "required": field.required}
             arg_names = field_class.__init__.im_func.func_code.co_varnames
@@ -61,7 +58,8 @@ class FormForForm(forms.ModelForm):
         """
         Return the value entered for the first field of type EmailField.
         """
-        if self.email_field is None:
-            return None
-        return self.cleaned_data.get("field_%s" % self.email_field)
+        for field in self.form_fields:
+            if field.field_type.split("/")[0] == "EmailField":
+                return self.cleaned_data["field_%s" % field.id]
+        return None
         
