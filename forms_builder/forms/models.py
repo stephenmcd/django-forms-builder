@@ -8,10 +8,10 @@ FIELD_MAX_LENGTH = 2000
 LABEL_MAX_LENGTH = 20
 
 STATUS_DRAFT = 1
-STATUS_PUBLIC = 2
+STATUS_PUBLISHED = 2
 STATUS_CHOICES = (
     (STATUS_DRAFT, "Draft"), 
-    (STATUS_PUBLIC, "Public"),
+    (STATUS_PUBLISHED, "Published"),
 )
 
 FIELD_CHOICES = (
@@ -30,16 +30,12 @@ class Form(models.Model):
     A user-built form.
     """
 
-    class Meta:
-        verbose_name = _("Form")
-        verbose_name_plural = _("Forms")
-
     title = models.CharField(_("Title"), max_length=50, unique=True)
     slug = models.SlugField(editable=False, max_length=100, unique=True)
     intro = models.TextField(_("Intro"), max_length=2000)
     response = models.TextField(_("Response"), max_length=2000)
     status = models.IntegerField(_("Status"), choices=STATUS_CHOICES, 
-        default=STATUS_PUBLIC)
+        default=STATUS_PUBLISHED)
     send_email = models.BooleanField(_("Send email"), default=True, help_text=
         _("If checked, the person entering the form will be sent an email"))
     email_from = models.EmailField(_("From address"), blank=True, 
@@ -47,6 +43,10 @@ class Form(models.Model):
     email_copies = models.CharField(_("Send copies to"), blank=True, 
         help_text=_("One or more email addresses, separated by commas"), 
         max_length=200)
+
+    class Meta:
+        verbose_name = _("Form")
+        verbose_name_plural = _("Forms")
     
     def __unicode__(self):
         return self.title
