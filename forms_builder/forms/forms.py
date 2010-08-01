@@ -59,7 +59,7 @@ class FormForForm(forms.ModelForm):
         for field in self.form_fields:
             field_key = "field_%s" % field.id
             value = self.cleaned_data[field_key]
-            if self.fields[field_key].widget.needs_multipart_form:
+            if value and self.fields[field_key].widget.needs_multipart_form:
                 value = fs.save(join("forms", str(uuid4()), value.name), value)
             entry.fields.create(field_id=field.id, value=value)
         return entry
