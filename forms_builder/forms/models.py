@@ -40,7 +40,7 @@ class Form(models.Model):
     A user-built form.
     """
 
-    title = models.CharField(_("Title"), max_length=50, unique=True)
+    title = models.CharField(_("Title"), max_length=50)
     slug = models.SlugField(editable=False, max_length=100, unique=True)
     intro = models.TextField(_("Intro"), max_length=2000)
     response = models.TextField(_("Response"), max_length=2000)
@@ -69,16 +69,16 @@ class Form(models.Model):
         already exists.
         """
         if not self.slug:
-            slug = temp = slugify(self.title)
-            index = 0
+            self.slug = slugify(self.title)
+            i = 0
             while True:
-                try:
-                    Form.objects.get(slug=temp)
-                except Form.DoesNotExist:
+                if i > 0:
+                    if i > 1:
+                        self.slug = self.slug.rsplit("-", 1)[0]
+                    self.slug = "%s-%s" % (self.slug, i)
+                if not Form.objects.filter(slug=self.slug):
                     break
-                index += 1
-                temp = "%s-%s" (slug, index)
-            self.slug = temp
+                i += 1
         super(Form, self).save(*args, **kwargs)
         
     @models.permalink
