@@ -14,7 +14,7 @@ from django.template import loader, Context
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
-from forms_builder.forms.models import Form, Field, FieldEntry
+from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry
 from forms_builder.forms.settings import UPLOAD_ROOT
 
 
@@ -76,19 +76,23 @@ class FormAdmin(admin.ModelAdmin):
             field_indexes[field.id] = len(field_indexes)
             if field.field_type == "FileField":
                 file_field_ids.append(field.id)
+        entry_time_name = FormEntry._meta.get_field("entry_time").verbose_name
+        columns.append(unicode(entry_time_name))
         csv.writerow(columns)
         # Loop through each field value order by entry, building up each  
         # entry as a row.
         current_entry = None
         current_row = None
-        values = FieldEntry.objects.filter(entry__form=form)
-        for field_entry in values.order_by("-entry__id"):
+        values = FieldEntry.objects.filter(entry__form=form
+            ).order_by("-entry__id").select_related(depth=1)
+        for field_entry in values:
             if field_entry.entry_id != current_entry:
                 # New entry, write out the current row and start a new one.
                 current_entry = field_entry.entry_id
                 if current_row is not None:
                     csv.writerow(current_row)
                 current_row = [""] * len(columns)
+                current_row[-1] = field_entry.entry.entry_time
             value = field_entry.value.encode("utf-8")
             # Create download URL for file fields.
             if field_entry.field_id in file_field_ids:

@@ -134,7 +134,7 @@ class FormEntry(models.Model):
     """
 
     form = models.ForeignKey("Form", related_name="entries")
-    entry_time = models.DateTimeField()
+    entry_time = models.DateTimeField(_("Date/time"))
     
     class Meta:
         verbose_name = _("Form entry")
