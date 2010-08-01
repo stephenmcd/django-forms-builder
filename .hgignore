@@ -2,5 +2,7 @@ syntax: glob
 *.pyc
 *.pyo
 dist/*
+build/*
+django_forms_builder.egg-info/*
 MANIFEST
 
