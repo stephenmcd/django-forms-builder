@@ -18,8 +18,12 @@ class Tests(TestCase):
             for field in FIELD_CHOICES:
                 form.fields.create(label=field[0], field_type=field[0], 
                     required=required, visible=True)
-                response = self.client.get(form.get_absolute_url())
-                self.assertEqual(response.status_code, 200)
+            response = self.client.get(form.get_absolute_url())
+            self.assertEqual(response.status_code, 200)
+            fields = form.fields.visible()
+            data = dict([("field_%s" % f.id, "test") for f in fields])
+            response = self.client.post(form.get_absolute_url(), data=data)
+            self.assertEqual(response.status_code, 200)
 
     def test_draft_form(self):
         """
