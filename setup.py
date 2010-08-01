@@ -11,7 +11,7 @@ setup(
         "users to create their own forms within the admin interface drawing "
         "from a set of fields defined by the developer."),
     long_description = open("README.rst").read(),
-    url = "http://bitbucket.org/citrus/django-forms-builder",
+    url = "http://github.com/stephenmcd/django-forms-builder",
     packages = ["forms_builder",],
     classifiers = [
         "Development Status :: 5 - Production/Stable",
