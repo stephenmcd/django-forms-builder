@@ -1,5 +1,5 @@
 
-from distutils.core import setup
+from setuptools import setup, find_packages
  
  
 setup(
@@ -11,7 +11,9 @@ setup(
         "users to create their own forms."),
     long_description = open("README.rst").read(),
     url = "http://github.com/stephenmcd/django-forms-builder",
-    packages = ["forms_builder",],
+    zip_safe = False,
+    include_package_data = True,
+    packages = find_packages(),
     classifiers = [
         "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",
