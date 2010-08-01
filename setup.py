@@ -8,8 +8,7 @@ setup(
     author = "Stephen McDonald",
     author_email = "stephen.mc@gmail.com",
     description = ("A Django reusable app providing the ability for admin "
-        "users to create their own forms within the admin interface drawing "
-        "from a set of fields defined by the developer."),
+        "users to create their own forms."),
     long_description = open("README.rst").read(),
     url = "http://github.com/stephenmcd/django-forms-builder",
     packages = ["forms_builder",],
