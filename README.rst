@@ -1,28 +1,40 @@
 Introduction
-------------
+============
 
-A Django reusable app providing the ability for admin users to create their own forms within the admin interface drawing from a set of fields defined by the developer.
+A Django reusable app providing the ability for admin users to create their 
+own forms within the admin interface drawing from a range of field widgets 
+such as regular text fields, drop-down lists and file uploads. Options are 
+also provided for controlling who gets sent email notifications when a form 
+is submitted. All form entries are made available in the admin via CSV export.
 
 Installation
-------------
+============
 
-Checkout the source and run ``python setup.py install``. You can then add ``email_extras`` to your ``INSTALLED_APPS`` and ``forms_builder.urls`` to your url conf.
+Assuming you have `setuptools`_ installed, the easiest method is to install 
+directly from pypi by running the following command::
 
-How It Works
-------------
+    $ easy_install -U mezzanine
 
-Two models are defined in forms_builder.models - ``BuiltForm`` and ``BuiltFormSubmission`` which represent a user created form and a submission to that form respectively. ``BuiltForm`` contains two special fields called ``mandatory_extra_fields`` and ``optional_extra_fields``. These are present in the admin interface as a list of checkboxes derived from all the fields on the ``BuiltFormSubmission`` model that have the keyword attribute ``blank`` set to ``True``. The difference between these two sets of fields is whether the fields are mandatory for the website user submitting the form.
+Otherwise you can check out the source directly and install it via::
 
-The actual form that gets displayed on the website is a ``ModelForm`` for ``BuiltFormSubmission`` and any of the fields within ``mandatory_extra_fields`` and ``optional_extra_fields`` that aren't selected for a given ``BuiltForm`` are excluded from the form on the website. The developer has the ability to define fields that are always present in the website form by not setting the ``blank`` attribute to ``True`` on the relevant fields of the ``BuiltFormSubmission`` model.
+    $ python setup.py install
 
-Configuration
--------------
+Once installed you can then add ``forms_builder.forms`` to your 
+``INSTALLED_APPS`` and ``forms_builder.forms.urls`` to your url conf.
 
-As described above, configuration of website form fields is done entirely on the ``BuiltFormSubmission`` model. Fields with a ``blank`` attribute set to ``True`` will be available as extra fields, and all other fields will always be present on the website form.
+File Uploads
+============
 
-There are also two settings you can configure in your project's ``settings`` module:
+It's possible for admin users to create forms that allow file uploads which 
+can be accessed via a download URL for each file that is provided in the 
+CSV export. By default these uploaded files are stored in an obscured 
+location under your project's ``MEDIA_ROOT`` directory but ideally the 
+should be stored somewhere inaccessible to the public. To set the location 
+where files are stored to be somewhere outside of your project's 
+``MEDIA_ROOT`` directory you just need to define the 
+``FORMS_BUILDER_UPLOAD_ROOT`` setting in your project's ``settings`` 
+module. Its value should be an absolute path on the web server that isn't 
+accessible to the public.
 
-    * ``FORMS_BUILDER_EMAIL_TO`` - An email address that will be sent an email upon each form submission if the ``send_email`` field is set to ``True`` by the admin user for the given ``BuiltForm``.
-
-    * ``FORMS_BUILDER_UPLOAD_TO`` - The location in your ``MEDIA_ROOT`` that files will be saved to if any ``FileField`` or ``ImageField`` fields are defined on your ``BuiltFormSubmission`` model. These files will also be attached to the email if it is sent.
+.. _`setuptools`: http://pypi.python.org/pypi/setuptools
 
