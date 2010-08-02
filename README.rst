@@ -13,7 +13,7 @@ Installation
 Assuming you have `setuptools`_ installed, the easiest method is to install 
 directly from pypi by running the following command::
 
-    $ easy_install -U mezzanine
+    $ easy_install -U django-forms-builder
 
 Otherwise you can check out the source directly and install it via::
 
