@@ -1,10 +1,14 @@
 
+from datetime import datetime
+
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext, ugettext_lazy as _
 
-from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
+from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH, \
+    USE_SITES
 
 
 STATUS_DRAFT = 1
@@ -14,16 +18,24 @@ STATUS_CHOICES = (
     (STATUS_PUBLISHED, "Published"),
 )
 
+sites_field = None
+if USE_SITES:
+    sites_field = models.ManyToManyField("sites.Site")
+
 FIELD_CHOICES = (
     ("CharField", _("Single line text")),
     ("CharField/django.forms.Textarea", _("Multi line text")),
     ("EmailField", _("Email")),
     ("BooleanField", _("Check box")),
+    ("MultipleChoiceField/django.forms.CheckboxSelectMultiple", 
+        _("Check boxes")),
     ("ChoiceField", _("Drop down")),
     ("MultipleChoiceField", _("Multi select")),
+    ("ChoiceField/django.forms.RadioSelect", _("Radio buttons")),
     ("FileField", _("File upload")),
     ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
     ("DateTimeField", _("Date/time")),
+    ("CharField/django.forms.HiddenInput", _("Hidden")),
 )
 
 class FormManager(models.Manager):
@@ -33,19 +45,31 @@ class FormManager(models.Manager):
     def published(self, for_user=None):
         if for_user is not None and for_user.is_staff:
             return self.all()
-        return self.filter(status=STATUS_PUBLISHED)
+        return self.filter( 
+            Q(publish_date__lte=datetime.now()) | Q(publish_date__isnull=True), 
+            Q(expiry_date__gte=datetime.now()) | Q(expiry_date__isnull=True),
+            Q(status=STATUS_PUBLISHED))
 
 class Form(models.Model):
     """
     A user-built form.
     """
 
+    sites = sites_field
     title = models.CharField(_("Title"), max_length=50)
     slug = models.SlugField(editable=False, max_length=100, unique=True)
     intro = models.TextField(_("Intro"), max_length=2000)
+    button_text = models.CharField(_("Button text"), max_length=50, 
+        default=_("Submit"))
     response = models.TextField(_("Response"), max_length=2000)
     status = models.IntegerField(_("Status"), choices=STATUS_CHOICES, 
         default=STATUS_PUBLISHED)
+    publish_date = models.DateTimeField(_("Published from"), 
+        help_text=_("With published selected, won't be shown until this time"),
+        blank=True, null=True)
+    expiry_date = models.DateTimeField(_("Expires on"), 
+        help_text=_("With published selected, won't be shown after this time"),
+        blank=True, null=True)
     send_email = models.BooleanField(_("Send email"), default=True, help_text=
         _("If checked, the person entering the form will be sent an email"))
     email_from = models.EmailField(_("From address"), blank=True, 
@@ -117,6 +141,8 @@ class Field(models.Model):
     visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
         help_text="Comma separated options where applicable")
+    default = models.CharField(_("Default value"), blank=True, 
+        max_length=FIELD_MAX_LENGTH)
         
     objects = FieldManager()
 
