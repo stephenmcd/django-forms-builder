@@ -29,6 +29,7 @@ FIELD_CHOICES = (
     ("BooleanField", _("Check box")),
     ("ChoiceField", _("Drop down")),
     ("MultipleChoiceField", _("Multi select")),
+    ("ChoiceField/django.forms.RadioSelect", _("Radio buttons")),
     ("FileField", _("File upload")),
     ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
     ("DateTimeField", _("Date/time")),
