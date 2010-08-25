@@ -55,6 +55,8 @@ class Form(models.Model):
     title = models.CharField(_("Title"), max_length=50)
     slug = models.SlugField(editable=False, max_length=100, unique=True)
     intro = models.TextField(_("Intro"), max_length=2000)
+    button_text = models.CharField(_("Button text"), max_length=50, 
+        default=_("Submit"))
     response = models.TextField(_("Response"), max_length=2000)
     status = models.IntegerField(_("Status"), choices=STATUS_CHOICES, 
         default=STATUS_PUBLISHED)
