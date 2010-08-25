@@ -1,6 +1,9 @@
 
+from datetime import datetime
+
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext, ugettext_lazy as _
 
@@ -38,7 +41,10 @@ class FormManager(models.Manager):
     def published(self, for_user=None):
         if for_user is not None and for_user.is_staff:
             return self.all()
-        return self.filter(status=STATUS_PUBLISHED)
+        return self.filter( 
+            Q(publish_date__lte=datetime.now()) | Q(publish_date__isnull=True), 
+            Q(expiry_date__gte=datetime.now()) | Q(expiry_date__isnull=True),
+            Q(status=STATUS_PUBLISHED))
 
 class Form(models.Model):
     """
@@ -52,6 +58,12 @@ class Form(models.Model):
     response = models.TextField(_("Response"), max_length=2000)
     status = models.IntegerField(_("Status"), choices=STATUS_CHOICES, 
         default=STATUS_PUBLISHED)
+    publish_date = models.DateTimeField(_("Published from"), 
+        help_text=_("With published selected, won't be shown until this time"),
+        blank=True, null=True)
+    expiry_date = models.DateTimeField(_("Expires on"), 
+        help_text=_("With published selected, won't be shown after this time"),
+        blank=True, null=True)
     send_email = models.BooleanField(_("Send email"), default=True, help_text=
         _("If checked, the person entering the form will be sent an email"))
     email_from = models.EmailField(_("From address"), blank=True, 
