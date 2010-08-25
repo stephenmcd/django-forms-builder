@@ -4,7 +4,8 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext, ugettext_lazy as _
 
-from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
+from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH, \
+    USE_SITES
 
 
 STATUS_DRAFT = 1
@@ -13,6 +14,10 @@ STATUS_CHOICES = (
     (STATUS_DRAFT, "Draft"), 
     (STATUS_PUBLISHED, "Published"),
 )
+
+sites_field = None
+if USE_SITES:
+    sites_field = models.ManyToManyField("sites.Site")
 
 FIELD_CHOICES = (
     ("CharField", _("Single line text")),
@@ -40,6 +45,7 @@ class Form(models.Model):
     A user-built form.
     """
 
+    sites = sites_field
     title = models.CharField(_("Title"), max_length=50)
     slug = models.SlugField(editable=False, max_length=100, unique=True)
     intro = models.TextField(_("Intro"), max_length=2000)

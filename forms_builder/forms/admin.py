@@ -15,12 +15,20 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext_lazy as _
 
 from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry
-from forms_builder.forms.settings import UPLOAD_ROOT
+from forms_builder.forms.settings import UPLOAD_ROOT, USE_SITES
 
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
+form_admin_filter_horizontal = ()
+form_admin_fieldsets = [
+    (None, {"fields": ("title", "status", "intro", "response")}),
+    (_("Email"), {"fields": ("send_email", "email_from", "email_copies")}),]
 
-    
+if USE_SITES:
+    form_admin_fieldsets.append((_("Sites"), {"fields": ("sites",), 
+        "classes": ("collapse",)}))
+    form_admin_filter_horizontal = ("sites",)
+
 class FieldAdmin(admin.TabularInline):
     model = Field
 
@@ -32,13 +40,11 @@ class FormAdmin(admin.ModelAdmin):
     list_display_links = ("title",)
     list_editable = ("status", "email_from", "email_copies")
     list_filter = ("status",)
+    filter_horizontal = form_admin_filter_horizontal
     search_fields = ("title", "intro", "response", "email_from", 
         "email_copies")
     radio_fields = {"status": admin.HORIZONTAL}
-    fieldsets = (
-        (None, {"fields": ("title", "status", "intro", "response")}),
-        (_("Email"), {"fields": ("send_email", "email_from", "email_copies")}),
-    )
+    fieldsets = form_admin_fieldsets
 
     def get_urls(self):
         """
