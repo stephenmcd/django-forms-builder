@@ -33,6 +33,7 @@ FIELD_CHOICES = (
     ("FileField", _("File upload")),
     ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
     ("DateTimeField", _("Date/time")),
+    ("CharField/django.forms.HiddenInput", _("Hidden")),
 )
 
 class FormManager(models.Manager):
@@ -138,6 +139,8 @@ class Field(models.Model):
     visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
         help_text="Comma separated options where applicable")
+    default = models.CharField(_("Default value"), blank=True, 
+        max_length=FIELD_MAX_LENGTH)
         
     objects = FieldManager()
 
