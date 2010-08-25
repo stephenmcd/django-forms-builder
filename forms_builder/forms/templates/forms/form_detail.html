@@ -6,6 +6,8 @@
 		body {font-family:sans-serif; padding:1em 2em;}
 		p {width:50em;}
 		label {display:block; float:left; width:10em;}
+		li {list-style-type:none;}
+		li label {width:auto; cursor:pointer;}
 		.errorlist {color:#f00;}
 	</style>
 </head>
@@ -17,7 +19,8 @@
 	
 	<form method="post" enctype="multipart/form-data">
 		{{ form_for_form.as_p }}
-		<input type="submit" />
+		<div style="clear:left;">&nbsp;</div>
+		<input type="submit" value="{{ form.button_text }}" />
 	</form>
 	
 </body>

@@ -1,5 +1,6 @@
 
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage
 from django.template import RequestContext
@@ -7,6 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render_to_response
 
 from forms_builder.forms.forms import FormForForm
 from forms_builder.forms.models import Form
+from forms_builder.forms.settings import USE_SITES
 
 
 def form_detail(request, slug, template="forms/form_detail.html"):
@@ -14,6 +16,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     Display a built form and handle submission.
     """    
     published = Form.objects.published(for_user=request.user)
+    if USE_SITES:
+        published = published.filter(sites=Site.objects.get_current())
     form = get_object_or_404(published, slug=slug)
     form_for_form = FormForForm(form, request.POST or None, request.FILES or None)
     if request.method == "POST":
