@@ -45,6 +45,7 @@ class FormForForm(forms.ModelForm):
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
+            self.initial[field_key] = field.default
             self.fields[field_key] = field_class(**field_args)
 
     def save(self, **kwargs):
