@@ -1,9 +1,16 @@
 
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.test import TestCase
 
 from forms_builder.forms.models import Form, FIELD_CHOICES, \
     STATUS_DRAFT, STATUS_PUBLISHED
+from forms_builder.forms.settings import USE_SITES
+
+
+current_site = None
+if USE_SITES:
+    current_site = Site.objects.get_current()
 
 
 class Tests(TestCase):
@@ -15,6 +22,9 @@ class Tests(TestCase):
         """
         for required in (True, False):
             form = Form.objects.create(title="Test", status=STATUS_PUBLISHED)
+            if USE_SITES:
+                form.sites.add(current_site)
+                form.save()
             for field in FIELD_CHOICES:
                 form.fields.create(label=field[0], field_type=field[0], 
                     required=required, visible=True)
@@ -34,6 +44,9 @@ class Tests(TestCase):
         User.objects.create_superuser(username, "", password)
         self.client.logout()
         draft = Form.objects.create(title="Draft", status=STATUS_DRAFT)
+        if USE_SITES:
+            draft.sites.add(current_site)
+            draft.save()
         response = self.client.get(draft.get_absolute_url())
         self.assertEqual(response.status_code, 404)
         self.client.login(username=username, password=password)
