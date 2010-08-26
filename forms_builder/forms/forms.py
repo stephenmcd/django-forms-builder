@@ -47,6 +47,11 @@ class FormForForm(forms.ModelForm):
                 field_args["widget"] = getattr(import_module(module), widget)
             self.initial[field_key] = field.default
             self.fields[field_key] = field_class(**field_args)
+            # Add identifying CSS classes to the field.
+            css_class = field_class_name.lower()
+            if field.required:
+                css_class += " required"
+            self.fields[field_key].widget.attrs["class"] = css_class
 
     def save(self, **kwargs):
         """
