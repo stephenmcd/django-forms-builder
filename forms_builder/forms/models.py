@@ -21,7 +21,12 @@ STATUS_CHOICES = (
 
 sites_field = None
 if USE_SITES:
-    sites_field = models.ManyToManyField("sites.Site")
+    from django.contrib.sites.models import Site
+    sites = Site.objects.all()
+    args = {}
+    if len(sites) == 1:
+        args["default"] = (sites[0].id,)
+    sites_field = models.ManyToManyField(Site, **args)
 
 FIELD_CHOICES = (
     ("CharField", _("Single line text")),
