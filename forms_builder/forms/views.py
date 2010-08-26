@@ -1,5 +1,6 @@
 
 from django.conf import settings
+from django.contrib.auth.decorators import _CheckLogin
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage
@@ -19,6 +20,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     if USE_SITES:
         published = published.filter(sites=Site.objects.get_current())
     form = get_object_or_404(published, slug=slug)
+    if form.login_required and not request.user.is_authenticated():
+        return _CheckLogin(lambda: None, lambda u: False)(request)
     form_for_form = FormForForm(form, request.POST or None, request.FILES or None)
     if request.method == "POST":
         if form_for_form.is_valid():

@@ -21,8 +21,8 @@ from forms_builder.forms.settings import UPLOAD_ROOT, USE_SITES
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 form_admin_filter_horizontal = ()
 form_admin_fieldsets = [
-    (None, {"fields": ("title", ("status", "publish_date", "expiry_date",),
-         "intro", "button_text", "response")}),
+    (None, {"fields": ("title", ("status", "login_required",), 
+        ("publish_date", "expiry_date",), "intro", "button_text", "response")}),
     (_("Email"), {"fields": ("send_email", "email_from", "email_copies")}),]
 
 if USE_SITES:
