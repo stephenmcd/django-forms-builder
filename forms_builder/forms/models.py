@@ -1,6 +1,7 @@
 
 from datetime import datetime
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
@@ -70,6 +71,8 @@ class Form(models.Model):
     expiry_date = models.DateTimeField(_("Expires on"), 
         help_text=_("With published selected, won't be shown after this time"),
         blank=True, null=True)
+    login_required = models.BooleanField(_("Login required"), 
+        help_text=_("If checked, only logged in users can view the form"))
     send_email = models.BooleanField(_("Send email"), default=True, help_text=
         _("If checked, the person entering the form will be sent an email"))
     email_from = models.EmailField(_("From address"), blank=True, 
