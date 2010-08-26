@@ -121,10 +121,10 @@ class AbstractForm(models.Model):
                     if i > 1:
                         self.slug = self.slug.rsplit("-", 1)[0]
                     self.slug = "%s-%s" % (self.slug, i)
-                if not Form.objects.filter(slug=self.slug):
+                if not self.__class__.objects.filter(slug=self.slug):
                     break
                 i += 1
-        super(Form, self).save(*args, **kwargs)
+        super(AbstractForm, self).save(*args, **kwargs)
         
     @models.permalink
     def get_absolute_url(self):
