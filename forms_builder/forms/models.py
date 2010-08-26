@@ -22,10 +22,14 @@ STATUS_CHOICES = (
 sites_field = None
 if USE_SITES:
     from django.contrib.sites.models import Site
-    sites = Site.objects.all()
-    args = {}
-    if len(sites) == 1:
-        args["default"] = (sites[0].id,)
+    try:
+        # Will fail on syncdb since the table doesn't exist yet, which is fine.
+        sites = Site.objects.all()
+        args = {}
+        if len(sites) == 1:
+            args["default"] = (sites[0].id,)
+    except:
+        pass
     sites_field = models.ManyToManyField(Site, **args)
 
 FIELD_CHOICES = (
@@ -56,7 +60,15 @@ class FormManager(models.Manager):
             Q(expiry_date__gte=datetime.now()) | Q(expiry_date__isnull=True),
             Q(status=STATUS_PUBLISHED))
 
-class Form(models.Model):
+######################################################################
+#                                                                    #
+#   Each of the models are implemented as abstract to allow for      #
+#   subclassing. Default concrete implementations are then defined   #
+#   at the end of this module.                                       #
+#                                                                    #
+######################################################################
+
+class AbstractForm(models.Model):
     """
     A user-built form.
     """
@@ -91,6 +103,7 @@ class Form(models.Model):
     class Meta:
         verbose_name = _("Form")
         verbose_name_plural = _("Forms")
+        abstract = True
     
     def __unicode__(self):
         return self.title
@@ -128,7 +141,7 @@ class Form(models.Model):
         return "<a href='%s'>%s</a>" % (url, ugettext("Export entries"))
     admin_link_export.allow_tags = True
     admin_link_export.short_description = ""
-
+    
 class FieldManager(models.Manager):
     """
     Only show visible fields when displaying actual form..
@@ -136,12 +149,11 @@ class FieldManager(models.Manager):
     def visible(self):
         return self.filter(visible=True)
 
-class Field(models.Model):
+class AbstractField(models.Model):
     """
     A field for a user-built form.
     """
     
-    form = models.ForeignKey("Form", related_name="fields")
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     field_type = models.CharField(_("Type"), choices=FIELD_CHOICES, 
         max_length=50)
@@ -157,33 +169,53 @@ class Field(models.Model):
     class Meta:
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
-        order_with_respect_to = "form"
+        abstract = True
     
     def __unicode__(self):
         return self.label
 
-class FormEntry(models.Model):
+class AbstractFormEntry(models.Model):
     """
     An entry submitted via a user-built form.
     """
 
-    form = models.ForeignKey("Form", related_name="entries")
     entry_time = models.DateTimeField(_("Date/time"))
     
     class Meta:
         verbose_name = _("Form entry")
         verbose_name_plural = _("Form entries")
-
-class FieldEntry(models.Model):
+        abstract = True
+    
+class AbstractFieldEntry(models.Model):
     """
     A single field value for a form entry submitted via a user-built form.
     """
     
-    entry = models.ForeignKey("FormEntry", related_name="fields")
     field_id = models.IntegerField()
     value = models.CharField(max_length=FIELD_MAX_LENGTH)
 
     class Meta:
         verbose_name = _("Form field entry")
         verbose_name_plural = _("Form field entries")
+        abstract = True
+
+###################################################
+#                                                 #
+#   Default concrete implementations are below.   #
+#                                                 #
+###################################################
+
+class Form(AbstractForm):
+    pass
+
+class Field(AbstractField):
+    form = models.ForeignKey("Form", related_name="fields")
+    class Meta:
+        order_with_respect_to = "form"
+
+class FormEntry(AbstractFormEntry):
+    form = models.ForeignKey("Form", related_name="entries")
+
+class FieldEntry(AbstractFieldEntry):
+    entry = models.ForeignKey("FormEntry", related_name="fields")
 
