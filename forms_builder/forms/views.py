@@ -29,8 +29,12 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             entry = form_for_form.save()
             fields = ["%s: %s" % (v.label, form_for_form.cleaned_data[k]) 
                 for (k, v) in form_for_form.fields.items()]
-            subject = "%s - %s" % (form.title, entry.entry_time)
+            subject = form.email_subject
+            if not subject:
+                subject = "%s - %s" % (form.title, entry.entry_time)
             body = "\n".join(fields)
+            if form.email_message:
+                body = "%s\n\n%s" % (form.email_message, body)
             email_from = form.email_from or settings.DEFAULT_FROM_EMAIL
             email_to = form_for_form.email_to()
             if email_to and form.send_email:
