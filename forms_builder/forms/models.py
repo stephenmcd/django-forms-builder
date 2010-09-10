@@ -76,10 +76,10 @@ class AbstractForm(models.Model):
     sites = sites_field
     title = models.CharField(_("Title"), max_length=50)
     slug = models.SlugField(editable=False, max_length=100, unique=True)
-    intro = models.TextField(_("Intro"), max_length=2000)
+    intro = models.TextField(_("Intro"))
     button_text = models.CharField(_("Button text"), max_length=50, 
         default=_("Submit"))
-    response = models.TextField(_("Response"), max_length=2000)
+    response = models.TextField(_("Response"))
     status = models.IntegerField(_("Status"), choices=STATUS_CHOICES, 
         default=STATUS_PUBLISHED)
     publish_date = models.DateTimeField(_("Published from"), 
@@ -97,6 +97,8 @@ class AbstractForm(models.Model):
     email_copies = models.CharField(_("Send copies to"), blank=True, 
         help_text=_("One or more email addresses, separated by commas"), 
         max_length=200)
+    email_subject = models.CharField(_("Subject"), max_length=200, blank=True)
+    email_message = models.TextField(_("Message"), blank=True)
 
     objects = FormManager()
 

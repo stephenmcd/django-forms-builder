@@ -23,7 +23,8 @@ form_admin_filter_horizontal = ()
 form_admin_fieldsets = [
     (None, {"fields": ("title", ("status", "login_required",), 
         ("publish_date", "expiry_date",), "intro", "button_text", "response")}),
-    (_("Email"), {"fields": ("send_email", "email_from", "email_copies")}),]
+    (_("Email"), {"fields": ("send_email", "email_from", "email_copies", 
+        "email_subject", "email_message")}),]
 
 if USE_SITES:
     form_admin_fieldsets.append((_("Sites"), {"fields": ("sites",), 
@@ -36,11 +37,10 @@ class FieldAdmin(admin.TabularInline):
 class FormAdmin(admin.ModelAdmin):
 
     inlines = (FieldAdmin,)
-    list_display = ("title", "status", "email_from", "email_copies", 
+    list_display = ("title", "status", "email_copies", 
         "publish_date", "expiry_date", "admin_link_export", "admin_link_view")
     list_display_links = ("title",)
-    list_editable = ("status", "email_from", "email_copies", "publish_date", 
-        "expiry_date", )
+    list_editable = ("status", "email_copies", "publish_date", "expiry_date")
     list_filter = ("status",)
     filter_horizontal = form_admin_filter_horizontal
     search_fields = ("title", "intro", "response", "email_from", 
