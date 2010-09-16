@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-09 15:24+0200\n"
+"POT-Creation-Date: 2010-09-16 14:40+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Wouter van der Graaf <wouter@dynora.nl>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,194 +17,211 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: forms/admin.py:26 forms/models.py:38
+#: admin.py:26 models.py:38
 msgid "Email"
 msgstr "E-mail"
 
-#: forms/admin.py:29
+#: admin.py:30
 msgid "Sites"
 msgstr "Sites"
 
-#: forms/models.py:36
+#: models.py:36
 msgid "Single line text"
 msgstr "Enkele rij tekst"
 
-#: forms/models.py:37
+#: models.py:37
 msgid "Multi line text"
 msgstr "Meerdere rijen tekst"
 
-#: forms/models.py:39
+#: models.py:39
 msgid "Check box"
 msgstr "Aankruisvakje"
 
-#: forms/models.py:41
+#: models.py:41
 msgid "Check boxes"
 msgstr "Aankruisvakjes"
 
-#: forms/models.py:42
+#: models.py:42
 msgid "Drop down"
 msgstr "Uitklapveld"
 
-#: forms/models.py:43
+#: models.py:43
 msgid "Multi select"
 msgstr "Lijstveld"
 
-#: forms/models.py:44
+#: models.py:44
 msgid "Radio buttons"
 msgstr "Keuzerondjes"
 
-#: forms/models.py:45
+#: models.py:45
 msgid "File upload"
 msgstr "Bestand upload"
 
-#: forms/models.py:46
+#: models.py:46
 msgid "Date"
 msgstr "Datum"
 
-#: forms/models.py:47 forms/models.py:182
+#: models.py:47 models.py:185
 msgid "Date/time"
 msgstr "Datum/tijd"
 
-#: forms/models.py:48
+#: models.py:48
 msgid "Hidden"
 msgstr "Verborgen"
 
-#: forms/models.py:77
+#: models.py:77
 msgid "Title"
 msgstr "Titel"
 
-#: forms/models.py:79
+#: models.py:79
 msgid "Intro"
 msgstr "Intro"
 
-#: forms/models.py:80
+#: models.py:80
 msgid "Button text"
 msgstr "Knoptekst"
 
-#: forms/models.py:81
+#: models.py:81
 msgid "Submit"
 msgstr "Verzenden"
 
-#: forms/models.py:82
+#: models.py:82
 msgid "Response"
 msgstr "Respons"
 
-#: forms/models.py:83
+#: models.py:83
 msgid "Status"
 msgstr "Status"
 
-#: forms/models.py:85
+#: models.py:85
 msgid "Published from"
 msgstr "Gepubliceerd vanaf"
 
-#: forms/models.py:86
+#: models.py:86
 msgid "With published selected, won't be shown until this time"
-msgstr "Met gepubliceerd geselecteerd, wordt deze niet getoond tot dit tijdstip"
+msgstr ""
+"Met gepubliceerd geselecteerd, wordt deze niet getoond tot dit tijdstip"
 
-#: forms/models.py:88
+#: models.py:88
 msgid "Expires on"
 msgstr "Vervalt op"
 
-#: forms/models.py:89
+#: models.py:89
 msgid "With published selected, won't be shown after this time"
-msgstr "Met gepubliceerd geselecteerd, wordt deze niet getoond vanaf dit tijdstip"
+msgstr ""
+"Met gepubliceerd geselecteerd, wordt deze niet getoond vanaf dit tijdstip"
 
-#: forms/models.py:91
+#: models.py:91
 msgid "Login required"
 msgstr "Inloggen vereist"
 
-#: forms/models.py:92
+#: models.py:92
 msgid "If checked, only logged in users can view the form"
-msgstr "Als aangevinkt, dan kunnen alleen ingelogde gebruikers het formulier zien"
+msgstr ""
+"Als aangevinkt, dan kunnen alleen ingelogde gebruikers het formulier zien"
 
-#: forms/models.py:93
+#: models.py:93
 msgid "Send email"
 msgstr "Verstuur e-mail"
 
-#: forms/models.py:94
+#: models.py:94
 msgid "If checked, the person entering the form will be sent an email"
-msgstr "Als aangevinkt, dan krijgt de persoon die het formulier heeft ingevuld een e-mail"
+msgstr ""
+"Als aangevinkt, dan krijgt de persoon die het formulier heeft ingevuld een e-"
+"mail"
 
-#: forms/models.py:95
+#: models.py:95
 msgid "From address"
 msgstr "Van adres"
 
-#: forms/models.py:96
+#: models.py:96
 msgid "The address the email will be sent from"
 msgstr "Het adres waarvandaan de e-mail verzonden wordt"
 
-#: forms/models.py:97
+#: models.py:97
 msgid "Send copies to"
 msgstr "Stuur kopie naar"
 
-#: forms/models.py:98
+#: models.py:98
 msgid "One or more email addresses, separated by commas"
 msgstr "Een of meer e-mailadressen, gescheiden door komma's"
 
-#: forms/models.py:104
+#: models.py:100
+msgid "Subject"
+msgstr "Onderwerp"
+
+#: models.py:101
+msgid "Message"
+msgstr "Bericht"
+
+#: models.py:106
 msgid "Form"
 msgstr "Formulier"
 
-#: forms/models.py:105
+#: models.py:107
 msgid "Forms"
 msgstr "Formulieren"
 
-#: forms/models.py:135 forms/templates/admin/forms/change_form.html:10
+#: models.py:137 templates/admin/forms/change_form.html:10
 msgid "View on site"
 msgstr "Bekijk op site"
 
-#: forms/models.py:141
+#: models.py:143
 msgid "Export entries"
 msgstr "Exporteer inzendingen"
 
-#: forms/models.py:157
+#: models.py:159
 msgid "Label"
 msgstr "Naam"
 
-#: forms/models.py:158
+#: models.py:160
 msgid "Type"
 msgstr "Type"
 
-#: forms/models.py:160
+#: models.py:162
 msgid "Required"
 msgstr "Verplicht"
 
-#: forms/models.py:161
+#: models.py:163
 msgid "Visible"
 msgstr "Zichtbaar"
 
-#: forms/models.py:162
+#: models.py:164
 msgid "Choices"
 msgstr "Keuzes"
 
-#: forms/models.py:164
+#: models.py:166
 msgid "Default value"
 msgstr "Standaardwaarde"
 
-#: forms/models.py:170
+#: models.py:168
+msgid "Help text"
+msgstr "Helptekst"
+
+#: models.py:173
 msgid "Field"
 msgstr "Veld"
 
-#: forms/models.py:171
+#: models.py:174
 msgid "Fields"
 msgstr "Velden"
 
-#: forms/models.py:185
+#: models.py:188
 msgid "Form entry"
 msgstr "Formulierinzending"
 
-#: forms/models.py:186
+#: models.py:189
 msgid "Form entries"
 msgstr "Formulierinzendingen"
 
-#: forms/models.py:198
+#: models.py:201
 msgid "Form field entry"
 msgstr "Formulierveldinzending"
 
-#: forms/models.py:199
+#: models.py:202
 msgid "Form field entries"
 msgstr "Formulierveldinzendingen"
 
-#: forms/templates/admin/forms/change_form.html:9
+#: templates/admin/forms/change_form.html:9
 msgid "History"
 msgstr "Geschiedenis"
