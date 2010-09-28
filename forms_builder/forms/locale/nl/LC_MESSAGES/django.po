@@ -1,0 +1,227 @@
+# Dutch Translation for stephenmcd's django-forms-builder
+# Copyright (C) 2010 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Wouter van der Graaf <wouter@dynora.nl>, 2010.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-09-16 14:40+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Wouter van der Graaf <wouter@dynora.nl>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: admin.py:26 models.py:38
+msgid "Email"
+msgstr "E-mail"
+
+#: admin.py:30
+msgid "Sites"
+msgstr "Sites"
+
+#: models.py:36
+msgid "Single line text"
+msgstr "Enkele rij tekst"
+
+#: models.py:37
+msgid "Multi line text"
+msgstr "Meerdere rijen tekst"
+
+#: models.py:39
+msgid "Check box"
+msgstr "Aankruisvakje"
+
+#: models.py:41
+msgid "Check boxes"
+msgstr "Aankruisvakjes"
+
+#: models.py:42
+msgid "Drop down"
+msgstr "Uitklapveld"
+
+#: models.py:43
+msgid "Multi select"
+msgstr "Lijstveld"
+
+#: models.py:44
+msgid "Radio buttons"
+msgstr "Keuzerondjes"
+
+#: models.py:45
+msgid "File upload"
+msgstr "Bestand upload"
+
+#: models.py:46
+msgid "Date"
+msgstr "Datum"
+
+#: models.py:47 models.py:185
+msgid "Date/time"
+msgstr "Datum/tijd"
+
+#: models.py:48
+msgid "Hidden"
+msgstr "Verborgen"
+
+#: models.py:77
+msgid "Title"
+msgstr "Titel"
+
+#: models.py:79
+msgid "Intro"
+msgstr "Intro"
+
+#: models.py:80
+msgid "Button text"
+msgstr "Knoptekst"
+
+#: models.py:81
+msgid "Submit"
+msgstr "Verzenden"
+
+#: models.py:82
+msgid "Response"
+msgstr "Respons"
+
+#: models.py:83
+msgid "Status"
+msgstr "Status"
+
+#: models.py:85
+msgid "Published from"
+msgstr "Gepubliceerd vanaf"
+
+#: models.py:86
+msgid "With published selected, won't be shown until this time"
+msgstr ""
+"Met gepubliceerd geselecteerd, wordt deze niet getoond tot dit tijdstip"
+
+#: models.py:88
+msgid "Expires on"
+msgstr "Vervalt op"
+
+#: models.py:89
+msgid "With published selected, won't be shown after this time"
+msgstr ""
+"Met gepubliceerd geselecteerd, wordt deze niet getoond vanaf dit tijdstip"
+
+#: models.py:91
+msgid "Login required"
+msgstr "Inloggen vereist"
+
+#: models.py:92
+msgid "If checked, only logged in users can view the form"
+msgstr ""
+"Als aangevinkt, dan kunnen alleen ingelogde gebruikers het formulier zien"
+
+#: models.py:93
+msgid "Send email"
+msgstr "Verstuur e-mail"
+
+#: models.py:94
+msgid "If checked, the person entering the form will be sent an email"
+msgstr ""
+"Als aangevinkt, dan krijgt de persoon die het formulier heeft ingevuld een e-"
+"mail"
+
+#: models.py:95
+msgid "From address"
+msgstr "Van adres"
+
+#: models.py:96
+msgid "The address the email will be sent from"
+msgstr "Het adres waarvandaan de e-mail verzonden wordt"
+
+#: models.py:97
+msgid "Send copies to"
+msgstr "Stuur kopie naar"
+
+#: models.py:98
+msgid "One or more email addresses, separated by commas"
+msgstr "Een of meer e-mailadressen, gescheiden door komma's"
+
+#: models.py:100
+msgid "Subject"
+msgstr "Onderwerp"
+
+#: models.py:101
+msgid "Message"
+msgstr "Bericht"
+
+#: models.py:106
+msgid "Form"
+msgstr "Formulier"
+
+#: models.py:107
+msgid "Forms"
+msgstr "Formulieren"
+
+#: models.py:137 templates/admin/forms/change_form.html:10
+msgid "View on site"
+msgstr "Bekijk op site"
+
+#: models.py:143
+msgid "Export entries"
+msgstr "Exporteer inzendingen"
+
+#: models.py:159
+msgid "Label"
+msgstr "Naam"
+
+#: models.py:160
+msgid "Type"
+msgstr "Type"
+
+#: models.py:162
+msgid "Required"
+msgstr "Verplicht"
+
+#: models.py:163
+msgid "Visible"
+msgstr "Zichtbaar"
+
+#: models.py:164
+msgid "Choices"
+msgstr "Keuzes"
+
+#: models.py:166
+msgid "Default value"
+msgstr "Standaardwaarde"
+
+#: models.py:168
+msgid "Help text"
+msgstr "Helptekst"
+
+#: models.py:173
+msgid "Field"
+msgstr "Veld"
+
+#: models.py:174
+msgid "Fields"
+msgstr "Velden"
+
+#: models.py:188
+msgid "Form entry"
+msgstr "Formulierinzending"
+
+#: models.py:189
+msgid "Form entries"
+msgstr "Formulierinzendingen"
+
+#: models.py:201
+msgid "Form field entry"
+msgstr "Formulierveldinzending"
+
+#: models.py:202
+msgid "Form field entries"
+msgstr "Formulierveldinzendingen"
+
+#: templates/admin/forms/change_form.html:9
+msgid "History"
+msgstr "Geschiedenis"

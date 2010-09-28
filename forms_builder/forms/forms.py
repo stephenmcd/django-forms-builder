@@ -82,7 +82,8 @@ class FormForForm(forms.ModelForm):
             else:
                 field_class_name, field_widget = field.field_type, None
             field_class = getattr(forms, field_class_name)
-            field_args = {"label": field.label, "required": field.required}
+            field_args = {"label": field.label, "required": field.required,
+                "help_text": field.help_text}
             arg_names = field_class.__init__.im_func.func_code.co_varnames
             if "max_length" in arg_names:
                 field_args["max_length"] = FIELD_MAX_LENGTH
@@ -116,7 +117,8 @@ class FormForForm(forms.ModelForm):
                 value = fs.save(join("forms", str(uuid4()), value.name), value)
             if isinstance(value, list):
                 value = ", ".join([v.strip() for v in value])
-            entry.fields.create(field_id=field.id, value=value)
+            if value:
+                entry.fields.create(field_id=field.id, value=value)
         return entry
         
     def email_to(self):
