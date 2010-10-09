@@ -4,8 +4,8 @@
 	<title>{{ form.title }}</title>
 	<style>
 		body {font-family:sans-serif; padding:1em 2em;}
-		p {width:50em;}
-		label {display:block; float:left; width:10em;}
+		p {width:50em; clear:both;}
+		label {display:block; float:left; width:8em; margin:0 1.2em 1.2em 0;}
 		li {list-style-type:none;}
 		li label {width:auto; cursor:pointer;}
 		.errorlist {color:#f00;}
@@ -17,7 +17,8 @@
 	<h1>{{ form.title }}</h1>
 	<p>{{ form.intro }}</p>
 	
-	<form method="post"{% if form_for_form.is_multipart %} enctype="multipart/form-data"{% endif %}>
+	<form method="post"{% if form_for_form.is_multipart %} 
+	    enctype="multipart/form-data"{% endif %}>
 	    {% csrf_token %}
 		{{ form_for_form.as_p }}
 		<div style="clear:left;">&nbsp;</div>
