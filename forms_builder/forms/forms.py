@@ -161,7 +161,7 @@ class ExportForm(forms.Form):
             if "ChoiceField" in field.field_type or is_bool_field:
                 # A fixed set of choices to filter by.
                 if is_bool_field:
-                    choices = ((True, _("Checked")), False, _("Not checked"))
+                    choices = ((True, _("Checked")), (False, _("Not checked")))
                 else:
                     choices = zip(*([field.choices.split(",")] * 2))
                 contains_field = forms.MultipleChoiceField(label=" ",
