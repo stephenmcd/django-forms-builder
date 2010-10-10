@@ -21,16 +21,14 @@ STATUS_CHOICES = (
 
 sites_field = None
 if USE_SITES:
+    import sys
     from django.contrib.sites.models import Site
-    try:
-        # Will fail on syncdb since the table doesn't exist yet, which is fine.
+    kwargs = {}
+    if not (len(sys.argv) >= 2 and sys.argv[1] == "syncdb"):
         sites = Site.objects.all()
-        args = {}
         if len(sites) == 1:
-            args["default"] = (sites[0].id,)
-    except:
-        pass
-    sites_field = models.ManyToManyField(Site, **args)
+            kwargs["default"] = (sites[0].id,)
+    sites_field = models.ManyToManyField(Site, **kwargs)
 
 FIELD_CHOICES = (
     ("CharField", _("Single line text")),
