@@ -182,7 +182,7 @@ class AbstractField(models.Model):
         """
         Parse a comma separated choice string into a list of choices taking 
         into account quoted choices using the ``CHOICES_QUOTE`` and 
-        ``UNCHOICES_QUOTE`` settings.
+        ``CHOICES_UNQUOTE`` settings.
         """
         choice = ""
         quoted = False
