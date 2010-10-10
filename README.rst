@@ -45,6 +45,8 @@ The following settings can be defined in your project's ``settings`` module.
   * ``FORMS_BUILDER_LABEL_MAX_LENGTH`` - Maximum allowed length for field labels. Defaults to ``20``
   * ``FORMS_BUILDER_UPLOAD_ROOT`` - The absolute path where files will be uploaded to. Defaults to ``None``
   * ``FORMS_BUILDER_USE_SITES`` - Boolean controlling whether forms are associated to Django's Sites framework. Defaults to ``"django.contrib.sites" in settings.INSTALLED_APPS``
+  * ``FORMS_BUILDER_CHOICES_QUOTE`` - Char to start a quoted choice with. Defaults to `.
+  * ``FORMS_BUILDER_CHOICES_UNQUOTE`` - Char to end a quoted choice with. Defaults to `.
 
 .. _`setuptools`: http://pypi.python.org/pypi/setuptools
 
