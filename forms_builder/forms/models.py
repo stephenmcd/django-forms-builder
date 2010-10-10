@@ -9,7 +9,7 @@ from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext, ugettext_lazy as _
 
 from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH, \
-    USE_SITES
+    USE_SITES, CHOICES_QUOTE, CHOICES_UNQUOTE
 
 
 STATUS_DRAFT = 1
@@ -162,7 +162,10 @@ class AbstractField(models.Model):
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True, 
-        help_text="Comma separated options where applicable")
+        help_text="Comma separated options where applicable. If an option "
+            "itself contains commas, surround the option starting with the %s"
+            "character and ending with the %s character." % 
+                (CHOICES_QUOTE, CHOICES_UNQUOTE))
     default = models.CharField(_("Default value"), blank=True, 
         max_length=FIELD_MAX_LENGTH)
     help_text = models.CharField(_("Help text"), blank=True, max_length=100)
@@ -176,6 +179,30 @@ class AbstractField(models.Model):
     
     def __unicode__(self):
         return self.label
+
+    def get_choices(self):
+        """
+        Parse a comma separated choice string into a list of choices taking 
+        into account quoted choices using the ``CHOICES_QUOTE`` and 
+        ``UNCHOICES_QUOTE`` settings.
+        """
+        choice = ""
+        quoted = False
+        for char in self.choices:
+            if not quoted and char == CHOICES_QUOTE:
+                quoted = True
+            elif quoted and char == CHOICES_UNQUOTE:
+                quoted = False
+            elif char == "," and not quoted:
+                choice = choice.strip()
+                if choice:
+                    yield choice, choice
+                choice = ""
+            else:
+                choice += char
+        choice = choice.strip()
+        if choice:
+            yield choice, choice
 
 class AbstractFormEntry(models.Model):
     """
@@ -221,4 +248,3 @@ class FormEntry(AbstractFormEntry):
 
 class FieldEntry(AbstractFieldEntry):
     entry = models.ForeignKey("FormEntry", related_name="fields")
-

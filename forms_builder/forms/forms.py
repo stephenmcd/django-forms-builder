@@ -60,7 +60,7 @@ choice_filter_field = forms.ChoiceField(label=" ", required=False,
 date_filter_field = forms.ChoiceField(label=" ", required=False, 
     choices=DATE_FILTER_CHOICES)
 
-
+    
 class FormForForm(forms.ModelForm):
 
     class Meta:
@@ -88,8 +88,7 @@ class FormForForm(forms.ModelForm):
             if "max_length" in arg_names:
                 field_args["max_length"] = FIELD_MAX_LENGTH
             if "choices" in arg_names:
-                choices = field.choices.split(",")
-                field_args["choices"] = zip(choices, choices)
+                field_args["choices"] = field.get_choices()
             if field_widget is not None:
                 module, widget = field_widget.rsplit(".", 1)
                 field_args["widget"] = getattr(import_module(module), widget)
@@ -163,7 +162,7 @@ class ExportForm(forms.Form):
                 if is_bool_field:
                     choices = ((True, _("Checked")), (False, _("Not checked")))
                 else:
-                    choices = zip(*([field.choices.split(",")] * 2))
+                    choices = field.get_choices()
                 contains_field = forms.MultipleChoiceField(label=" ",
                     choices=choices, widget=forms.CheckboxSelectMultiple(), 
                     required=False)
