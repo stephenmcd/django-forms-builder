@@ -22,13 +22,13 @@ from forms_builder.forms.settings import UPLOAD_ROOT, USE_SITES
 fs = FileSystemStorage(location=UPLOAD_ROOT)
 form_admin_filter_horizontal = ()
 form_admin_fieldsets = [
-    (None, {"fields": ("title", ("status", "login_required",), 
+    (None, {"fields": ("title", ("status", "login_required",),
         ("publish_date", "expiry_date",), "intro", "button_text", "response")}),
-    (_("Email"), {"fields": ("send_email", "email_from", "email_copies", 
+    (_("Email"), {"fields": ("send_email", "email_from", "email_copies",
         "email_subject", "email_message")}),]
 
 if USE_SITES:
-    form_admin_fieldsets.append((_("Sites"), {"fields": ("sites",), 
+    form_admin_fieldsets.append((_("Sites"), {"fields": ("sites",),
         "classes": ("collapse",)}))
     form_admin_filter_horizontal = ("sites",)
 
@@ -38,13 +38,13 @@ class FieldAdmin(admin.TabularInline):
 class FormAdmin(admin.ModelAdmin):
 
     inlines = (FieldAdmin,)
-    list_display = ("title", "status", "email_copies", 
+    list_display = ("title", "status", "email_copies",
         "publish_date", "expiry_date", "admin_link_export", "admin_link_view")
     list_display_links = ("title",)
     list_editable = ("status", "email_copies", "publish_date", "expiry_date")
     list_filter = ("status",)
     filter_horizontal = form_admin_filter_horizontal
-    search_fields = ("title", "intro", "response", "email_from", 
+    search_fields = ("title", "intro", "response", "email_from",
         "email_copies")
     radio_fields = {"status": admin.HORIZONTAL}
     fieldsets = form_admin_fieldsets
@@ -54,12 +54,12 @@ class FormAdmin(admin.ModelAdmin):
         Add the export view to urls.
         """
         urls = super(FormAdmin, self).get_urls()
-        extra_urls = patterns("", 
-            url("^export/(?P<form_id>\d+)/$", 
-                self.admin_site.admin_view(self.export_view), 
+        extra_urls = patterns("",
+            url("^export/(?P<form_id>\d+)/$",
+                self.admin_site.admin_view(self.export_view),
                 name="form_export"),
-            url("^file/(?P<field_entry_id>\d+)/$", 
-                self.admin_site.admin_view(self.file_view), 
+            url("^file/(?P<field_entry_id>\d+)/$",
+                self.admin_site.admin_view(self.file_view),
                 name="form_file"),
         )
         return extra_urls + urls
@@ -69,7 +69,7 @@ class FormAdmin(admin.ModelAdmin):
         Output a CSV file to the browser containing the entries for the form.
         """
         if request.POST.get("back"):
-            change_url = reverse("admin:%s_%s_change" % 
+            change_url = reverse("admin:%s_%s_change" %
                 (Form._meta.app_label, Form.__name__.lower()), args=(form_id,))
             return HttpResponseRedirect(change_url)
         form = get_object_or_404(Form, id=form_id)
@@ -101,4 +101,3 @@ class FormAdmin(admin.ModelAdmin):
         return response
 
 admin.site.register(Form, FormAdmin)
-
