@@ -25,10 +25,10 @@ sites_field = None
 if USE_SITES:
     from django.contrib.sites.models import Site
 
-    def default_site():
-        return Site.objects.get_current()
+    def default_sites():
+        return [Site.objects.get_current()]
 
-    sites_field = models.ManyToManyField(Site, default=default_site)
+    sites_field = models.ManyToManyField(Site, default=default_sites)
 
 FIELD_CHOICES = (
     ("CharField", _("Single line text")),

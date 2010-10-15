@@ -53,3 +53,11 @@ class Tests(TestCase):
         response = self.client.get(draft.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
+    def test_default_sites(self):
+        """
+        If USE_SITES is True, then a new Form object should
+        default to using Site.objects.get_current
+        """
+        f = Form()
+        self.assert_(current_site in f.sites)
+
