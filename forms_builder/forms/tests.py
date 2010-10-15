@@ -17,7 +17,7 @@ class Tests(TestCase):
 
     def test_form_fields(self):
         """
-        Simple 200 status check against rendering and posting to forms with 
+        Simple 200 status check against rendering and posting to forms with
         both optional and required fields.
         """
         for required in (True, False):
@@ -26,7 +26,7 @@ class Tests(TestCase):
                 form.sites.add(current_site)
                 form.save()
             for field in FIELD_CHOICES:
-                form.fields.create(label=field[0], field_type=field[0], 
+                form.fields.create(label=field[0], field_type=field[0],
                     required=required, visible=True)
             response = self.client.get(form.get_absolute_url())
             self.assertEqual(response.status_code, 200)
