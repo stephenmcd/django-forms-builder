@@ -15,19 +15,19 @@ from forms_builder.forms.settings import USE_SITES
 def form_detail(request, slug, template="forms/form_detail.html"):
     """
     Display a built form and handle submission.
-    """    
+    """
     published = Form.objects.published(for_user=request.user)
     if USE_SITES:
         published = published.filter(sites=Site.objects.get_current())
     form = get_object_or_404(published, slug=slug)
     if form.login_required and not request.user.is_authenticated():
-        return redirect("%s?%s=%s" % (settings.LOGIN_URL, REDIRECT_FIELD_NAME, 
+        return redirect("%s?%s=%s" % (settings.LOGIN_URL, REDIRECT_FIELD_NAME,
             urlquote(request.get_full_path())))
     form_for_form = FormForForm(form, request.POST or None, request.FILES or None)
     if request.method == "POST":
         if form_for_form.is_valid():
             entry = form_for_form.save()
-            fields = ["%s: %s" % (v.label, form_for_form.cleaned_data[k]) 
+            fields = ["%s: %s" % (v.label, form_for_form.cleaned_data[k])
                 for (k, v) in form_for_form.fields.items()]
             subject = form.email_subject
             if not subject:
@@ -41,7 +41,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 msg = EmailMessage(subject, body, email_from, [email_to])
                 msg.send()
             email_from = email_to or email_from # Send from the email entered.
-            email_copies = [e.strip() for e in form.email_copies.split(",") 
+            email_copies = [e.strip() for e in form.email_copies.split(",")
                 if e.strip()]
             if email_copies:
                 msg = EmailMessage(subject, body, email_from, email_copies)
