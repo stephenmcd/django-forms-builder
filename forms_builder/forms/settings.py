@@ -11,7 +11,7 @@ LABEL_MAX_LENGTH = getattr(settings, "FORMS_BUILDER_LABEL_MAX_LENGTH", 200)
 # The absolute path where files will be uploaded to.
 UPLOAD_ROOT = getattr(settings, "FORMS_BUILDER_UPLOAD_ROOT", None)
 
-# Boolean controlling whether HTML5 features are used.
+# Boolean controlling whether HTML5 form fields are used.
 USE_HTML5 = getattr(settings, "FORMS_BUILDER_USE_HTML5", True)
 
 # Boolean controlling whether forms are associated to Django's Sites framework.
