@@ -2,10 +2,11 @@
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.sites.models import Site
-from django.core.urlresolvers import reverse
 from django.core.mail import EmailMessage
-from django.template import RequestContext
+from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect, render_to_response
+from django.template import RequestContext
+from django.utils.http import urlquote
 
 from forms_builder.forms.forms import FormForForm
 from forms_builder.forms.models import Form
@@ -22,8 +23,9 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     form = get_object_or_404(published, slug=slug)
     if form.login_required and not request.user.is_authenticated():
         return redirect("%s?%s=%s" % (settings.LOGIN_URL, REDIRECT_FIELD_NAME,
-            urlquote(request.get_full_path())))
-    form_for_form = FormForForm(form, request.POST or None, request.FILES or None)
+                        urlquote(request.get_full_path())))
+    args = (form, request.POST or None, request.FILES or None)
+    form_for_form = FormForForm(*args)
     if request.method == "POST":
         if form_for_form.is_valid():
             entry = form_for_form.save()
@@ -52,6 +54,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             return redirect(reverse("form_sent", kwargs={"slug": form.slug}))
     context = {"form": form, "form_for_form": form_for_form}
     return render_to_response(template, context, RequestContext(request))
+
 
 def form_sent(request, slug, template="forms/form_sent.html"):
     """
