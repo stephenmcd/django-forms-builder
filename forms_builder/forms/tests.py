@@ -3,8 +3,8 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.test import TestCase
 
-from forms_builder.forms.models import Form, FIELD_CHOICES, \
-    STATUS_DRAFT, STATUS_PUBLISHED
+from forms_builder.forms.models import Form, STATUS_DRAFT, STATUS_PUBLISHED
+from forms_builder.forms.fields import NAMES
 from forms_builder.forms.settings import USE_SITES
 
 
@@ -25,9 +25,9 @@ class Tests(TestCase):
             if USE_SITES:
                 form.sites.add(current_site)
                 form.save()
-            for field in FIELD_CHOICES:
-                form.fields.create(label=field[0], field_type=field[0],
-                    required=required, visible=True)
+            for (field, _) in NAMES:
+                form.fields.create(label=field, field_type=field,
+                                   required=required, visible=True)
             response = self.client.get(form.get_absolute_url())
             self.assertEqual(response.status_code, 200)
             fields = form.fields.visible()
@@ -52,12 +52,3 @@ class Tests(TestCase):
         self.client.login(username=username, password=password)
         response = self.client.get(draft.get_absolute_url())
         self.assertEqual(response.status_code, 200)
-
-    def test_default_sites(self):
-        """
-        If USE_SITES is True, then a new Form object should
-        default to using Site.objects.get_current
-        """
-        f = Form()
-        self.assert_(current_site in f.sites)
-

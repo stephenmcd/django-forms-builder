@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext, ugettext_lazy as _
 
+from forms_builder.forms import fields
 from forms_builder.forms import settings
 
 
@@ -23,22 +24,6 @@ if settings.USE_SITES:
     def default_sites():
         return [Site.objects.get_current()]
     sites_field = models.ManyToManyField(Site, default=default_sites)
-
-FIELD_CHOICES = (
-    ("CharField", _("Single line text")),
-    ("CharField/django.forms.Textarea", _("Multi line text")),
-    ("EmailField", _("Email")),
-    ("BooleanField", _("Check box")),
-    ("MultipleChoiceField/django.forms.CheckboxSelectMultiple",
-        _("Check boxes")),
-    ("ChoiceField", _("Drop down")),
-    ("MultipleChoiceField", _("Multi select")),
-    ("ChoiceField/django.forms.RadioSelect", _("Radio buttons")),
-    ("FileField", _("File upload")),
-    ("DateField/django.forms.extras.SelectDateWidget", _("Date")),
-    ("DateTimeField", _("Date/time")),
-    ("CharField/django.forms.HiddenInput", _("Hidden")),
-)
 
 class FormManager(models.Manager):
     """
@@ -159,8 +144,7 @@ class AbstractField(models.Model):
     """
 
     label = models.CharField(_("Label"), max_length=settings.LABEL_MAX_LENGTH)
-    field_type = models.CharField(_("Type"), choices=FIELD_CHOICES,
-                                  max_length=55)
+    field_type = models.IntegerField(_("Type"), choices=fields.NAMES)
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
@@ -206,6 +190,12 @@ class AbstractField(models.Model):
         choice = choice.strip()
         if choice:
             yield choice, choice
+    
+    def is_a(self, *args):
+        """
+        Helper that returns True if the field's type is given in any arg.
+        """
+        return self.field_type in args
 
 class AbstractFormEntry(models.Model):
     """
