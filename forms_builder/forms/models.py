@@ -8,8 +8,9 @@ from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext, ugettext_lazy as _
 
-from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH, \
-    USE_SITES, CHOICES_QUOTE, CHOICES_UNQUOTE
+from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
+from forms_builder.forms.settings import USE_HTML5, USE_SITES
+from forms_builder.forms.settings import CHOICES_QUOTE, CHOICES_UNQUOTE
 
 
 STATUS_DRAFT = 1
@@ -18,8 +19,6 @@ STATUS_CHOICES = (
     (STATUS_DRAFT, "Draft"),
     (STATUS_PUBLISHED, "Published"),
 )
-
-
 
 sites_field = None
 if USE_SITES:
@@ -149,6 +148,16 @@ class FieldManager(models.Manager):
     def visible(self):
         return self.filter(visible=True)
 
+def placeholder_text_field():
+    """
+    Return nothing if HTML5 is disabled, otherwise return the 
+    ``placeholder_text`` field. Wrapped in a function to trigger the correct 
+    field ordering at creation time.
+    """
+    if not USE_HTML5:
+        return None
+    return models.CharField(_("Placeholder Text"), blank=True, max_length=100)
+
 class AbstractField(models.Model):
     """
     A field for a user-built form.
@@ -156,7 +165,7 @@ class AbstractField(models.Model):
 
     label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
     field_type = models.CharField(_("Type"), choices=FIELD_CHOICES,
-        max_length=55)
+                                  max_length=55)
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
@@ -166,6 +175,7 @@ class AbstractField(models.Model):
                 (CHOICES_QUOTE, CHOICES_UNQUOTE))
     default = models.CharField(_("Default value"), blank=True,
         max_length=FIELD_MAX_LENGTH)
+    placeholder_text = placeholder_text_field()
     help_text = models.CharField(_("Help text"), blank=True, max_length=100)
 
     objects = FieldManager()
