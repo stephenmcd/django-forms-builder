@@ -11,10 +11,10 @@ from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
 
 from forms_builder.forms.models import FormEntry, FieldEntry
-from forms_builder.forms.settings import FIELD_MAX_LENGTH, UPLOAD_ROOT
+from forms_builder.forms import settings
 
 
-fs = FileSystemStorage(location=UPLOAD_ROOT)
+fs = FileSystemStorage(location=settings.UPLOAD_ROOT)
 
 FILTER_CHOICE_CONTAINS = "1"
 FILTER_CHOICE_DOESNT_CONTAIN = "2"
@@ -87,7 +87,7 @@ class FormForForm(forms.ModelForm):
                 "help_text": field.help_text}
             arg_names = field_class.__init__.im_func.func_code.co_varnames
             if "max_length" in arg_names:
-                field_args["max_length"] = FIELD_MAX_LENGTH
+                field_args["max_length"] = settings.FIELD_MAX_LENGTH
             if "choices" in arg_names:
                 field_args["choices"] = field.get_choices()
             if field_widget is not None:
@@ -99,6 +99,8 @@ class FormForForm(forms.ModelForm):
             css_class = field_class_name.lower()
             if field.required:
                 css_class += " required"
+                if settings.USE_HTML5:
+                    self.fields[field_key].widget.attrs["required"] = ""
             self.fields[field_key].widget.attrs["class"] = css_class
             if field.placeholder_text and not field.default:
                 text = field.placeholder_text
@@ -202,7 +204,7 @@ class ExportForm(forms.Form):
         for field_id in [f.id for f in self.form_fields] + [0]:
             prefix = "field_%s_" % field_id
             fields = [f for f in super(ExportForm, self).__iter__()
-                if f.name.startswith(prefix)]
+                      if f.name.startswith(prefix)]
             yield fields[0], fields[1], fields[2:]
     
     def columns(self):
@@ -210,7 +212,7 @@ class ExportForm(forms.Form):
         Returns the list of selected column names.
         """
         fields = [f.label for f in self.form_fields 
-            if self.cleaned_data["field_%s_export" % f.id]]
+                  if self.cleaned_data["field_%s_export" % f.id]]
         if self.cleaned_data["field_0_export"]:
             fields.append(self.entry_time_name)
         return fields
