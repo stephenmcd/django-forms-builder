@@ -1,16 +1,13 @@
 
 from datetime import datetime
 
-from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext, ugettext_lazy as _
 
-from forms_builder.forms.settings import FIELD_MAX_LENGTH, LABEL_MAX_LENGTH
-from forms_builder.forms.settings import USE_HTML5, USE_SITES
-from forms_builder.forms.settings import CHOICES_QUOTE, CHOICES_UNQUOTE
+from forms_builder.forms import settings
 
 
 STATUS_DRAFT = 1
@@ -21,12 +18,10 @@ STATUS_CHOICES = (
 )
 
 sites_field = None
-if USE_SITES:
+if settings.USE_SITES:
     from django.contrib.sites.models import Site
-
     def default_sites():
         return [Site.objects.get_current()]
-
     sites_field = models.ManyToManyField(Site, default=default_sites)
 
 FIELD_CHOICES = (
@@ -154,7 +149,7 @@ def placeholder_text_field():
     ``placeholder_text`` field. Wrapped in a function to trigger the correct 
     field ordering at creation time.
     """
-    if not USE_HTML5:
+    if not settings.USE_HTML5:
         return None
     return models.CharField(_("Placeholder Text"), blank=True, max_length=100)
 
@@ -163,7 +158,7 @@ class AbstractField(models.Model):
     A field for a user-built form.
     """
 
-    label = models.CharField(_("Label"), max_length=LABEL_MAX_LENGTH)
+    label = models.CharField(_("Label"), max_length=settings.LABEL_MAX_LENGTH)
     field_type = models.CharField(_("Type"), choices=FIELD_CHOICES,
                                   max_length=55)
     required = models.BooleanField(_("Required"), default=True)
@@ -172,9 +167,9 @@ class AbstractField(models.Model):
         help_text="Comma separated options where applicable. If an option "
             "itself contains commas, surround the option starting with the %s"
             "character and ending with the %s character." %
-                (CHOICES_QUOTE, CHOICES_UNQUOTE))
+                (settings.CHOICES_QUOTE, settings.CHOICES_UNQUOTE))
     default = models.CharField(_("Default value"), blank=True,
-        max_length=FIELD_MAX_LENGTH)
+        max_length=settings.FIELD_MAX_LENGTH)
     placeholder_text = placeholder_text_field()
     help_text = models.CharField(_("Help text"), blank=True, max_length=100)
 
@@ -191,15 +186,15 @@ class AbstractField(models.Model):
     def get_choices(self):
         """
         Parse a comma separated choice string into a list of choices taking
-        into account quoted choices using the ``CHOICES_QUOTE`` and
-        ``CHOICES_UNQUOTE`` settings.
+        into account quoted choices using the ``settings.CHOICES_QUOTE`` and
+        ``settings.CHOICES_UNQUOTE`` settings.
         """
         choice = ""
         quoted = False
         for char in self.choices:
-            if not quoted and char == CHOICES_QUOTE:
+            if not quoted and char == settings.CHOICES_QUOTE:
                 quoted = True
-            elif quoted and char == CHOICES_UNQUOTE:
+            elif quoted and char == settings.CHOICES_UNQUOTE:
                 quoted = False
             elif char == "," and not quoted:
                 choice = choice.strip()
@@ -230,7 +225,7 @@ class AbstractFieldEntry(models.Model):
     """
 
     field_id = models.IntegerField()
-    value = models.CharField(max_length=FIELD_MAX_LENGTH)
+    value = models.CharField(max_length=settings.FIELD_MAX_LENGTH)
 
     class Meta:
         verbose_name = _("Form field entry")
