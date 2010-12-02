@@ -157,9 +157,9 @@ class ExportForm(forms.Form):
             # Checkbox for including in export.
             self.fields["%s_export" % field_key] = forms.BooleanField(
                 label=field.label, initial=True, required=False)
-            if field.is_a(fields.CHOICES):
+            if field.is_a(*fields.CHOICES):
                 # A fixed set of choices to filter by.
-                if field.is_a(fields.CHOICES):
+                if field.is_a(fields.CHECKBOX):
                     choices = ((True, _("Checked")), (False, _("Not checked")))
                 else:
                     choices = field.get_choices()
@@ -168,7 +168,7 @@ class ExportForm(forms.Form):
                     required=False)
                 self.fields["%s_filter" % field_key] = choice_filter_field
                 self.fields["%s_contains" % field_key] = contains_field
-            elif field.is_a(fields.DATES):
+            elif field.is_a(*fields.DATES):
                 # A date range to filter by.
                 self.fields["%s_filter" % field_key] = date_filter_field
                 self.fields["%s_from" % field_key] = forms.DateField(
