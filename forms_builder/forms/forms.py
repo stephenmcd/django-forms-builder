@@ -228,7 +228,7 @@ class ExportForm(forms.Form):
                 field_indexes[field.id] = len(field_indexes)
                 if field.is_a(fields.FILE):
                     file_field_ids.append(field.id)
-                elif field.is_a(fields.DATE):
+                elif field.is_a(*fields.DATES):
                     date_field_ids.append(field.id)
         num_columns = len(field_indexes)
         include_entry_time = self.cleaned_data["field_0_export"]
