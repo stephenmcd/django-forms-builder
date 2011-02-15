@@ -57,8 +57,9 @@ The following settings can be defined in your project's ``settings`` module.
   * ``FORMS_BUILDER_UPLOAD_ROOT`` - The absolute path where files will be uploaded to. Defaults to ``None``
   * ``FORMS_BUILDER_USE_HTML5`` - Boolean controlling whether HTML5 form fields are used. Defaults to ``True``
   * ``FORMS_BUILDER_USE_SITES`` - Boolean controlling whether forms are associated to Django's Sites framework. Defaults to ``"django.contrib.sites" in settings.INSTALLED_APPS``
-  * ``FORMS_BUILDER_CHOICES_QUOTE`` - Char to start a quoted choice with. Defaults to `.
-  * ``FORMS_BUILDER_CHOICES_UNQUOTE`` - Char to end a quoted choice with. Defaults to `.
+  * ``FORMS_BUILDER_CHOICES_QUOTE`` - Char to start a quoted choice with. Defaults to the backtick char: `
+  * ``FORMS_BUILDER_CHOICES_UNQUOTE`` - Char to end a quoted choice with. Defaults to the backtick char: `
+  * ``FORMS_BUILDER_CSV_DELIMITER`` - Char to use as a field delimiter when exporting form responses as CSV. Defaults to a comma: ,
 
 .. _`setuptools`: http://pypi.python.org/pypi/setuptools
 
