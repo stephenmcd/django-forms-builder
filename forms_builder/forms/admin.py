@@ -16,7 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from forms_builder.forms.forms import ExportForm
 from forms_builder.forms.models import Form, Field, FieldEntry
-from forms_builder.forms.settings import UPLOAD_ROOT, USE_SITES
+from forms_builder.forms.settings import CSV_DELIMITER, UPLOAD_ROOT, USE_SITES
 
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
@@ -78,7 +78,7 @@ class FormAdmin(admin.ModelAdmin):
             response = HttpResponse(mimetype="text/csv")
             fname = "%s-%s.csv" % (form.slug, slugify(datetime.now().ctime()))
             response["Content-Disposition"] = "attachment; filename=%s" % fname
-            csv = writer(response)
+            csv = writer(response, delimiter=settings.FORMS_CSV_DELIMITER)
             csv.writerow(export_form.columns())
             for rows in export_form.rows():
                 csv.writerow(rows)
