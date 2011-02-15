@@ -53,10 +53,10 @@ class AbstractForm(models.Model):
     sites = sites_field
     title = models.CharField(_("Title"), max_length=50)
     slug = models.SlugField(editable=False, max_length=100, unique=True)
-    intro = models.TextField(_("Intro"))
+    intro = models.TextField(_("Intro"), blank=True)
     button_text = models.CharField(_("Button text"), max_length=50,
         default=_("Submit"))
-    response = models.TextField(_("Response"))
+    response = models.TextField(_("Response"), blank=True)
     status = models.IntegerField(_("Status"), choices=STATUS_CHOICES,
         default=STATUS_PUBLISHED)
     publish_date = models.DateTimeField(_("Published from"),
