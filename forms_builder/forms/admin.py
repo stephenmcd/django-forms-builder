@@ -8,6 +8,7 @@ from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
 from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
+from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
@@ -39,15 +40,24 @@ class FormAdmin(admin.ModelAdmin):
 
     inlines = (FieldAdmin,)
     list_display = ("title", "status", "email_copies",
-        "publish_date", "expiry_date", "admin_link_export", "admin_link_view")
+                    "publish_date", "expiry_date", "total_entries",
+                    "admin_link_export", "admin_link_view")
     list_display_links = ("title",)
     list_editable = ("status", "email_copies", "publish_date", "expiry_date")
     list_filter = ("status",)
     filter_horizontal = form_admin_filter_horizontal
     search_fields = ("title", "intro", "response", "email_from",
-        "email_copies")
+                     "email_copies")
     radio_fields = {"status": admin.HORIZONTAL}
     fieldsets = form_admin_fieldsets
+
+    def queryset(self, request):
+        """
+        Annotate the queryset with the entries count for use in the
+        admin list view.
+        """
+        qs = super(FormAdmin, self).queryset(request)
+        return qs.annotate(total_entries=Count("entries"))
 
     def get_urls(self):
         """
