@@ -92,7 +92,7 @@ class FormAdmin(admin.ModelAdmin):
                 response["Content-Disposition"] = "attachment; filename=%s" % fname
                 csv = writer(response, delimiter=CSV_DELIMITER)
                 csv.writerow(export_form.columns())
-                for rows in export_form.rows():
+                for rows in export_form.rows(csv=True):
                     csv.writerow(rows)
                 return response
         template = "admin/forms/export.html"

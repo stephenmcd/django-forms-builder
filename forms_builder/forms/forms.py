@@ -1,12 +1,13 @@
 
 from datetime import date, datetime
-from os.path import join
+from os.path import join, split
 from uuid import uuid4
 
 from django import forms
 from django.forms.extras import SelectDateWidget
 from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from forms_builder.forms import fields
@@ -211,7 +212,7 @@ class ExportForm(forms.Form):
             fields.append(self.entry_time_name)
         return fields
 
-    def rows(self):
+    def rows(self, csv=False):
         """
         Returns each row based on the selected criteria.
         """
@@ -301,6 +302,9 @@ class ExportForm(forms.Form):
             if field_id in file_field_ids:
                 url = reverse("admin:form_file", args=(field_entry.id,))
                 field_value = self.request.build_absolute_uri(url)
+                if not csv:
+                    parts = (field_value, split(field_entry.value)[1])
+                    field_value = mark_safe("<a href=\"%s\">%s</a>" % parts)
             # Only use values for fields that were selected.
             try:
                 current_row[field_indexes[field_id]] = field_value
