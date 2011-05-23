@@ -105,6 +105,14 @@ class AbstractForm(models.Model):
                 i += 1
         super(AbstractForm, self).save(*args, **kwargs)
 
+    def total_entries(self):
+        """
+        Called by the admin list view where the queryset is annotated
+        with the number of entries.
+        """
+        return self.total_entries
+    total_entries.admin_order_field = "total_entries"
+
     @models.permalink
     def get_absolute_url(self):
         return ("form_detail", (), {"slug": self.slug})
@@ -130,8 +138,8 @@ class FieldManager(models.Manager):
 
 def placeholder_text_field():
     """
-    Return nothing if HTML5 is disabled, otherwise return the 
-    ``placeholder_text`` field. Wrapped in a function to trigger the correct 
+    Return nothing if HTML5 is disabled, otherwise return the
+    ``placeholder_text`` field. Wrapped in a function to trigger the correct
     field ordering at creation time.
     """
     if not settings.USE_HTML5:
@@ -190,7 +198,7 @@ class AbstractField(models.Model):
         choice = choice.strip()
         if choice:
             yield choice, choice
-    
+
     def is_a(self, *args):
         """
         Helper that returns True if the field's type is given in any arg.
