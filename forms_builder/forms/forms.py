@@ -42,26 +42,26 @@ DATE_FILTER_CHOICES = (
 )
 
 FILTER_FUNCS = {
-    FILTER_CHOICE_CONTAINS: 
+    FILTER_CHOICE_CONTAINS:
         lambda val, field: val.lower() in field.lower(),
-    FILTER_CHOICE_DOESNT_CONTAIN: 
+    FILTER_CHOICE_DOESNT_CONTAIN:
         lambda val, field: val.lower() not in field.lower(),
-    FILTER_CHOICE_EQUALS: 
+    FILTER_CHOICE_EQUALS:
         lambda val, field: val.lower() == field.lower(),
     FILTER_CHOICE_DOESNT_EQUAL:
         lambda val, field: val.lower() != field.lower(),
-    FILTER_CHOICE_BETWEEN: 
+    FILTER_CHOICE_BETWEEN:
         lambda val_from, val_to, field: val_from <= field <=  val_to
 }
 
-text_filter_field = forms.ChoiceField(label=" ", required=False, 
+text_filter_field = forms.ChoiceField(label=" ", required=False,
                                       choices=TEXT_FILTER_CHOICES)
-choice_filter_field = forms.ChoiceField(label=" ", required=False, 
+choice_filter_field = forms.ChoiceField(label=" ", required=False,
                                         choices=CHOICE_FILTER_CHOICES)
-date_filter_field = forms.ChoiceField(label=" ", required=False, 
+date_filter_field = forms.ChoiceField(label=" ", required=False,
                                       choices=DATE_FILTER_CHOICES)
 
-    
+
 class FormForForm(forms.ModelForm):
 
     class Meta:
@@ -70,7 +70,7 @@ class FormForForm(forms.ModelForm):
 
     def __init__(self, form, *args, **kwargs):
         """
-        Dynamically add each of the form fields for the given form model 
+        Dynamically add each of the form fields for the given form model
         instance and its related field model instances.
         """
         self.form = form
@@ -104,7 +104,7 @@ class FormForForm(forms.ModelForm):
 
     def save(self, **kwargs):
         """
-        Create a FormEntry instance and related FieldEntry instances for each 
+        Create a FormEntry instance and related FieldEntry instances for each
         form field.
         """
         entry = super(FormForForm, self).save(commit=False)
@@ -121,7 +121,7 @@ class FormForForm(forms.ModelForm):
             if value:
                 entry.fields.create(field_id=field.id, value=value)
         return entry
-        
+
     def email_to(self):
         """
         Return the value entered for the first field of type EmailField.
@@ -133,17 +133,17 @@ class FormForForm(forms.ModelForm):
 
 class ExportForm(forms.Form):
     """
-    Form with a set if fields dynamically assigned that can be used to 
+    Form with a set if fields dynamically assigned that can be used to
     filter responses for the given ``forms.models.Form`` instance.
     """
 
     def __init__(self, form, request, *args, **kwargs):
         """
-        Iterate through the fields of the ``forms.models.Form`` instance and 
-        create the form fields required to control including the field in 
-        the export (with a checkbox) or filtering the field which differs 
-        across field types. User a list of checkboxes when a fixed set of 
-        choices can be chosen from, a pair of date fields for date ranges, 
+        Iterate through the fields of the ``forms.models.Form`` instance and
+        create the form fields required to control including the field in
+        the export (with a checkbox) or filtering the field which differs
+        across field types. User a list of checkboxes when a fixed set of
+        choices can be chosen from, a pair of date fields for date ranges,
         and for all other types provide a textbox for text search.
         """
         self.form = form
@@ -164,7 +164,7 @@ class ExportForm(forms.Form):
                 else:
                     choices = field.get_choices()
                 contains_field = forms.MultipleChoiceField(label=" ",
-                    choices=choices, widget=forms.CheckboxSelectMultiple(), 
+                    choices=choices, widget=forms.CheckboxSelectMultiple(),
                     required=False)
                 self.fields["%s_filter" % field_key] = choice_filter_field
                 self.fields["%s_contains" % field_key] = contains_field
@@ -183,14 +183,14 @@ class ExportForm(forms.Form):
         # Add ``FormEntry.entry_time`` as a field.
         field_key = "field_0"
         self.fields["%s_export" % field_key] = forms.BooleanField(initial=True,
-            label=FormEntry._meta.get_field("entry_time").verbose_name, 
+            label=FormEntry._meta.get_field("entry_time").verbose_name,
             required=False)
         self.fields["%s_filter" % field_key] = date_filter_field
         self.fields["%s_from" % field_key] = forms.DateField(
             label=" ", widget=SelectDateWidget(), required=False)
         self.fields["%s_to" % field_key] = forms.DateField(
             label=_("and"), widget=SelectDateWidget(), required=False)
-        
+
     def __iter__(self):
         """
         Yield pairs of include checkbox / filters for each field.
@@ -200,12 +200,12 @@ class ExportForm(forms.Form):
             fields = [f for f in super(ExportForm, self).__iter__()
                       if f.name.startswith(prefix)]
             yield fields[0], fields[1], fields[2:]
-    
+
     def columns(self):
         """
         Returns the list of selected column names.
         """
-        fields = [f.label for f in self.form_fields 
+        fields = [f.label for f in self.form_fields
                   if self.cleaned_data["field_%s_export" % f.id]]
         if self.cleaned_data["field_0_export"]:
             fields.append(self.entry_time_name)
@@ -216,9 +216,9 @@ class ExportForm(forms.Form):
         Returns each row based on the selected criteria.
         """
 
-        # Store the index of each field against its ID for building each 
-        # entry row with columns in the correct order. Also store the IDs of 
-        # fields with a type of FileField or Date-like for special handling of 
+        # Store the index of each field against its ID for building each
+        # entry row with columns in the correct order. Also store the IDs of
+        # fields with a type of FileField or Date-like for special handling of
         # their values.
         field_indexes = {}
         file_field_ids = []
@@ -235,7 +235,7 @@ class ExportForm(forms.Form):
         if include_entry_time:
             num_columns += 1
 
-        # Get the field entries for the given form and filter by entry_time 
+        # Get the field entries for the given form and filter by entry_time
         # if specified.
         field_entries = FieldEntry.objects.filter(entry__form=self.form
             ).order_by("-entry__id").select_related(depth=1)
@@ -247,7 +247,7 @@ class ExportForm(forms.Form):
                     entry__entry_time__range=(time_from, time_to))
 
         # Loop through each field value ordered by entry, building up each
-        # entry as a row. Use the ``valid_row`` flag for marking a row as 
+        # entry as a row. Use the ``valid_row`` flag for marking a row as
         # invalid if it fails one of the filtering criteria specified.
         current_entry = None
         current_row = None
