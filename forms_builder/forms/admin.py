@@ -39,9 +39,8 @@ class FieldAdmin(admin.TabularInline):
 class FormAdmin(admin.ModelAdmin):
 
     inlines = (FieldAdmin,)
-    list_display = ("title", "status", "email_copies",
-                    "publish_date", "expiry_date", "total_entries",
-                    "admin_link_export", "admin_link_view")
+    list_display = ("title", "status", "email_copies", "publish_date",
+                    "expiry_date", "total_entries", "admin_links")
     list_display_links = ("title",)
     list_editable = ("status", "email_copies", "publish_date", "expiry_date")
     list_filter = ("status",)
