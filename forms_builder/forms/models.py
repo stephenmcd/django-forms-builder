@@ -117,17 +117,14 @@ class AbstractForm(models.Model):
     def get_absolute_url(self):
         return ("form_detail", (), {"slug": self.slug})
 
-    def admin_link_view(self):
-        url = self.get_absolute_url()
-        return "<a href='%s'>%s</a>" % (url, ugettext("View on site"))
-    admin_link_view.allow_tags = True
-    admin_link_view.short_description = ""
-
-    def admin_link_export(self):
-        url = reverse("admin:form_export", args=(self.id,))
-        return "<a href='%s'>%s</a>" % (url, ugettext("Export entries"))
-    admin_link_export.allow_tags = True
-    admin_link_export.short_description = ""
+    def admin_links(self):
+        view_url = self.get_absolute_url()
+        export_url = reverse("admin:form_export", args=(self.id,))
+        parts = (view_url, ugettext("View form on site"),
+                 export_url, ugettext("Export entries"))
+        return "<a href='%s'>%s</a><br /><a href='%s'>%s</a>" % parts
+    admin_links.allow_tags = True
+    admin_links.short_description = ""
 
 class FieldManager(models.Manager):
     """
