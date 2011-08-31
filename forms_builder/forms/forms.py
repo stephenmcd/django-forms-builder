@@ -7,6 +7,7 @@ from django import forms
 from django.forms.extras import SelectDateWidget
 from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
+from django import dispatch
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
@@ -16,6 +17,8 @@ from forms_builder.forms import settings
 
 
 fs = FileSystemStorage(location=settings.UPLOAD_ROOT)
+
+form_builder_submission = dispatch.Signal(providing_args=['form', 'instance'])
 
 FILTER_CHOICE_CONTAINS = "1"
 FILTER_CHOICE_DOESNT_CONTAIN = "2"
@@ -122,6 +125,7 @@ class FormForForm(forms.ModelForm):
                 value = ", ".join([v.strip() for v in value])
             if value:
                 entry.fields.create(field_id=field.id, value=value)
+        form_builder_submission.send(sender=self, instance=entry)
         return entry
 
     def email_to(self):
