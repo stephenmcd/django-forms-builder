@@ -61,4 +61,21 @@ The following settings can be defined in your project's ``settings`` module.
   * ``FORMS_BUILDER_CHOICES_UNQUOTE`` - Char to end a quoted choice with. Defaults to the backtick char: `
   * ``FORMS_BUILDER_CSV_DELIMITER`` - Char to use as a field delimiter when exporting form responses as CSV. Defaults to a comma: ,
 
+Signals
+=======
+
+Two signals are provided for hooking into different states of the form
+submission process.
+
+
+  * ``form_invalid(sender=request, form=form)`` - Sent when the form is submitted with invalid data.
+  * ``form_valid(sender=request, form=form, entry=entry)`` - Sent when the form is submitted with valid data.
+
+For each signal the sender argument is the current request. Both signals
+receive a ``form`` argument is given which is the ``FormForForm``
+instance, a ``ModelForm`` for the ``FormEntry`` model.
+
+The ``form_valid`` signal also receives a ``entry`` argument, which is
+the ``FormEntry`` model instance created.
+
 .. _`setuptools`: http://pypi.python.org/pypi/setuptools

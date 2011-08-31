@@ -1,4 +1,5 @@
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.test import TestCase
@@ -6,6 +7,7 @@ from django.test import TestCase
 from forms_builder.forms.models import Form, STATUS_DRAFT, STATUS_PUBLISHED
 from forms_builder.forms.fields import NAMES
 from forms_builder.forms.settings import USE_SITES
+from forms_builder.forms.signals import form_invalid, form_valid
 
 
 current_site = None
@@ -39,6 +41,7 @@ class Tests(TestCase):
         """
         Test that a form with draft status is only visible to staff.
         """
+        settings.DEBUG = True # Don't depend on having a 404 template.
         username = "test"
         password = "test"
         User.objects.create_superuser(username, "", password)
@@ -52,3 +55,23 @@ class Tests(TestCase):
         self.client.login(username=username, password=password)
         response = self.client.get(draft.get_absolute_url())
         self.assertEqual(response.status_code, 200)
+
+    def test_form_signals(self):
+        """
+        Test that each of the signals are sent.
+        """
+        events = ["valid", "invalid"]
+        invalid = lambda **kwargs: events.remove("invalid")
+        form_invalid.connect(invalid)
+        valid = lambda **kwargs: events.remove("valid")
+        form_valid.connect(valid)
+        form = Form.objects.create(title="Signals", status=STATUS_PUBLISHED)
+        if USE_SITES:
+            form.sites.add(current_site)
+            form.save()
+        form.fields.create(label="field", field_type=NAMES[0][0],
+                           required=True, visible=True)
+        self.client.post(form.get_absolute_url(), data={})
+        data = {"field_%s" % form.fields.visible()[0].id: "test"}
+        self.client.post(form.get_absolute_url(), data=data)
+        self.assertEqual(len(events), 0)
