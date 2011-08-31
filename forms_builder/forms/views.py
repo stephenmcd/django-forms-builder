@@ -11,6 +11,7 @@ from django.utils.http import urlquote
 from forms_builder.forms.forms import FormForForm
 from forms_builder.forms.models import Form
 from forms_builder.forms.settings import USE_SITES
+from forms_builder.forms.signals import form_invalid, form_valid
 
 
 def form_detail(request, slug, template="forms/form_detail.html"):
@@ -27,7 +28,9 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     args = (form, request.POST or None, request.FILES or None)
     form_for_form = FormForForm(*args)
     if request.method == "POST":
-        if form_for_form.is_valid():
+        if not form_for_form.is_valid():
+            form_invalid.send(sender=request, form=form_for_form)
+        else:
             entry = form_for_form.save()
             fields = ["%s: %s" % (v.label, form_for_form.cleaned_data[k])
                 for (k, v) in form_for_form.fields.items()]
@@ -51,6 +54,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                     f.seek(0)
                     msg.attach(f.name, f.read())
                 msg.send()
+            form_valid.send(sender=request, form=form_for_form, entry=entry)
             return redirect(reverse("form_sent", kwargs={"slug": form.slug}))
     context = {"form": form, "form_for_form": form_for_form}
     return render_to_response(template, context, RequestContext(request))
