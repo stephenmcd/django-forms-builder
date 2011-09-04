@@ -1,7 +1,7 @@
 
 from setuptools import setup, find_packages
- 
- 
+
+
 setup(
     name = "django-forms-builder",
     version = __import__("forms_builder").__version__,
@@ -14,6 +14,7 @@ setup(
     zip_safe = False,
     include_package_data = True,
     packages = find_packages(),
+    install_requires=["sphinx-me",],
     classifiers = [
         "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",
@@ -25,4 +26,3 @@ setup(
         "Topic :: Internet :: WWW/HTTP :: Site Management",
     ]
 )
-
