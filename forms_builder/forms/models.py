@@ -119,9 +119,9 @@ class AbstractForm(models.Model):
 
     def admin_links(self):
         view_url = self.get_absolute_url()
-        export_url = reverse("admin:form_export", args=(self.id,))
+        entries_url = reverse("admin:form_entries", args=(self.id,))
         parts = (view_url, ugettext("View form on site"),
-                 export_url, ugettext("Export entries"))
+                 entries_url, ugettext("View entries"))
         return "<a href='%s'>%s</a><br /><a href='%s'>%s</a>" % parts
     admin_links.allow_tags = True
     admin_links.short_description = ""

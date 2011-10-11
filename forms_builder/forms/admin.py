@@ -13,10 +13,10 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template.defaultfilters import slugify
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ungettext, ugettext_lazy as _
 
-from forms_builder.forms.forms import ExportForm
-from forms_builder.forms.models import Form, Field, FieldEntry
+from forms_builder.forms.forms import EntriesForm
+from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry
 from forms_builder.forms.settings import CSV_DELIMITER, UPLOAD_ROOT, USE_SITES
 
 
@@ -60,42 +60,62 @@ class FormAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         """
-        Add the export view to urls.
+        Add the entries view to urls.
         """
         urls = super(FormAdmin, self).get_urls()
         extra_urls = patterns("",
-            url("^export/(?P<form_id>\d+)/$",
-                self.admin_site.admin_view(self.export_view),
-                name="form_export"),
+            url("^(?P<form_id>\d+)/entries/$",
+                self.admin_site.admin_view(self.entries_view),
+                name="form_entries"),
             url("^file/(?P<field_entry_id>\d+)/$",
                 self.admin_site.admin_view(self.file_view),
                 name="form_file"),
         )
         return extra_urls + urls
 
-    def export_view(self, request, form_id):
+    def entries_view(self, request, form_id):
         """
-        Exports the form entries in either a HTML table or CSV file.
+        Displays the form entries in a HTML table with option to
+        export as CSV file.
         """
         if request.POST.get("back"):
             change_url = reverse("admin:%s_%s_change" %
                 (Form._meta.app_label, Form.__name__.lower()), args=(form_id,))
             return HttpResponseRedirect(change_url)
         form = get_object_or_404(Form, id=form_id)
-        export_form = ExportForm(form, request, request.POST or None)
-        submitted = export_form.is_valid()
+        entries_form = EntriesForm(form, request, request.POST or None)
+        delete_entries_perm = "%s.delete_formentry" % FormEntry._meta.app_label
+        can_delete_entries = request.user.has_perm(delete_entries_perm)
+        submitted = entries_form.is_valid()
         if submitted:
             if request.POST.get("export"):
                 response = HttpResponse(mimetype="text/csv")
                 fname = "%s-%s.csv" % (form.slug, slugify(datetime.now().ctime()))
                 response["Content-Disposition"] = "attachment; filename=%s" % fname
                 csv = writer(response, delimiter=CSV_DELIMITER)
-                csv.writerow(export_form.columns())
-                for row in export_form.rows(csv=True):
+                csv.writerow(entries_form.columns())
+                for row in entries_form.rows(csv=True):
                     csv.writerow(row)
                 return response
-        template = "admin/forms/export.html"
-        context = {"title": _("Export Entries"), "export_form": export_form,
+            elif request.POST.get("delete") and can_delete_entries:
+                selected = request.POST.getlist("selected")
+                if selected:
+                    try:
+                        from django.contrib.messages import info
+                    except ImportError:
+                        def info(request, message, fail_silently=True):
+                            request.user.message_set.create(message=message)
+                    entries = FormEntry.objects.filter(id__in=selected)
+                    count = entries.count()
+                    if count > 0:
+                        entries.delete()
+                        message = ungettext("1 entry deleted",
+                                            "%(count)s entries deleted", count)
+                        info(request, message % {"count": count})
+        template = "admin/forms/entries.html"
+        context = {"title": _("View Entries"), "entries_form": entries_form,
+                   "opts": self.model._meta, "original": form,
+                   "can_delete_entries": can_delete_entries,
                    "submitted": submitted}
         return render_to_response(template, context, RequestContext(request))
 
