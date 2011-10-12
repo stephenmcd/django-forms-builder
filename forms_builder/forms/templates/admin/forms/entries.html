@@ -120,7 +120,7 @@
     <input type="submit" class="button default" name="export" value="{% trans "Export CSV" %}" />
     {% if submitted %}
     <br clear="both" />
-    <h1>{% trans "Entries" %}</h1>
+    <h1>{% trans "Entries" %} ({{ entries_count }})</h1>
     {% for row in entries_form.rows %}
     {% if forloop.first %}
     <table id="entries-table">
