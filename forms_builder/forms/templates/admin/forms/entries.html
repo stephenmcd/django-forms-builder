@@ -71,7 +71,7 @@
         // hidden div after the entries are displayed to avoid
         // running the rows method twice.
         var title = $('#entries-title');
-        if (title) {
+        if (title.length == 1) {
             title.text(title.text() + ' (' + $('#entries-count').text() + ')');
         }
     });
