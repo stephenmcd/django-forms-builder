@@ -84,10 +84,12 @@ class FormAdmin(admin.ModelAdmin):
             return HttpResponseRedirect(change_url)
         form = get_object_or_404(Form, id=form_id)
         entries_form = EntriesForm(form, request, request.POST or None)
+        entries_count = None
         delete_entries_perm = "%s.delete_formentry" % FormEntry._meta.app_label
         can_delete_entries = request.user.has_perm(delete_entries_perm)
         submitted = entries_form.is_valid()
         if submitted:
+            entries_count = sum(1 for x in entries_form.rows())
             if request.POST.get("export"):
                 response = HttpResponse(mimetype="text/csv")
                 fname = "%s-%s.csv" % (form.slug, slugify(datetime.now().ctime()))
@@ -113,10 +115,15 @@ class FormAdmin(admin.ModelAdmin):
                                             "%(count)s entries deleted", count)
                         info(request, message % {"count": count})
         template = "admin/forms/entries.html"
-        context = {"title": _("View Entries"), "entries_form": entries_form,
-                   "opts": self.model._meta, "original": form,
-                   "can_delete_entries": can_delete_entries,
-                   "submitted": submitted}
+        context = {
+        	"title": _("View Entries"),
+        	"entries_form": entries_form,
+        	"entries_count": entries_count,
+        	"opts": self.model._meta,
+        	"original": form,
+        	"can_delete_entries": can_delete_entries,
+        	"submitted": submitted
+        }
         return render_to_response(template, context, RequestContext(request))
 
     def file_view(self, request, field_entry_id):
