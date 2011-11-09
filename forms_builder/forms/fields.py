@@ -19,12 +19,14 @@ FILE = 9
 DATE = 10
 DATE_TIME = 11
 HIDDEN = 12
+NUMBER = 13
 
 # Names for all available field types.
 NAMES = (
     (TEXT, _("Single line text")),
     (TEXTAREA, _("Multi line text")),
     (EMAIL, _("Email")),
+    (NUMBER, _("Number")),
     (CHECKBOX, _("Check box")),
     (CHECKBOX_MULTIPLE, _("Check boxes")),
     (SELECT, _("Drop down")),
@@ -50,6 +52,7 @@ CLASSES = {
     DATE: forms.DateField,
     DATE_TIME: forms.DateTimeField,
     HIDDEN: forms.CharField,
+    NUMBER: forms.FloatField,
 }
 
 # Widgets for field types where a specialised widget is required.
@@ -71,5 +74,5 @@ if USE_HTML5:
     WIDGETS.update({
         DATE: html5_field("date", forms.DateInput),
         DATE_TIME: html5_field("datetime", forms.DateTimeInput),
-        EMAIL: html5_field("email", forms.TextInput), 
+        EMAIL: html5_field("email", forms.TextInput),
     })
