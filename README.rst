@@ -21,12 +21,17 @@ The folliwng HTML5 form features are supported.
 Installation
 ============
 
-Assuming you have `setuptools`_ installed, the easiest method is to install
-directly from pypi by running the following command::
+The easiest way to install django-forms-builder is directly from PyPi using
+`pip`_ or `setuptools`_ by running the respective command below::
+
+    $ pip install -U django-forms-builder
+
+or::
 
     $ easy_install -U django-forms-builder
 
-Otherwise you can check out the source directly and install it via::
+Otherwise you can download django-forms-builder and install it directly
+from source::
 
     $ python setup.py install
 
@@ -78,4 +83,5 @@ instance, a ``ModelForm`` for the ``FormEntry`` model.
 The ``form_valid`` signal also receives a ``entry`` argument, which is
 the ``FormEntry`` model instance created.
 
+.. _`pip`: http://www.pip-installer.org/
 .. _`setuptools`: http://pypi.python.org/pypi/setuptools
