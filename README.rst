@@ -18,6 +18,7 @@ The folliwng HTML5 form features are supported.
   * ``date`` fields
   * ``datetime`` fields
   * ``number`` fields
+  * ``url`` fields
 
 Installation
 ============

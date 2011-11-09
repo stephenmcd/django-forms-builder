@@ -20,6 +20,7 @@ DATE = 10
 DATE_TIME = 11
 HIDDEN = 12
 NUMBER = 13
+URL = 14
 
 # Names for all available field types.
 NAMES = (
@@ -27,6 +28,7 @@ NAMES = (
     (TEXTAREA, _("Multi line text")),
     (EMAIL, _("Email")),
     (NUMBER, _("Number")),
+    (URL, _("URL")),
     (CHECKBOX, _("Check box")),
     (CHECKBOX_MULTIPLE, _("Check boxes")),
     (SELECT, _("Drop down")),
@@ -53,6 +55,7 @@ CLASSES = {
     DATE_TIME: forms.DateTimeField,
     HIDDEN: forms.CharField,
     NUMBER: forms.FloatField,
+    URL: forms.URLField,
 }
 
 # Widgets for field types where a specialised widget is required.
@@ -76,4 +79,5 @@ if USE_HTML5:
         DATE_TIME: html5_field("datetime", forms.DateTimeInput),
         EMAIL: html5_field("email", forms.TextInput),
         NUMBER: html5_field("number", forms.TextInput),
+        URL: html5_field("url", forms.TextInput),
     })
