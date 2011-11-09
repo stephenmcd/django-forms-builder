@@ -75,4 +75,5 @@ if USE_HTML5:
         DATE: html5_field("date", forms.DateInput),
         DATE_TIME: html5_field("datetime", forms.DateTimeInput),
         EMAIL: html5_field("email", forms.TextInput),
+        NUMBER: html5_field("number", forms.TextInput),
     })
