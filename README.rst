@@ -17,6 +17,7 @@ The folliwng HTML5 form features are supported.
   * ``email`` fields
   * ``date`` fields
   * ``datetime`` fields
+  * ``number`` fields
 
 Installation
 ============
