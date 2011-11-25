@@ -3,6 +3,7 @@ from csv import writer
 from datetime import datetime
 from mimetypes import guess_type
 from os.path import join
+from cStringIO import StringIO
 
 from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
@@ -92,10 +93,14 @@ class FormAdmin(admin.ModelAdmin):
                 response = HttpResponse(mimetype="text/csv")
                 fname = "%s-%s.csv" % (form.slug, slugify(datetime.now().ctime()))
                 response["Content-Disposition"] = "attachment; filename=%s" % fname
-                csv = writer(response, delimiter=CSV_DELIMITER)
+                queue = StringIO()
+                csv = writer(queue, delimiter=CSV_DELIMITER)
                 csv.writerow(entries_form.columns())
                 for row in entries_form.rows(csv=True):
                     csv.writerow(row)
+                    # Decode and reencode the response into utf-16 to be Excel compatible
+                    data = queue.getvalue().decode("utf-8").encode("utf-16")
+                    response.write(data)
                 return response
             elif request.POST.get("delete") and can_delete_entries:
                 selected = request.POST.getlist("selected")
