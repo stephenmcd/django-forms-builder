@@ -1,30 +1,49 @@
-<html>
-
+<!doctype html>
 <head>
+	<meta charset="utf-8">
 	<title>{{ form.title }}</title>
 	<style>
-		body {font-family:sans-serif; padding:1em 2em;}
-		p {width:50em; clear:both;}
-		label {display:block; float:left; width:8em; margin:0 1.2em 1.2em 0;}
-		li {list-style-type:none;}
-		li label {width:auto; cursor:pointer;}
-		.errorlist {color:#f00;}
+		body {
+			font-family: sans-serif;
+			padding: 1em 2em;
+		}
+		
+		p {
+			width: 50em;
+			clear: both;
+		}
+		
+		label {
+			display: block;
+			float: left;
+			width: 8em;
+			margin: 0 1.2em 1.2em 0;
+		}
+		
+		li {
+			list-style-type: none;
+		}
+		
+		li label {
+			width: auto;
+			cursor: pointer;
+		}
+		
+		.errorlist {
+			color: #f00;
+		}
 	</style>
 </head>
-
 <body>
-	
 	<h1>{{ form.title }}</h1>
 	{% if form.intro %}
 	<p>{{ form.intro }}</p>
 	{% endif %}
-	
-	<form method="post"{% if form_for_form.is_multipart %} 
-	    enctype="multipart/form-data"{% endif %}>
-	    {% csrf_token %}
+	<form method="post"{% if form_for_form.is_multipart %}
+		enctype="multipart/form-data"{% endif %}>
+		{% csrf_token %}
 		{{ form_for_form.as_p }}
-		<div style="clear:left;">&nbsp;</div>
+		<div style="clear:left">&nbsp;</div>
 		<input type="submit" value="{{ form.button_text }}" />
 	</form>
-	
 </body>
