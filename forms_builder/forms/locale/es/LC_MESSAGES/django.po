@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-27 20:19-0500\n"
-"PO-Revision-Date: 2011-11-27 20:38-0500\n"
+"PO-Revision-Date: 2011-11-28 18:56-0500\n"
 "Last-Translator: \n"
 "Language-Team: American English <kde-i18n-doc@kde.org>\n"
 "Language: \n"
@@ -31,7 +31,7 @@ msgstr "Sitios"
 msgid "1 entry deleted"
 msgid_plural "%(count)s entries deleted"
 msgstr[0] "1 entrada eliminada"
-msgstr[1] ""
+msgstr[1] "%(count)s entradas eliminadas"
 
 #: admin.py:121
 msgid "View Entries"
@@ -335,4 +335,5 @@ msgstr "Eliminar seleccionados"
 #: templates/admin/forms/entries.html:161
 msgid "No entries to display"
 msgstr "Ninguna entrada que mostrar"
+
 
