@@ -1,6 +1,6 @@
-<html>
-
+<!doctype html>
 <head>
+	<meta charset="utf-8">
 	<title>{{ form.title }}</title>
 	<style>
 		body {font-family:sans-serif; padding:1em 2em;}
@@ -9,12 +9,9 @@
 		.errorlist {color:#f00;}
 	</style>
 </head>
-
 <body>
-	
 	<h1>{{ form.title }}</h1>
 	{% if form.response %}
 	<p>{{ form.response }}</p>
 	{% endif %}
-	
 </body>
