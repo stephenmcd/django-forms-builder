@@ -68,13 +68,16 @@ class FormAdmin(admin.ModelAdmin):
             url("^(?P<form_id>\d+)/entries/$",
                 self.admin_site.admin_view(self.entries_view),
                 name="form_entries"),
+            url("^(?P<form_id>\d+)/entries/view/$",
+                self.admin_site.admin_view(self.entries_view),
+                {"show_entries":True}, name="show_form_entries"),
             url("^file/(?P<field_entry_id>\d+)/$",
                 self.admin_site.admin_view(self.file_view),
                 name="form_file"),
         )
         return extra_urls + urls
 
-    def entries_view(self, request, form_id):
+    def entries_view(self, request, form_id, *args, **kwargs):
         """
         Displays the form entries in a HTML table with option to
         export as CSV file.
@@ -121,7 +124,9 @@ class FormAdmin(admin.ModelAdmin):
         context = {"title": _("View Entries"), "entries_form": entries_form,
                    "opts": self.model._meta, "original": form,
                    "can_delete_entries": can_delete_entries,
-                   "submitted": submitted}
+                   "submitted": submitted,
+                   "form_id": form_id,
+                   "show_entries": kwargs.get("show_entries", None)}
         return render_to_response(template, context, RequestContext(request))
 
     def file_view(self, request, field_entry_id):
