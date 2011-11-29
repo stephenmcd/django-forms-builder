@@ -66,6 +66,11 @@
                 return confirm('{% trans "Delete selected entries?" %}');
             }
         });
+        {% if show_entries %}
+     	if ( !$('#entries-title').length ) {
+        	$('#content-main form').submit();
+        }
+        {% endif %}
     });
 
 </script>
@@ -83,7 +88,7 @@
 
 {% block content %}
 <div id="content-main">
-    <form method="post">
+    <form method="post" action="{% url admin:show_form_entries form_id %}">
     {% csrf_token %}
     <table>
         <tr>
