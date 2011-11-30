@@ -3,8 +3,7 @@
 {% load i18n %}
 
 {% block extrahead %}{{ block.super }}
-<style type="text/css">
-
+<style>
     #content-main table {margin:10px 0 20px 0;}
     #content-main ul, #content-main li {display:inline; padding:0;}
     #content-main label {cursor:pointer;}
@@ -24,50 +23,47 @@
     .on {background:#eee;}
     .off {background:#fff;}
     .button {float:left !important; margin-right:10px; cursor:pointer;}
-
 </style>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-<script type="text/javascript">
-
-    $(function() {
-        // Show the filter criteria fields when a filter option is selected.
-        $('.filter select').change(function() {
-            var filtering = this.selectedIndex > 0;
-            var options = $(this).parent().parent().find('.options-div');
-            options.css({visibility: filtering ? 'visible' : 'hidden'});
-            // Focus the first field.
-            if (filtering) {
-                var input = options.find('input:first');
-                if (input.length == 1) {
-                    input.focus();
-                } else {
-                    options.find('select:first').focus();
-                }
-            }
-        }).change();
-        // Toggle the include `All` checkboxes - grouped within table tags.
-        $('#content-main table').each(function(i, table) {
-            table = $(table);
-            var all = table.find(':checkbox.include-all');
-            var others = table.find('.include :checkbox');
-            others.change(function() {
-                all.attr('checked', table.find('.include :checkbox:not(:checked)').length == 0);
-            });
-            all.change(function() {
-                others.attr('checked', !!all.attr('checked'));
-            });
-        });
-        // Add a confirmation prompt for deleting entries.
-        $('input[name="delete"]').click(function() {
-            if ($('input[name="selected"]:checked').length == 0) {
-                alert('{% trans "No entries selected" %}');
-                return false;
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
+<script>
+$(function() {
+    // Show the filter criteria fields when a filter option is selected.
+    $('.filter select').change(function() {
+        var filtering = this.selectedIndex > 0;
+        var options = $(this).parent().parent().find('.options-div');
+        options.css({visibility: filtering ? 'visible' : 'hidden'});
+        // Focus the first field.
+        if (filtering) {
+            var input = options.find('input:first');
+            if (input.length == 1) {
+                input.focus();
             } else {
-                return confirm('{% trans "Delete selected entries?" %}');
+                options.find('select:first').focus();
             }
+        }
+    }).change();
+    // Toggle the include `All` checkboxes - grouped within table tags.
+    $('#content-main table').each(function(i, table) {
+        table = $(table);
+        var all = table.find(':checkbox.include-all');
+        var others = table.find('.include :checkbox');
+        others.change(function() {
+            all.attr('checked', table.find('.include :checkbox:not(:checked)').length == 0);
+        });
+        all.change(function() {
+            others.attr('checked', !!all.attr('checked'));
         });
     });
-
+    // Add a confirmation prompt for deleting entries.
+    $('input[name="delete"]').click(function() {
+        if ($('input[name="selected"]:checked').length == 0) {
+            alert('{% trans "No entries selected" %}');
+            return false;
+        } else {
+            return confirm('{% trans "Delete selected entries?" %}');
+        }
+    });
+});
 </script>
 {% endblock %}
 
@@ -110,14 +106,14 @@
                 <label for="include-all">{% trans "All" %}</label>
             </td>
             <td class="include-all">
-                <input type="checkbox" id="include-all" class="include-all" checked="checked" />
+                <input type="checkbox" id="include-all" class="include-all" checked="checked">
             </td>
             <td class="last" colspan="2">&nbsp;</td>
         </tr>
     </table>
-    <input type="submit" name="back" class="button" value="{% trans "Back to form" %}" />
-    <input type="submit" class="button default" value="{% trans "View entries" %}" />
-    <input type="submit" class="button default" name="export" value="{% trans "Export CSV" %}" />
+    <input type="submit" name="back" class="button" value="{% trans "Back to form" %}">
+    <input type="submit" class="button default" value="{% trans "View entries" %}">
+    <input type="submit" class="button default" name="export" value="{% trans "Export CSV" %}">
     {% if submitted %}
     <br clear="both" />
     <h1 id="entries-title">{% trans "Entries" %}</h1>
@@ -153,8 +149,8 @@
     -->
     <style>#entries-title:after {content: ' ({{ forloop.counter }})';}</style>
     {% if can_delete_entries %}
-    <input type="submit" name="back" class="button" value="{% trans "Back to form" %}" />
-    <input type="submit" name="delete" class="button default" value="{% trans "Delete selected" %}" />
+    <input type="submit" name="back" class="button" value="{% trans "Back to form" %}">
+    <input type="submit" name="delete" class="button default" value="{% trans "Delete selected" %}">
     {% endif %}
     {% endif %}
     {% empty %}
