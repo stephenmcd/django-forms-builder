@@ -31,11 +31,11 @@ $(function() {
     $('.filter select').change(function() {
         var filtering = this.selectedIndex > 0;
         var options = $(this).parent().parent().find('.options-div');
-        options.css({visibility: filtering ? 'visible' : 'hidden'});
+        options.css('visibility', filtering ? 'visible' : 'hidden');
         // Focus the first field.
         if (filtering) {
             var input = options.find('input:first');
-            if (input.length == 1) {
+            if (input.length === 1) {
                 input.focus();
             } else {
                 options.find('select:first').focus();
@@ -48,7 +48,8 @@ $(function() {
         var all = table.find(':checkbox.include-all');
         var others = table.find('.include :checkbox');
         others.change(function() {
-            all.attr('checked', table.find('.include :checkbox:not(:checked)').length == 0);
+            var len = table.find('.include :checkbox:not(:checked)').length;
+            all.attr('checked', len === 0);
         });
         all.change(function() {
             others.attr('checked', !!all.attr('checked'));
@@ -56,7 +57,7 @@ $(function() {
     });
     // Add a confirmation prompt for deleting entries.
     $('input[name="delete"]').click(function() {
-        if ($('input[name="selected"]:checked').length == 0) {
+        if ( $('input[name="selected"]:checked').length === 0 ) {
             alert('{% trans "No entries selected" %}');
             return false;
         } else {
@@ -122,7 +123,9 @@ $(function() {
     <table id="entries-table">
         <tr>
             {% if can_delete_entries %}
-            <th><input type="checkbox" class="include-all"></th>
+            <th>
+                <input type="checkbox" class="include-all">
+            </th>
             {% endif %}
             {% for column in entries_form.columns %}
             <th{% if forloop.last %} class="last"{% endif %}>{{ column }}</th>
