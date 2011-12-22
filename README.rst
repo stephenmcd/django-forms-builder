@@ -61,6 +61,7 @@ The following settings can be defined in your project's ``settings`` module.
 
   * ``FORMS_BUILDER_FIELD_MAX_LENGTH`` - Maximum allowed length for field values. Defaults to ``2000``
   * ``FORMS_BUILDER_LABEL_MAX_LENGTH`` - Maximum allowed length for field labels. Defaults to ``20``
+  * ``FORMS_BUILDER_CHOICES_MAX_LENGTH`` - Maximum allowed length for field choices. Defaults to ``FORMS_BUILDER_FIELD_MAX_LENGTH``
   * ``FORMS_BUILDER_UPLOAD_ROOT`` - The absolute path where files will be uploaded to. Defaults to ``None``
   * ``FORMS_BUILDER_USE_HTML5`` - Boolean controlling whether HTML5 form fields are used. Defaults to ``True``
   * ``FORMS_BUILDER_USE_SITES`` - Boolean controlling whether forms are associated to Django's Sites framework. Defaults to ``"django.contrib.sites" in settings.INSTALLED_APPS``
