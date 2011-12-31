@@ -1,4 +1,3 @@
-
 from datetime import datetime
 
 from django.core.urlresolvers import reverse
@@ -125,6 +124,10 @@ class AbstractForm(models.Model):
         return "<a href='%s'>%s</a><br /><a href='%s'>%s</a>" % parts
     admin_links.allow_tags = True
     admin_links.short_description = ""
+    
+    def form_for_form(self, post=None, files=None):
+        from .forms import FormForForm
+        return FormForForm(self, post, files)
 
 class FieldManager(models.Manager):
     """
