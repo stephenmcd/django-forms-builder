@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
@@ -8,6 +9,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 
 from forms_builder.forms import fields
 from forms_builder.forms import settings
+from forms_builder.forms.signals import form_invalid, form_valid
 
 
 STATUS_DRAFT = 1
@@ -28,6 +30,9 @@ class FormManager(models.Manager):
     """
     Only show published forms for non-staff users.
     """
+    class LoginRequired(Exception):
+        pass
+
     def published(self, for_user=None):
         if for_user is not None and for_user.is_staff:
             return self.all()
@@ -35,6 +40,15 @@ class FormManager(models.Manager):
             Q(publish_date__lte=datetime.now()) | Q(publish_date__isnull=True),
             Q(expiry_date__gte=datetime.now()) | Q(expiry_date__isnull=True),
             Q(status=STATUS_PUBLISHED))
+
+    def get_form_for_request(self, request, slug):
+        published = self.published(for_user=request.user)
+        if settings.USE_SITES:
+            published = published.filter(sites=Site.objects.get_current())
+        form = published.get(slug=slug) # may raise a DoesNotExist
+        if form.login_required and not request.user.is_authenticated():
+            raise self.LoginRequired
+        return form
 
 ######################################################################
 #                                                                    #
@@ -124,10 +138,41 @@ class AbstractForm(models.Model):
         return "<a href='%s'>%s</a><br /><a href='%s'>%s</a>" % parts
     admin_links.allow_tags = True
     admin_links.short_description = ""
-    
+
     def form_for_form(self, post=None, files=None):
         from .forms import FormForForm
         return FormForForm(self, post, files)
+
+    def process_form(self, request):
+        form_for_form = self.form_for_form(request.POST, request.FILES)
+        if not form_for_form.is_valid():
+            form_invalid.send(sender=request, form=form_for_form)
+            return None, form_for_form
+        entry = form_for_form.save()
+        fields = ["%s: %s" % (v.label, form_for_form.cleaned_data[k])
+            for (k, v) in form_for_form.fields.items()]
+        subject = self.email_subject
+        if not subject:
+            subject = "%s - %s" % (self.title, entry.entry_time)
+        body = "\n".join(fields)
+        if self.email_message:
+            body = "%s\n\n%s" % (self.email_message, body)
+        email_from = self.email_from or settings.DEFAULT_FROM_EMAIL
+        email_to = form_for_form.email_to()
+        if email_to and self.send_email:
+            msg = EmailMessage(subject, body, email_from, [email_to])
+            msg.send()
+        email_from = email_to or email_from # Send from the email entered.
+        email_copies = [e.strip() for e in self.email_copies.split(",")
+            if e.strip()]
+        if email_copies:
+            msg = EmailMessage(subject, body, email_from, email_copies)
+            for f in form_for_form.files.values():
+                f.seek(0)
+                msg.attach(f.name, f.read())
+            msg.send()
+        form_valid.send(sender=request, form=form_for_form, entry=entry)
+        return entry, form_for_form
 
 class FieldManager(models.Manager):
     """
