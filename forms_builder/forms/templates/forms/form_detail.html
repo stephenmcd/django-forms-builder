@@ -1,4 +1,5 @@
 <!doctype html>
+{% load forms %}
 <head>
     <meta charset="utf-8">
     <title>{{ form.title }}</title>
@@ -12,15 +13,18 @@
     </style>
 </head>
 <body>
-    <h1>{{ form.title }}</h1>
-    {% if form.intro %}
-    <p>{{ form.intro }}</p>
+    {% bound_form_for form as f %}
+    <h1>{{form.title}}</h1>
+    {% if form.intro %}<p>{{form.intro}}</p>{% endif %}
+    {% if f.is_valid %}
+        <p>{{form.response}}</p>
+    {% else %}
+        <form method="post"{% if f.is_multipart %}
+          enctype="multipart/form-data"{% endif %}>
+            {% csrf_token %}
+            {{ f.as_p }}
+            <div style="clear:left;">&nbsp;</div>
+            <input type="submit" value="{{ form.button_text }}" />
+        </form>
     {% endif %}
-    <form method="post"{% if form_for_form.is_multipart %} 
-        enctype="multipart/form-data"{% endif %}>
-        {% csrf_token %}
-        {{ form_for_form.as_p }}
-        <div style="clear:left;">&nbsp;</div>
-        <input type="submit" value="{{ form.button_text }}">
-    </form>
 </body>
