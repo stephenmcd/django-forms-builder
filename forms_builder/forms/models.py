@@ -139,26 +139,33 @@ class AbstractForm(models.Model):
     admin_links.allow_tags = True
     admin_links.short_description = ""
 
-    def form_for_form(self, post=None, files=None):
+    # keep per-instance state ...
+    entry = None
+    bound_form = None
+
+    def empty_form(self):
         from .forms import FormForForm
-        return FormForForm(self, post, files)
+        return FormForForm(self)
 
     def process_form(self, request):
-        form_for_form = self.form_for_form(request.POST, request.FILES)
-        if not form_for_form.is_valid():
-            form_invalid.send(sender=request, form=form_for_form)
-            return None, form_for_form
-        entry = form_for_form.save()
-        fields = ["%s: %s" % (v.label, form_for_form.cleaned_data[k])
-            for (k, v) in form_for_form.fields.items()]
+        if self.bound_form:
+            return self.entry
+        from .forms import FormForForm
+        self.bound_form = FormForForm(self, request.POST, request.FILES)
+        if not self.bound_form.is_valid():
+            form_invalid.send(sender=request, form=self.bound_form)
+            return None
+        self.entry = self.bound_form.save()
+        fields = ["%s: %s" % (v.label, self.bound_form.cleaned_data[k])
+            for (k, v) in self.bound_form.fields.items()]
         subject = self.email_subject
         if not subject:
-            subject = "%s - %s" % (self.title, entry.entry_time)
+            subject = "%s - %s" % (self.title, self.entry.entry_time)
         body = "\n".join(fields)
         if self.email_message:
             body = "%s\n\n%s" % (self.email_message, body)
         email_from = self.email_from or settings.DEFAULT_FROM_EMAIL
-        email_to = form_for_form.email_to()
+        email_to = self.bound_form.email_to()
         if email_to and self.send_email:
             msg = EmailMessage(subject, body, email_from, [email_to])
             msg.send()
@@ -167,12 +174,12 @@ class AbstractForm(models.Model):
             if e.strip()]
         if email_copies:
             msg = EmailMessage(subject, body, email_from, email_copies)
-            for f in form_for_form.files.values():
+            for f in self.bound_form.files.values():
                 f.seek(0)
                 msg.attach(f.name, f.read())
             msg.send()
-        form_valid.send(sender=request, form=form_for_form, entry=entry)
-        return entry, form_for_form
+        form_valid.send(sender=request, form=self.bound_form, entry=self.entry)
+        return self.entry
 
 class FieldManager(models.Manager):
     """
