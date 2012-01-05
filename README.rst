@@ -21,7 +21,7 @@ The folliwng HTML5 form features are supported.
 * ``url`` fields
 
 Installation
-==============
+============
 
 The easiest way to install django-forms-builder is directly from PyPi using
 `pip`_ or `setuptools`_ by running the respective command below::
@@ -37,47 +37,42 @@ from source::
 
     $ python setup.py install
 
-
 Project Configuration
 =====================
 
-Once installed you can configure your projects to use the new functionality by following these stepsa
+Once installed you can configure your project to use django-forms-builder
+with the following steps.
 
-Add ``forms_builder.forms`` to ``INSTALLED_APPS`` in the ``settings.py`` file.
+Add ``forms_builder.forms`` to ``INSTALLED_APPS`` in your project's
+``settings`` module::
 
-It should look something like this::
-
-    INSTALLED_APPS = (  
+    INSTALLED_APPS = (
         'django.contrib.auth',
         'django.contrib.contenttypes',
         'django.contrib.sessions',
-        'django.contrib.sites', 
+        'django.contrib.sites',
         'django.contrib.messages',
         'django.contrib.staticfiles',
         'django.contrib.admin',
         'forms_builder.forms',
-        'some_app_you_wrote',
     )
 
-Next you need to import ``forms_builder.forms.urls`` in the your ``url.py`` configuration file.
+Then add ``forms_builder.forms.urls`` to your project's ``urls`` module::
 
-It should look something like this:
+    from django.conf.urls.defaults import patterns, include, url
+    import forms_builder.forms.urls # add this import
 
-    from django.conf.urls.defaults import patterns, include, url  
-    import forms_builder.forms.urls # add this import  
+    from django.contrib import admin
+    admin.autodiscover()
 
-	from django.contrib import admin  
-	admin.autodiscover()  
-
-	urlpatterns = patterns('',  
-        url(r'^admin/', include(admin.site.urls)),  
-        url(r'^forms/', include(forms_builder.forms.urls)), # add this for your forms to be usable by site visitors  
+    urlpatterns = patterns('',
+        url(r'^admin/', include(admin.site.urls)),
+        url(r'^forms/', include(forms_builder.forms.urls)),
     )
 
-Finally you need to synch your database so run:
+Finally, sync your database::
 
     $ python manage.py syncdb
-
 
 Usage
 =====
