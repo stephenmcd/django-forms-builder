@@ -5,6 +5,7 @@ from mimetypes import guess_type
 from os.path import join
 from cStringIO import StringIO
 
+from django import forms
 from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
 from django.core.files.storage import FileSystemStorage
@@ -34,8 +35,30 @@ if USE_SITES:
         "classes": ("collapse",)}))
     form_admin_filter_horizontal = ("sites",)
 
+class FieldForm(forms.ModelForm):
+    '''FieldForm makes the implicit '_order' property in Field editable'''
+
+    _order = forms.IntegerField(label=_('Ordering'), initial=0)
+
+    class Meta:
+        model = Field
+
+    def __init__(self, *args, **kwargs):
+        super(FieldForm, self).__init__(*args, **kwargs)
+
+        # transfer _order value from model instance to form
+        instance = kwargs.get('instance', None)
+        if not instance is None:
+            self.initial['_order'] = instance._order
+
+    def clean__order(self):
+        # store _order value from form in model instance
+        self.instance._order = self.cleaned_data['_order']
+        return self.cleaned_data['_order']
+
 class FieldAdmin(admin.TabularInline):
     model = Field
+    form = FieldForm
 
 class FormAdmin(admin.ModelAdmin):
 
