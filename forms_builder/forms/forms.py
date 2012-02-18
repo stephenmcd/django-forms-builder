@@ -76,7 +76,14 @@ class FormForForm(forms.ModelForm):
         """
         self.form = form
         self.form_fields = form.fields.visible()
+        # If a FormEntry instance is given to edit, populate initial
+        # with its field values.
+        field_entries = {}
+        if "instance" in kwargs:
+            for field_entry in kwargs["instance"].fields.all():
+                field_entries[field_entry.field_id] = field_entry.value
         super(FormForForm, self).__init__(*args, **kwargs)
+        # Create the form fields.
         for field in self.form_fields:
             field_key = "field_%s" % field.id
             field_class = fields.CLASSES[field.field_type]
@@ -90,7 +97,10 @@ class FormForForm(forms.ModelForm):
                 field_args["choices"] = field.get_choices()
             if field_widget is not None:
                 field_args["widget"] = field_widget
-            self.initial[field_key] = field.default
+            try:
+                self.initial[field_key] = field_entries[field.id]
+            except KeyError:
+                self.initial[field_key] = field.default
             self.fields[field_key] = field_class(**field_args)
             # Add identifying CSS classes to the field.
             css_class = field_class.__name__.lower()
@@ -106,8 +116,8 @@ class FormForForm(forms.ModelForm):
 
     def save(self, **kwargs):
         """
-        Create a FormEntry instance and related FieldEntry instances for each
-        form field.
+        Get/create a FormEntry instance and assign submitted values to
+        related FieldEntry instances for each form field.
         """
         entry = super(FormForForm, self).save(commit=False)
         entry.form = self.form
@@ -121,7 +131,9 @@ class FormForForm(forms.ModelForm):
             if isinstance(value, list):
                 value = ", ".join([v.strip() for v in value])
             if value:
-                entry.fields.create(field_id=field.id, value=value)
+                field_entry, _ = entry.fields.get_or_create(field_id=field.id)
+                field_entry.value = value
+                field_entry.save()
         return entry
 
     def email_to(self):
