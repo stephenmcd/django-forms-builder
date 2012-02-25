@@ -1,8 +1,12 @@
 syntax: glob
 *.pyc
 *.pyo
-dist/*
+*.db
+.DS_Store
+.coverage
+local_settings.py
 build/*
-django_forms_builder.egg-info/*
-MANIFEST
+dist/*
+*.egg-info/*
+example_project/static
 
