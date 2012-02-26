@@ -1,7 +1,10 @@
 
+from collections import namedtuple
+
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
+from django.template import Context, Template
 from django.test import TestCase
 
 from forms_builder.forms.models import Form, STATUS_DRAFT, STATUS_PUBLISHED
@@ -75,3 +78,19 @@ class Tests(TestCase):
         data = {"field_%s" % form.fields.visible()[0].id: "test"}
         self.client.post(form.get_absolute_url(), data=data)
         self.assertEqual(len(events), 0)
+
+    def test_tag(self):
+        """
+        Test that the different formats for the ``render_built_form``
+        tag all work.
+        """
+        form = Form.objects.create(title="Tags", status=STATUS_PUBLISHED)
+        request = namedtuple("Request", ("user",))(user=AnonymousUser())
+        context = {"form": form, "request": request}
+        template = "{%% load forms_builder_tags %%}{%% render_built_form %s %%}"
+        formats = ("form", "form=form", "id=form.id", "slug=form.slug")
+        for format in formats:
+            t = Template(template % format).render(Context(context))
+            self.assertTrue(form.get_absolute_url(), t)
+
+
