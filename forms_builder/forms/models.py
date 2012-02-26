@@ -232,16 +232,33 @@ class AbstractFieldEntry(models.Model):
 #                                                 #
 ###################################################
 
-class Form(AbstractForm):
-    pass
-
-class Field(AbstractField):
-    form = models.ForeignKey("Form", related_name="fields")
-    class Meta:
-        order_with_respect_to = "form"
-
 class FormEntry(AbstractFormEntry):
     form = models.ForeignKey("Form", related_name="entries")
 
 class FieldEntry(AbstractFieldEntry):
     entry = models.ForeignKey("FormEntry", related_name="fields")
+
+class Form(AbstractForm):
+    pass
+
+class Field(AbstractField):
+    """
+    Implements automated field ordering.
+    """
+
+    form = models.ForeignKey("Form", related_name="fields")
+    order = models.IntegerField(_("Order"), null=True, blank=True)
+
+    class Meta:
+        ordering = ("order",)
+        order_with_respect_to = "form"
+
+    def save(self, *args, **kwargs):
+        if self.order is None:
+            self.order = self.form.fields.count()
+        super(Field, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        fields_after = self.form.fields.filter(order__gte=self.order)
+        fields_after.update(order=models.F("order") - 1)
+        super(Field, self).delete(*args, **kwargs)
