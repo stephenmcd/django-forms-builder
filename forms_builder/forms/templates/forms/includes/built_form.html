@@ -1,0 +1,11 @@
+    <h1>{{ form.title }}</h1>
+    {% if form.intro %}
+    <p>{{ form.intro }}</p>
+    {% endif %}
+    <form action="{{ form.get_absolute_url }}" method="post"
+        {% if form_for_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+        {% csrf_token %}
+        {{ form_for_form.as_p }}
+        <div style="clear:left;">&nbsp;</div>
+        <input type="submit" value="{{ form.button_text }}">
+    </form>

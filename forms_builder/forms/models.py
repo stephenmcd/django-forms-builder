@@ -32,10 +32,14 @@ class FormManager(models.Manager):
     def published(self, for_user=None):
         if for_user is not None and for_user.is_staff:
             return self.all()
-        return self.filter(
+        filters = [
             Q(publish_date__lte=datetime.now()) | Q(publish_date__isnull=True),
             Q(expiry_date__gte=datetime.now()) | Q(expiry_date__isnull=True),
-            Q(status=STATUS_PUBLISHED))
+            Q(status=STATUS_PUBLISHED),
+        ]
+        if settings.USE_SITES:
+            filters.append(Q(sites=Site.objects.get_current()))
+        return self.filter(*filters)
 
 ######################################################################
 #                                                                    #
