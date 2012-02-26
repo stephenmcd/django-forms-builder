@@ -140,7 +140,6 @@ Signals
 Two signals are provided for hooking into different states of the form
 submission process.
 
-
 * ``form_invalid(sender=request, form=form)`` - Sent when the form is
   submitted with invalid data.
 * ``form_valid(sender=request, form=form, entry=entry)`` - Sent when
@@ -149,9 +148,27 @@ submission process.
 For each signal the sender argument is the current request. Both
 signals receive a ``form`` argument is given which is the
 ``FormForForm`` instance, a ``ModelForm`` for the ``FormEntry`` model.
-
 The ``form_valid`` signal also receives a ``entry`` argument, which is
 the ``FormEntry`` model instance created.
+
+Some examples of using the signals would be to monitor how users are
+causing validation errors with the form, or a pipeline of events to
+occur on successful form submissions. Suppose we wanted to store a
+logged in user's username against each form when submitted, given
+a form containing a field with the label ``Username`` with its
+field_type set to ``Hidden``::
+
+    from django.dispatch import receiver
+    from forms_builder.forms.signals import form_valid
+
+    @receiver(form_valid)
+    def set_username(sender=None, form=None, entry=None, **kwargs):
+        request = sender
+        if request.user.is_authenticated():
+            field = entry.form.fields.get(label="Username")
+            field_entry, _ = entry.fields.get_or_create(field_id=field.id)
+            field_entry.value = request.user.username
+            field_entry.save()
 
 .. _`pip`: http://www.pip-installer.org/
 .. _`setuptools`: http://pypi.python.org/pypi/setuptools
