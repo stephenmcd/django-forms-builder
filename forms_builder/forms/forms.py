@@ -214,13 +214,25 @@ class EntriesForm(forms.Form):
                       if f.name.startswith(prefix)]
             yield fields[0], fields[1], fields[2:]
 
+    def posted_data(self, field):
+        """
+        Wrapper for self.cleaned_data that returns True on
+        field_id_export fields when the form hasn't been posted to,
+        to facilitate show/export URLs that export all entries without
+        a form submission.
+        """
+        try:
+            return self.cleaned_data[field]
+        except AttributeError, KeyError:
+            return field.endswith("_export")
+
     def columns(self):
         """
         Returns the list of selected column names.
         """
         fields = [f.label.encode("utf-8") for f in self.form_fields
-                  if self.cleaned_data["field_%s_export" % f.id]]
-        if self.cleaned_data["field_0_export"]:
+                  if self.posted_data("field_%s_export" % f.id)]
+        if self.posted_data("field_0_export"):
             fields.append(self.entry_time_name.encode("utf-8"))
         return fields
 
@@ -237,14 +249,14 @@ class EntriesForm(forms.Form):
         file_field_ids = []
         date_field_ids = []
         for field in self.form_fields:
-            if self.cleaned_data["field_%s_export" % field.id]:
+            if self.posted_data("field_%s_export" % field.id):
                 field_indexes[field.id] = len(field_indexes)
                 if field.is_a(fields.FILE):
                     file_field_ids.append(field.id)
                 elif field.is_a(*fields.DATES):
                     date_field_ids.append(field.id)
         num_columns = len(field_indexes)
-        include_entry_time = self.cleaned_data["field_0_export"]
+        include_entry_time = self.posted_data("field_0_export")
         if include_entry_time:
             num_columns += 1
 
@@ -252,9 +264,9 @@ class EntriesForm(forms.Form):
         # if specified.
         field_entries = FieldEntry.objects.filter(entry__form=self.form
             ).order_by("-entry__id").select_related(depth=1)
-        if self.cleaned_data["field_0_filter"] == FILTER_CHOICE_BETWEEN:
-            time_from = self.cleaned_data["field_0_from"]
-            time_to = self.cleaned_data["field_0_to"]
+        if self.posted_data("field_0_filter") == FILTER_CHOICE_BETWEEN:
+            time_from = self.posted_data("field_0_from")
+            time_to = self.posted_data("field_0_to")
             if time_from and time_to:
                 field_entries = field_entries.filter(
                     entry__entry_time__range=(time_from, time_to))
@@ -280,17 +292,17 @@ class EntriesForm(forms.Form):
             field_value = field_entry.value
             # Check for filter.
             field_id = field_entry.field_id
-            filter_type = self.cleaned_data.get("field_%s_filter" % field_id)
+            filter_type = self.posted_data("field_%s_filter" % field_id)
             filter_args = None
             if filter_type:
                 if filter_type == FILTER_CHOICE_BETWEEN:
                     f, t = "field_%s_from" % field_id, "field_%s_to" % field_id
-                    filter_args = [self.cleaned_data[f], self.cleaned_data[t]]
+                    filter_args = [self.posted_data(f), self.posted_data(t)]
                     if filter_args[0] is None or filter_args[1] is None:
                         filter_args = None
                 else:
                     field_name = "field_%s_contains" % field_id
-                    filter_args = self.cleaned_data[field_name]
+                    filter_args = self.posted_data(field_name)
                     if filter_args:
                         filter_args = [filter_args]
             if filter_args:

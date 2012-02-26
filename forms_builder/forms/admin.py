@@ -68,13 +68,19 @@ class FormAdmin(admin.ModelAdmin):
             url("^(?P<form_id>\d+)/entries/$",
                 self.admin_site.admin_view(self.entries_view),
                 name="form_entries"),
+            url("^(?P<form_id>\d+)/entries/show/$",
+                self.admin_site.admin_view(self.entries_view),
+                {"show": True}, name="form_entries_show"),
+            url("^(?P<form_id>\d+)/entries/export/$",
+                self.admin_site.admin_view(self.entries_view),
+                {"export": True}, name="form_entries_export"),
             url("^file/(?P<field_entry_id>\d+)/$",
                 self.admin_site.admin_view(self.file_view),
                 name="form_file"),
         )
         return extra_urls + urls
 
-    def entries_view(self, request, form_id):
+    def entries_view(self, request, form_id, show=False, export=False):
         """
         Displays the form entries in a HTML table with option to
         export as CSV file.
@@ -87,9 +93,10 @@ class FormAdmin(admin.ModelAdmin):
         entries_form = EntriesForm(form, request, request.POST or None)
         delete_entries_perm = "%s.delete_formentry" % FormEntry._meta.app_label
         can_delete_entries = request.user.has_perm(delete_entries_perm)
-        submitted = entries_form.is_valid()
+        submitted = entries_form.is_valid() or show or export
+        export = export or request.POST.get("export")
         if submitted:
-            if request.POST.get("export"):
+            if export:
                 response = HttpResponse(mimetype="text/csv")
                 fname = "%s-%s.csv" % (form.slug, slugify(datetime.now().ctime()))
                 response["Content-Disposition"] = "attachment; filename=%s" % fname
