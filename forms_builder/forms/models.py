@@ -1,6 +1,7 @@
 
 from datetime import datetime
 
+from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
@@ -18,12 +19,6 @@ STATUS_CHOICES = (
     (STATUS_PUBLISHED, "Published"),
 )
 
-sites_field = None
-if settings.USE_SITES:
-    from django.contrib.sites.models import Site
-    def default_sites():
-        return [Site.objects.get_current()]
-    sites_field = models.ManyToManyField(Site, default=default_sites)
 
 class FormManager(models.Manager):
     """
@@ -54,7 +49,7 @@ class AbstractForm(models.Model):
     A user-built form.
     """
 
-    sites = sites_field
+    sites = models.ManyToManyField(Site, editable=settings.USE_SITES)
     title = models.CharField(_("Title"), max_length=50)
     slug = models.SlugField(editable=False, max_length=100, unique=True)
     intro = models.TextField(_("Intro"), blank=True)

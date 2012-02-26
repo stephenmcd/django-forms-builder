@@ -52,9 +52,17 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
+    'django.contrib.sites',
     'django.contrib.staticfiles',
     'forms_builder.forms',
 )
+
+try:
+    import south
+except ImportError:
+    pass
+else:
+    INSTALLED_APPS += ("south",)
 
 try:
     from local_settings import *
