@@ -1,8 +1,9 @@
 
 from datetime import datetime
 
-from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
+from django.conf import settings as django_settings
+from django.contrib.sites.models import Site
 from django.db import models
 from django.db.models import Q
 from django.template.defaultfilters import slugify
@@ -49,7 +50,8 @@ class AbstractForm(models.Model):
     A user-built form.
     """
 
-    sites = models.ManyToManyField(Site, editable=settings.USE_SITES)
+    sites = models.ManyToManyField(Site, editable=settings.USE_SITES,
+        default=[django_settings.SITE_ID])
     title = models.CharField(_("Title"), max_length=50)
     slug = models.SlugField(editable=False, max_length=100, unique=True)
     intro = models.TextField(_("Intro"), blank=True)
