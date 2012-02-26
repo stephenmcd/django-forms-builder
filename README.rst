@@ -81,8 +81,20 @@ Usage
 
 Once installed and configured for your project just go to the admin
 page for your project and you will see a new Forms section. In this
-you can create and edit forms.
+you can create and edit forms. Forms are then each viewable with their
+own URLs. A template tag ``render_built_form`` is also available for
+displaying forms outside of the main form view provided. It will
+display a form when given an argument in one of the following
+formats, where ``form_instance`` is an instance of the ``Form`` model::
 
+    {% render_build_form form_instance %}
+    {% render_build_form form=form_instance %}
+    {% render_build_form id=form_instance.id %}
+    {% render_build_form slug=form_instance.slug %}
+
+This allows forms to be displayed without having a form instance, using
+a form's slug or ID, which could be hard-coded in a template, or stored
+in another model instance.
 
 File Uploads
 ============
