@@ -1,3 +1,5 @@
+.. image:: https://secure.travis-ci.org/stephenmcd/django-forms-builder.png?branch=master
+
 Introduction
 ============
 
