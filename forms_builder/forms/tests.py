@@ -1,6 +1,4 @@
 
-from collections import namedtuple
-
 from django.conf import settings
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
@@ -82,8 +80,11 @@ class Tests(TestCase):
         Test that the different formats for the ``render_built_form``
         tag all work.
         """
+        class Request(object):
+            pass
+        request = Request()
+        setattr(request, "user", AnonymousUser())
         form = Form.objects.create(title="Tags", status=STATUS_PUBLISHED)
-        request = namedtuple("Request", ("user",))(user=AnonymousUser())
         context = {"form": form, "request": request}
         template = "{%% load forms_builder_tags %%}{%% render_built_form %s %%}"
         formats = ("form", "form=form", "id=form.id", "slug=form.slug")
