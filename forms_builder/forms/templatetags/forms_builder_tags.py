@@ -19,7 +19,7 @@ class BuiltFormNode(template.Node):
         user = context["request"].user
         if self.name != "form":
             lookup = {
-                self.name: template.Variable(self.value).resolve(context)
+                str(self.name): template.Variable(self.value).resolve(context)
             }
             try:
                 form = Form.objects.published(for_user=user).get(**lookup)
