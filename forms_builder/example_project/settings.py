@@ -70,6 +70,3 @@ except ImportError:
     pass
 
 TEMPLATE_DEBUG = DEBUG
-
-if not SECRET_KEY:
-    raise Exception("Please set the value for SECRET_KEY")
