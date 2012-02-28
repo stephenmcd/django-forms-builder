@@ -13,12 +13,10 @@ from forms_builder.forms.settings import USE_SITES
 from forms_builder.forms.signals import form_invalid, form_valid
 
 
-current_site = None
-if USE_SITES:
-    current_site = Site.objects.get_current()
-
-
 class Tests(TestCase):
+
+    def setUp(self):
+        self._site = Site.objects.get_current()
 
     def test_form_fields(self):
         """
@@ -28,7 +26,7 @@ class Tests(TestCase):
         for required in (True, False):
             form = Form.objects.create(title="Test", status=STATUS_PUBLISHED)
             if USE_SITES:
-                form.sites.add(current_site)
+                form.sites.add(self._site)
                 form.save()
             for (field, _) in NAMES:
                 form.fields.create(label=field, field_type=field,
@@ -51,7 +49,7 @@ class Tests(TestCase):
         self.client.logout()
         draft = Form.objects.create(title="Draft", status=STATUS_DRAFT)
         if USE_SITES:
-            draft.sites.add(current_site)
+            draft.sites.add(self._site)
             draft.save()
         response = self.client.get(draft.get_absolute_url())
         self.assertEqual(response.status_code, 404)
@@ -70,7 +68,7 @@ class Tests(TestCase):
         form_valid.connect(valid)
         form = Form.objects.create(title="Signals", status=STATUS_PUBLISHED)
         if USE_SITES:
-            form.sites.add(current_site)
+            form.sites.add(self._site)
             form.save()
         form.fields.create(label="field", field_type=NAMES[0][0],
                            required=True, visible=True)
