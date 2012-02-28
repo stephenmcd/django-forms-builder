@@ -3,6 +3,7 @@
 import os
 
 DEBUG = False
+SITE_ID = 1
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIRNAME = PROJECT_ROOT.split(os.sep)[-1]
 STATIC_URL = "/static/"
