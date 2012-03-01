@@ -78,6 +78,11 @@ Finally, sync your database::
 
     $ python manage.py syncdb
 
+As of version 0.5, django-forms-builder provides `South`_ migrations. If
+you use south in your project, you'll also need to run migrations::
+
+    $ python manage.py migrate forms
+
 Usage
 =====
 
@@ -174,3 +179,4 @@ field_type set to ``Hidden``::
 
 .. _`pip`: http://www.pip-installer.org/
 .. _`setuptools`: http://pypi.python.org/pypi/setuptools
+.. _`South`: http://south.aeracode.org/
