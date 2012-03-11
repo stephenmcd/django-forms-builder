@@ -233,7 +233,7 @@ class EntriesForm(forms.Form):
         fields = [f.label.encode("utf-8") for f in self.form_fields
                   if self.posted_data("field_%s_export" % f.id)]
         if self.posted_data("field_0_export"):
-            fields.append(self.entry_time_name.encode("utf-8"))
+            fields.append(self.entry_time_name)
         return fields
 
     def rows(self, csv=False):
