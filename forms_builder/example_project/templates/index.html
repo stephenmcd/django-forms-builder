@@ -1,0 +1,21 @@
+<!doctype html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ form.title }}</title>
+    <style>
+        body {font-family:sans-serif; padding:1em 2em;}
+        p {width:50em;}
+        label {display:block; float:left; width:10em;}
+        .errorlist {color:#f00;}
+    </style>
+</head>
+<body>
+    <h1>Forms</h1>
+    {% for form in forms %}
+    <p><a href="{{ form.get_absolute_url }}">{{ form.title }}</a></p>
+    {% empty %}
+    <p>No forms created. Go to the <a href="/admin/">admin</a> to create a form.</p>
+    {% endfor %}
+</body>
+</html>
+
