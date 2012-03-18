@@ -10,6 +10,8 @@ from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
+from django.template.base import Origin, Template, Context,                     TemplateDoesNotExist 
+
 from forms_builder.forms import fields
 from forms_builder.forms.models import FormEntry, FieldEntry
 from forms_builder.forms import settings
@@ -76,6 +78,11 @@ class FormForForm(forms.ModelForm):
         """
         self.form = form
         self.form_fields = form.fields.visible()
+        self.context_dict = kwargs.get('context')
+        self.context = None
+        if self.context_dict:
+            self.context = Context(self.context_dict)
+            del(kwargs['context'])
         # If a FormEntry instance is given to edit, populate initial
         # with its field values.
         field_entries = {}
@@ -100,7 +107,7 @@ class FormForForm(forms.ModelForm):
             try:
                 self.initial[field_key] = field_entries[field.id]
             except KeyError:
-                self.initial[field_key] = field.default
+                self.initial[field_key] = self.fill_in(field_key, field.default)
             self.fields[field_key] = field_class(**field_args)
             # Add identifying CSS classes to the field.
             css_class = field_class.__name__.lower()
@@ -113,6 +120,16 @@ class FormForForm(forms.ModelForm):
             if field.placeholder_text and not field.default:
                 text = field.placeholder_text
                 self.fields[field_key].widget.attrs["placeholder"] = text
+
+    def fill_in(self, field_key, default):
+        return self.render_string(default)
+
+    def render_string(self, string):
+        if self.context:
+            t = Template(string)
+            return t.render(self.context)
+        else:
+            return string
 
     def save(self, **kwargs):
         """
