@@ -14,7 +14,7 @@ setup(
     zip_safe = False,
     include_package_data = True,
     packages = find_packages(),
-    install_requires=["sphinx-me >= 0.1.2", "django"],
+    install_requires=["sphinx-me >= 0.1.2", "django-email-extras", "django"],
     classifiers = [
         "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",

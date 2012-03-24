@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext
 from django.utils.http import urlquote
+from email_extras.utils import send_mail_template
 
 from forms_builder.forms.forms import FormForForm
 from forms_builder.forms.models import Form
@@ -31,28 +32,34 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             form_invalid.send(sender=request, form=form_for_form)
         else:
             entry = form_for_form.save()
-            fields = ["%s: %s" % (v.label, form_for_form.cleaned_data[k])
-                      for (k, v) in form_for_form.fields.items()]
             subject = form.email_subject
             if not subject:
                 subject = "%s - %s" % (form.title, entry.entry_time)
-            body = "\n".join(fields)
-            if form.email_message:
-                body = "%s\n\n%s" % (form.email_message, body)
+            fields = [(v.label, form_for_form.cleaned_data[k])
+                      for (k, v) in form_for_form.fields.items()]
+            context = {
+                "fields": fields,
+                "message": form.email_message,
+                "request": request,
+            }
             email_from = form.email_from or settings.DEFAULT_FROM_EMAIL
             email_to = form_for_form.email_to()
             if email_to and form.send_email:
-                msg = EmailMessage(subject, body, email_from, [email_to])
-                msg.send()
+                send_mail_template(subject, "form_response", email_from,
+                                   email_to, context=context,
+                                   fail_silently=settings.DEBUG)
             email_from = email_to or email_from # Send from the email entered.
             email_copies = [e.strip() for e in form.email_copies.split(",")
                             if e.strip()]
             if email_copies:
-                msg = EmailMessage(subject, body, email_from, email_copies)
+                attachments = []
                 for f in form_for_form.files.values():
                     f.seek(0)
-                    msg.attach(f.name, f.read())
-                msg.send()
+                    attachments.append((f.name, f.read()))
+                send_mail_template(subject, "form_response", email_from,
+                                   email_copies, context=context,
+                                   attachments=attachments,
+                                   fail_silently=settings.DEBUG)
             form_valid.send(sender=request, form=form_for_form, entry=entry)
             return redirect(reverse("form_sent", kwargs={"slug": form.slug}))
     context = {"form": form}
