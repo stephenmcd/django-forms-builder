@@ -32,7 +32,7 @@ class BuiltFormNode(template.Node):
             return ""
         t = get_template("forms/includes/built_form.html")
         context["form"] = form
-        context["form_for_form"] = FormForForm(form)
+        context["form_for_form"] = FormForForm(form, context)
         return t.render(context)
 
 

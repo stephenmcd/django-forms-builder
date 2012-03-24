@@ -2,7 +2,7 @@
 from django.conf import settings
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
-from django.template import Context, Template
+from django.template import RequestContext, Template
 from django.test import TestCase
 
 from forms_builder.forms.models import Form, STATUS_DRAFT, STATUS_PUBLISHED
@@ -80,16 +80,13 @@ class Tests(TestCase):
         Test that the different formats for the ``render_built_form``
         tag all work.
         """
-        class Request(object):
-            pass
-        request = Request()
-        setattr(request, "user", AnonymousUser())
         form = Form.objects.create(title="Tags", status=STATUS_PUBLISHED)
-        context = {"form": form, "request": request}
+        request = type("Request", (), {"META": {}, "user": AnonymousUser()})()
+        context = RequestContext(request, {"form": form})
         template = "{%% load forms_builder_tags %%}{%% render_built_form %s %%}"
         formats = ("form", "form=form", "id=form.id", "slug=form.slug")
         for format in formats:
-            t = Template(template % format).render(Context(context))
+            t = Template(template % format).render(context)
             self.assertTrue(form.get_absolute_url(), t)
 
 

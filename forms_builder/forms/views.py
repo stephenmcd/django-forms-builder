@@ -23,7 +23,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
     if form.login_required and not request.user.is_authenticated():
         return redirect("%s?%s=%s" % (settings.LOGIN_URL, REDIRECT_FIELD_NAME,
                         urlquote(request.get_full_path())))
-    args = (form, request.POST or None, request.FILES or None)
+    request_context = RequestContext(request)
+    args = (form, request_context, request.POST or None, request.FILES or None)
     form_for_form = FormForForm(*args)
     if request.method == "POST":
         if not form_for_form.is_valid():
@@ -31,7 +32,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
         else:
             entry = form_for_form.save()
             fields = ["%s: %s" % (v.label, form_for_form.cleaned_data[k])
-                for (k, v) in form_for_form.fields.items()]
+                      for (k, v) in form_for_form.fields.items()]
             subject = form.email_subject
             if not subject:
                 subject = "%s - %s" % (form.title, entry.entry_time)
@@ -45,7 +46,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 msg.send()
             email_from = email_to or email_from # Send from the email entered.
             email_copies = [e.strip() for e in form.email_copies.split(",")
-                if e.strip()]
+                            if e.strip()]
             if email_copies:
                 msg = EmailMessage(subject, body, email_from, email_copies)
                 for f in form_for_form.files.values():
@@ -54,8 +55,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 msg.send()
             form_valid.send(sender=request, form=form_for_form, entry=entry)
             return redirect(reverse("form_sent", kwargs={"slug": form.slug}))
-    context = {"form": form, "form_for_form": form_for_form}
-    return render_to_response(template, context, RequestContext(request))
+    context = {"form": form}
+    return render_to_response(template, context, request_context)
 
 
 def form_sent(request, slug, template="forms/form_sent.html"):
