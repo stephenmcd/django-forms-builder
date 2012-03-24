@@ -140,6 +140,28 @@ module.
   Defaults to the backtick char: `
 * ``FORMS_BUILDER_CSV_DELIMITER`` - Char to use as a field delimiter
   when exporting form responses as CSV. Defaults to a comma: ,
+* ``FORMS_BUILDER_SEND_FROM_SUBMITTER`` - Boolean controlling whether
+  emails to staff recipients are sent from the form submitter. Defaults
+  to ``True``
+
+Email Templates
+===============
+
+The `django-email-extras`_ package is used to send multipart email
+notifications using Django's templating system for constructing the
+emails, to users submitting forms, and any recipients specified when
+creating a form via Django's admin.
+
+Templates for HTML and text versions of the email can be found in the
+``templates/email_extras`` directory. This allows you to customize the
+look and feel of emails that are sent to form submitters.
+
+.. note::
+
+    With ``django-email-extras`` installed, it's also possible to
+    configure `PGP`_ encrypted emails to be send to staff members,
+    allowing forms to be built for capturing sensitive information.
+    Consult the `django-email-extras`_ documentation for more info.
 
 Signals
 =======
@@ -177,6 +199,16 @@ field_type set to ``Hidden``::
             field_entry.value = request.user.username
             field_entry.save()
 
+Dynamic Field Defaults
+======================
+
+As of version 0.6, you can use Django template code for default field
+values. For example you could enter ``{{ request.user.username }}`` and
+the field will be pre-populated with a user's username if they're
+authenticated.
+
 .. _`pip`: http://www.pip-installer.org/
 .. _`setuptools`: http://pypi.python.org/pypi/setuptools
 .. _`South`: http://south.aeracode.org/
+.. _`django-email-extras`: https://github.com/stephenmcd/django-email-extras
+.. _`PGP`: http://en.wikipedia.org/wiki/Pretty_Good_Privacy
