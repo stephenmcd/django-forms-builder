@@ -11,7 +11,7 @@ from email_extras.utils import send_mail_template
 
 from forms_builder.forms.forms import FormForForm
 from forms_builder.forms.models import Form
-from forms_builder.forms.settings import USE_SITES
+from forms_builder.forms.settings import SEND_FROM_SUBMITTER, USE_SITES
 from forms_builder.forms.signals import form_invalid, form_valid
 
 
@@ -48,10 +48,12 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 send_mail_template(subject, "form_response", email_from,
                                    email_to, context=context,
                                    fail_silently=settings.DEBUG)
-            email_from = email_to or email_from # Send from the email entered.
             email_copies = [e.strip() for e in form.email_copies.split(",")
                             if e.strip()]
             if email_copies:
+                if email_to and SEND_FROM_SUBMITTER:
+                    # Send from the email entered.
+                    email_from = email_to
                 attachments = []
                 for f in form_for_form.files.values():
                     f.seek(0)
