@@ -26,3 +26,6 @@ CHOICES_UNQUOTE = getattr(settings, "FORMS_BUILDER_CHOICES_UNQUOTE", "`")
 
 # Char to use as a field delimiter when exporting form responses as CSV.
 CSV_DELIMITER = getattr(settings, "FORMS_BUILDER_CSV_DELIMITER", ",")
+
+# Boolean controlling whether emails to staff recipients are sent from the form submitter.
+SEND_FROM_SUBMITTER = getattr(settings, "FORMS_BUILDER_SEND_FROM_SUBMITTER", True)
