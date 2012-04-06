@@ -3,6 +3,8 @@ from datetime import date, datetime
 from os.path import join, split
 from uuid import uuid4
 
+import parser
+
 from django import forms
 from django.forms.extras import SelectDateWidget
 from django.core.files.storage import FileSystemStorage
@@ -85,9 +87,12 @@ class FormForForm(forms.ModelForm):
             for field_entry in kwargs["instance"].fields.all():
                 field_entries[field_entry.field_id] = field_entry.value
         super(FormForForm, self).__init__(*args, **kwargs)
+        self.has_formulas = False
         # Create the form fields.
         for field in self.form_fields:
             field_key = "field_%s" % field.id
+            if field.field_type == fields.FORMULA:
+                self.has_formulas = True
             field_class = fields.CLASSES[field.field_type]
             field_widget = fields.WIDGETS.get(field.field_type)
             field_args = {"label": field.label, "required": field.required,
@@ -113,9 +118,12 @@ class FormForForm(forms.ModelForm):
                     field.field_type != fields.CHECKBOX_MULTIPLE):
                     self.fields[field_key].widget.attrs["required"] = ""
             self.fields[field_key].widget.attrs["class"] = css_class
+            if field.readonly:
+                self.fields[field_key].widget.attrs["readonly"] = True
             if field.placeholder_text and not field.default:
                 text = field.placeholder_text
                 self.fields[field_key].widget.attrs["placeholder"] = text
+
 
     def save(self, **kwargs):
         """
@@ -126,6 +134,8 @@ class FormForForm(forms.ModelForm):
         entry.form = self.form
         entry.entry_time = datetime.now()
         entry.save()
+        if self.has_formulas:
+            self.calculate_formulas()
         for field in self.form_fields:
             field_key = "field_%s" % field.id
             value = self.cleaned_data[field_key]
@@ -138,6 +148,30 @@ class FormForForm(forms.ModelForm):
             field_entry.save()
         return entry
 
+
+    def calculate_formulas(self):
+        uncalculated = []
+        for field in self.form_fields:
+            field_key = "field_%s" % field.id
+            if field.field_type != fields.FORMULA:
+                continue
+            if field.formula:
+                e = parser.expr(field.formula).compile()
+                try:
+                    self.cleaned_data[field_key] = eval(e,{},self.cleaned_data)
+                except NameError:
+                    uncalculated.append(e)
+
+        i = 0
+        while uncalculated and i < 20:
+            for j,u in enumerate(uncalculated):
+                try:
+                    self.cleaned_data[field_key] = eval(u,{},self.cleaned_data)
+                    del(uncalculated[j])
+                except NameError:
+                    pass
+
+
     def email_to(self):
         """
         Return the value entered for the first field of type EmailField.
@@ -146,6 +180,45 @@ class FormForForm(forms.ModelForm):
             if field.is_a(fields.EMAIL):
                 return self.cleaned_data["field_%s" % field.id]
         return None
+
+
+    def _html_output(self, *args, **kwargs):
+        base_html = super(FormForForm, self)._html_output(*args, **kwargs)
+        if not self.has_formulas:
+            return mark_safe(base_html)
+        formula_js = self.make_formula_javascript()
+        return mark_safe('%s\n%s' % (base_html, formula_js))
+
+
+    def make_formula_javascript(self):
+
+        formula_fields = []
+        for field in self.form_fields:
+            if field.field_type == fields.FORMULA:
+                formula_fields.append(field)
+
+        formula_part_fields = []
+        for field in formula_fields:
+            try:
+                e = parser.expr(field.formula).compile()
+                formula_part_fields.extend(list(e.co_names))
+            except:
+                pass
+        js = ['<script>']
+        for fp in formula_part_fields:
+            js.append("""document.getElementById('id_%(fp)s').addEventListener('change',function(){calculate_%(form)s(document.getElementById('id_%(fp)s'))});""" % {'fp':fp, 'form':self.form.id} )
+
+        js.append("""function calculate_%s(f) {""" % self.form.id)
+        for fp in formula_part_fields:
+            js.append("""%(fp)s = document.getElementById('id_%(fp)s').value * 1;""" % {'fp':fp} )
+
+        for field in formula_fields:
+            js.append("""document.getElementById('id_field_%(id)s').value = %(formula)s;"""% {'id':field.id, 'formula':field.formula})
+            js.append("""field_%(id)s = document.getElementById('id_field_%(id)s').value * 1;""" % {'id':field.id} )
+        js.append("}")
+        js.append("</script>")
+        return "\n".join(js)
+
 
 class EntriesForm(forms.Form):
     """
