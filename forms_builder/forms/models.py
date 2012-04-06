@@ -167,6 +167,8 @@ class AbstractField(models.Model):
         max_length=settings.FIELD_MAX_LENGTH)
     placeholder_text = placeholder_text_field()
     help_text = models.CharField(_("Help text"), blank=True, max_length=100)
+    formula = models.CharField(_("Formula"), blank=True, max_length=1000)
+    readonly = models.BooleanField(_("Read only"), default=False)
 
     objects = FieldManager()
 
@@ -177,6 +179,12 @@ class AbstractField(models.Model):
 
     def __unicode__(self):
         return self.label
+
+    def make_value_and_label(self, choice):
+        if ';' in choice:
+            choices = choice.split(';')
+            return choices[0], choices[1]
+        return choice, choice
 
     def get_choices(self):
         """
@@ -194,13 +202,13 @@ class AbstractField(models.Model):
             elif char == "," and not quoted:
                 choice = choice.strip()
                 if choice:
-                    yield choice, choice
+                    yield self.make_value_and_label(choice)
                 choice = ""
             else:
                 choice += char
         choice = choice.strip()
         if choice:
-            yield choice, choice
+            yield self.make_value_and_label(choice)
 
     def is_a(self, *args):
         """
