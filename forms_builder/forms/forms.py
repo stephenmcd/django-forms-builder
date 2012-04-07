@@ -113,6 +113,8 @@ class FormForForm(forms.ModelForm):
                     field.field_type != fields.CHECKBOX_MULTIPLE):
                     self.fields[field_key].widget.attrs["required"] = ""
             self.fields[field_key].widget.attrs["class"] = css_class
+            if field.readonly:
+                self.fields[field_key].widget.attrs["readonly"] = True
             if field.placeholder_text and not field.default:
                 text = field.placeholder_text
                 self.fields[field_key].widget.attrs["placeholder"] = text

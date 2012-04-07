@@ -158,6 +158,7 @@ class AbstractField(models.Model):
     field_type = models.IntegerField(_("Type"), choices=fields.NAMES)
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
+    readonly = models.BooleanField(_("Read only"), default=False)
     choices = models.CharField(_("Choices"), max_length=1000, blank=True,
         help_text="Comma separated options where applicable. If an option "
             "itself contains commas, surround the option starting with the %s"
