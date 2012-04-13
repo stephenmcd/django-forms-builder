@@ -15,7 +15,10 @@ class BuiltFormNode(template.Node):
         self.value = value
 
     def render(self, context):
-        user = context.get("user", None)
+        try:
+            user = context["request"].user
+        except KeyError, AttributeError:
+            user = None
         if self.name != "form":
             lookup = {
                 str(self.name): template.Variable(self.value).resolve(context)
