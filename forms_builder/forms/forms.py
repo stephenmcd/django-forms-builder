@@ -15,6 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 from forms_builder.forms import fields
 from forms_builder.forms.models import FormEntry, FieldEntry
 from forms_builder.forms import settings
+from forms_builder.forms.formulas import FormulaCalculator
 
 
 fs = FileSystemStorage(location=settings.UPLOAD_ROOT)
@@ -102,7 +103,10 @@ class FormForForm(forms.ModelForm):
             try:
                 self.initial[field_key] = field_entries[field.id]
             except KeyError:
-                default = Template(field.default).render(context)
+                if field.default[0] != '=':
+                    default = Template(field.default).render(context)
+                else:
+                    default = ''
                 self.initial[field_key] = default
             self.fields[field_key] = field_class(**field_args)
             # Add identifying CSS classes to the field.
@@ -126,6 +130,8 @@ class FormForForm(forms.ModelForm):
         entry.form = self.form
         entry.entry_time = datetime.now()
         entry.save()
+        fc = FormulaCalculator(self.form_fields, self.cleaned_data)
+        fc.calculate_formulas()
         for field in self.form_fields:
             field_key = "field_%s" % field.id
             value = self.cleaned_data[field_key]
