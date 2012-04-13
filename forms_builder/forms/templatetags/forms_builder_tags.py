@@ -1,4 +1,3 @@
-
 from django import template
 from django.template.loader import get_template
 
@@ -16,7 +15,7 @@ class BuiltFormNode(template.Node):
         self.value = value
 
     def render(self, context):
-        user = context["request"].user
+        user = context.get("user", None)
         if self.name != "form":
             lookup = {
                 str(self.name): template.Variable(self.value).resolve(context)
