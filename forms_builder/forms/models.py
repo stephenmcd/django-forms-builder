@@ -178,6 +178,12 @@ class AbstractField(models.Model):
     def __unicode__(self):
         return self.label
 
+    def make_value_and_label(self, choice):
+        if ';' in choice:
+            choices = choice.split(';')
+            return choices[0], choices[1]
+        return choice, choice
+
     def get_choices(self):
         """
         Parse a comma separated choice string into a list of choices taking
@@ -194,13 +200,13 @@ class AbstractField(models.Model):
             elif char == "," and not quoted:
                 choice = choice.strip()
                 if choice:
-                    yield choice, choice
+                    yield self.make_value_and_label(choice)
                 choice = ""
             else:
                 choice += char
         choice = choice.strip()
         if choice:
-            yield choice, choice
+            yield self.make_value_and_label(choice)
 
     def is_a(self, *args):
         """

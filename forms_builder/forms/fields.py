@@ -21,13 +21,14 @@ DATE_TIME = 11
 HIDDEN = 12
 NUMBER = 13
 URL = 14
+INTEGER = 15
 
 # Names for all available field types.
 NAMES = (
     (TEXT, _("Single line text")),
     (TEXTAREA, _("Multi line text")),
     (EMAIL, _("Email")),
-    (NUMBER, _("Number")),
+    (NUMBER, _("Number with decimal")),
     (URL, _("URL")),
     (CHECKBOX, _("Check box")),
     (CHECKBOX_MULTIPLE, _("Check boxes")),
@@ -38,6 +39,7 @@ NAMES = (
     (DATE, _("Date")),
     (DATE_TIME, _("Date/time")),
     (HIDDEN, _("Hidden")),
+    (INTEGER, _("Number without decimal")),
 )
 
 # Field classes for all available field types.
@@ -56,6 +58,7 @@ CLASSES = {
     HIDDEN: forms.CharField,
     NUMBER: forms.FloatField,
     URL: forms.URLField,
+    INTEGER: forms.IntegerField,
 }
 
 # Widgets for field types where a specialised widget is required.
