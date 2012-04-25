@@ -226,7 +226,7 @@ class EntriesForm(forms.Form):
         """
         try:
             return self.cleaned_data[field]
-        except AttributeError, KeyError:
+        except (AttributeError, KeyError):
             return field.endswith("_export")
 
     def columns(self):
