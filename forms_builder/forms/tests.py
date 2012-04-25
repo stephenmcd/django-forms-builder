@@ -1,14 +1,14 @@
-
 from django.conf import settings
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
-from django.template import RequestContext, Template
+from django.template import Context, RequestContext, Template
 from django.test import TestCase
 
 from forms_builder.forms.models import Form, STATUS_DRAFT, STATUS_PUBLISHED
-from forms_builder.forms.fields import NAMES
+from forms_builder.forms.fields import NAMES, FILE
 from forms_builder.forms.settings import USE_SITES
 from forms_builder.forms.signals import form_invalid, form_valid
+from forms_builder.forms.forms import FormForForm
 
 
 class Tests(TestCase):
@@ -88,5 +88,21 @@ class Tests(TestCase):
         for format in formats:
             t = Template(template % format).render(context)
             self.assertTrue(form.get_absolute_url(), t)
+
+    def test_optional_filefield(self):
+        form = Form.objects.create(title="Test", status=STATUS_PUBLISHED)
+        if USE_SITES:
+            form.sites.add(self._site)
+        form.save()
+        form.fields.create(label="file field",
+                field_type=FILE,
+                required=False,
+                visible=True)
+        fields = form.fields.visible()
+        data = {'field_%s' % fields[0].id: ''}
+        context = Context({})
+        form_for_form = FormForForm(form, context, data=data)
+        #should not raise IntegrityError: forms_fieldentry.value may not be NULL
+        form_for_form.save()
 
 
