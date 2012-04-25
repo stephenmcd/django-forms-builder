@@ -1,10 +1,16 @@
 from django.conf import settings
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
+from django.db import IntegrityError
 from django.template import Context, RequestContext, Template
 from django.test import TestCase
 
-from forms_builder.forms.models import Form, STATUS_DRAFT, STATUS_PUBLISHED
+from forms_builder.forms.models import (
+        Form,
+        Field,
+        STATUS_DRAFT,
+        STATUS_PUBLISHED,
+        )
 from forms_builder.forms.fields import NAMES, FILE
 from forms_builder.forms.settings import USE_SITES
 from forms_builder.forms.signals import form_invalid, form_valid
@@ -32,7 +38,7 @@ class Tests(TestCase):
             response = self.client.get(form.get_absolute_url())
             self.assertEqual(response.status_code, 200)
             fields = form.fields.visible()
-            data = dict([("field_%s" % f.id, "test") for f in fields])
+            data = dict([(f.slug, "test") for f in fields])
             response = self.client.post(form.get_absolute_url(), data=data)
             self.assertEqual(response.status_code, 200)
 
@@ -71,7 +77,7 @@ class Tests(TestCase):
         form.fields.create(label="field", field_type=NAMES[0][0],
                            required=True, visible=True)
         self.client.post(form.get_absolute_url(), data={})
-        data = {"field_%s" % form.fields.visible()[0].id: "test"}
+        data = {form.fields.visible()[0].slug: "test"}
         self.client.post(form.get_absolute_url(), data=data)
         self.assertEqual(len(events), 0)
 
@@ -106,3 +112,13 @@ class Tests(TestCase):
         form_for_form.save()
 
 
+    def test_field_validate_slug_names(self):
+        form = Form.objects.create(title="Test")
+        field = Field(form=form,
+                label="First name", field_type=NAMES[0][0])
+        field.save()
+        self.assertEqual(field.slug, 'first_name')
+
+        field_2 = Field(form=form,
+                label="First name", field_type=NAMES[0][0])
+        self.assertRaises(IntegrityError, field_2.save)

@@ -155,6 +155,8 @@ class AbstractField(models.Model):
     """
 
     label = models.CharField(_("Label"), max_length=settings.LABEL_MAX_LENGTH)
+    slug = models.SlugField(_('Slug'), max_length=100, blank=True,
+            editable=False, default="")
     field_type = models.IntegerField(_("Type"), choices=fields.NAMES)
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
@@ -174,6 +176,7 @@ class AbstractField(models.Model):
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
         abstract = True
+        unique_together = ('form', 'slug',)
 
     def __unicode__(self):
         return self.label
@@ -202,11 +205,17 @@ class AbstractField(models.Model):
         if choice:
             yield choice, choice
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.label).replace('-', '_')
+        return super(AbstractField, self).save(*args, **kwargs)
+
     def is_a(self, *args):
         """
         Helper that returns True if the field's type is given in any arg.
         """
         return self.field_type in args
+
 
 class AbstractFormEntry(models.Model):
     """
@@ -257,7 +266,7 @@ class Field(AbstractField):
     form = models.ForeignKey("Form", related_name="fields")
     order = models.IntegerField(_("Order"), null=True, blank=True)
 
-    class Meta:
+    class Meta(AbstractField.Meta):
         ordering = ("order",)
         order_with_respect_to = "form"
 

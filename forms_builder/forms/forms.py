@@ -87,7 +87,7 @@ class FormForForm(forms.ModelForm):
         super(FormForForm, self).__init__(*args, **kwargs)
         # Create the form fields.
         for field in self.form_fields:
-            field_key = "field_%s" % field.id
+            field_key = field.slug
             field_class = fields.CLASSES[field.field_type]
             field_widget = fields.WIDGETS.get(field.field_type)
             field_args = {"label": field.label, "required": field.required,
@@ -127,7 +127,7 @@ class FormForForm(forms.ModelForm):
         entry.entry_time = datetime.now()
         entry.save()
         for field in self.form_fields:
-            field_key = "field_%s" % field.id
+            field_key = field.slug
             value = self.cleaned_data[field_key]
             if value and self.fields[field_key].widget.needs_multipart_form:
                 value = fs.save(join("forms", str(uuid4()), value.name), value)
@@ -144,7 +144,7 @@ class FormForForm(forms.ModelForm):
         """
         for field in self.form_fields:
             if field.is_a(fields.EMAIL):
-                return self.cleaned_data["field_%s" % field.id]
+                return self.cleaned_data[field.slug]
         return None
 
 class EntriesForm(forms.Form):
