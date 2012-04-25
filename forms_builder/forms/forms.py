@@ -226,7 +226,7 @@ class EntriesForm(forms.Form):
         """
         try:
             return self.cleaned_data[field]
-        except AttributeError, KeyError:
+        except (AttributeError, KeyError):
             return field.endswith("_export")
 
     def columns(self):
@@ -292,7 +292,7 @@ class EntriesForm(forms.Form):
                 valid_row = True
                 if include_entry_time:
                     current_row[-1] = field_entry.entry.entry_time
-            field_value = field_entry.value
+            field_value = field_entry.value or ""
             # Check for filter.
             field_id = field_entry.field_id
             filter_type = self.posted_data("field_%s_filter" % field_id)
@@ -328,7 +328,7 @@ class EntriesForm(forms.Form):
                     if not filter_func(*filter_args):
                         valid_row = False
             # Create download URL for file fields.
-            if field_id in file_field_ids:
+            if field_entry.value and field_id in file_field_ids:
                 url = reverse("admin:form_file", args=(field_entry.id,))
                 field_value = self.request.build_absolute_uri(url)
                 if not csv:

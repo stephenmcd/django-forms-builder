@@ -235,7 +235,8 @@ class AbstractFieldEntry(models.Model):
     """
 
     field_id = models.IntegerField()
-    value = models.CharField(max_length=settings.FIELD_MAX_LENGTH)
+    value = models.CharField(max_length=settings.FIELD_MAX_LENGTH,
+            null=True)
 
     class Meta:
         verbose_name = _("Form field entry")
