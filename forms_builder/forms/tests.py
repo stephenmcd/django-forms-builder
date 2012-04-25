@@ -2,8 +2,8 @@
 from django.conf import settings
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
-from django.core.exceptions import ValidationError
-from django.template import Context, RequestContext, Template
+from django.db import IntegrityError
+from django.template import RequestContext, Template
 from django.test import TestCase
 
 from forms_builder.forms.models import (
@@ -15,7 +15,6 @@ from forms_builder.forms.models import (
 from forms_builder.forms.fields import NAMES
 from forms_builder.forms.settings import USE_SITES
 from forms_builder.forms.signals import form_invalid, form_valid
-from forms_builder.forms.forms import FormForForm
 
 
 class Tests(TestCase):
@@ -39,7 +38,7 @@ class Tests(TestCase):
             response = self.client.get(form.get_absolute_url())
             self.assertEqual(response.status_code, 200)
             fields = form.fields.visible()
-            data = dict([("field_%s" % f.id, "test") for f in fields])
+            data = dict([(f.slug, "test") for f in fields])
             response = self.client.post(form.get_absolute_url(), data=data)
             self.assertEqual(response.status_code, 200)
 
@@ -78,7 +77,7 @@ class Tests(TestCase):
         form.fields.create(label="field", field_type=NAMES[0][0],
                            required=True, visible=True)
         self.client.post(form.get_absolute_url(), data={})
-        data = {"field_%s" % form.fields.visible()[0].id: "test"}
+        data = {form.fields.visible()[0].slug: "test"}
         self.client.post(form.get_absolute_url(), data=data)
         self.assertEqual(len(events), 0)
 
@@ -97,31 +96,13 @@ class Tests(TestCase):
             self.assertTrue(form.get_absolute_url(), t)
 
 
-    def test_field_names_without_slug(self):
-        form = Form.objects.create(title="Test")
-        form.fields.create(label="field", field_type=NAMES[0][0],
-                           required=True, visible=True)
-        form_for_form = FormForForm(form, Context({}))
-        self.assertEqual(form_for_form.fields.keys()[0], 'field_1')
-
-    def test_field_names_with_slug(self):
-        form = Form.objects.create(title="Test")
-        form.fields.create(label="field", field_type=NAMES[0][0],
-                           required=True, visible=True,
-                           slug='foo')
-        form_for_form = FormForForm(form, Context({}))
-        self.assertEqual(form_for_form.fields.keys()[0], 'foo')
-
     def test_field_validate_slug_names(self):
         form = Form.objects.create(title="Test")
         field = Field(form=form,
-                label="field", field_type=NAMES[0][0], slug='field_1')
-        self.assertRaises(ValidationError, field.full_clean)
-
-        field.slug = "valid_slug"
-        field.full_clean()
-
+                label="First name", field_type=NAMES[0][0])
         field.save()
-        field = Field(form=form,
-                label="field", field_type=NAMES[0][0], slug='valid_slug')
-        self.assertRaises(ValidationError, field.full_clean)
+        self.assertEqual(field.slug, 'first_name')
+
+        field_2 = Field(form=form,
+                label="First name", field_type=NAMES[0][0])
+        self.assertRaises(IntegrityError, field_2.save)

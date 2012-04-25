@@ -1,7 +1,6 @@
 
 from datetime import datetime
 
-from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.conf import settings as django_settings
 from django.contrib.sites.models import Site
@@ -156,7 +155,8 @@ class AbstractField(models.Model):
     """
 
     label = models.CharField(_("Label"), max_length=settings.LABEL_MAX_LENGTH)
-    slug = models.SlugField(_('Slug'), max_length=100, blank=True, default="")
+    slug = models.SlugField(_('Slug'), max_length=100, blank=True,
+            editable=False, default="")
     field_type = models.IntegerField(_("Type"), choices=fields.NAMES)
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
@@ -176,6 +176,7 @@ class AbstractField(models.Model):
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
         abstract = True
+        unique_together = ('form', 'slug',)
 
     def __unicode__(self):
         return self.label
@@ -204,16 +205,10 @@ class AbstractField(models.Model):
         if choice:
             yield choice, choice
 
-    def clean(self):
-        if self.slug:
-            if self.slug.startswith('field_'):
-                msg = _('Slug cannot start with "field_"')
-                raise ValidationError(msg)
-
-            if self.form.fields.filter(slug=self.slug).count():
-                msg = _('Slug %s already exists for this form') % self.slug
-                raise ValidationError(msg)
-
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.label).replace('-', '_')
+        return super(AbstractField, self).save(*args, **kwargs)
 
     def is_a(self, *args):
         """
@@ -221,13 +216,6 @@ class AbstractField(models.Model):
         """
         return self.field_type in args
 
-    def field_name(self):
-        """
-        Returns field name appropriate to reference in form.
-
-        If ``slug`` exists returns it, otherwise "field_ID".
-        """
-        return self.slug or 'field_%s' % self.pk
 
 class AbstractFormEntry(models.Model):
     """
@@ -277,7 +265,7 @@ class Field(AbstractField):
     form = models.ForeignKey("Form", related_name="fields")
     order = models.IntegerField(_("Order"), null=True, blank=True)
 
-    class Meta:
+    class Meta(AbstractField.Meta):
         ordering = ("order",)
         order_with_respect_to = "form"
 
