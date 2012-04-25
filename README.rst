@@ -212,3 +212,4 @@ authenticated.
 .. _`South`: http://south.aeracode.org/
 .. _`django-email-extras`: https://github.com/stephenmcd/django-email-extras
 .. _`PGP`: http://en.wikipedia.org/wiki/Pretty_Good_Privacy
+
