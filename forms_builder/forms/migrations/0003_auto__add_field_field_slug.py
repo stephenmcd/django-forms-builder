@@ -12,10 +12,12 @@ class Migration(SchemaMigration):
         db.add_column('forms_field', 'slug',
                       self.gf('django.db.models.fields.SlugField')(default='', max_length=100, blank=True),
                       keep_default=False)
+        db.create_unique('forms_field', ['slug', 'form_id'])
 
     def backwards(self, orm):
         # Deleting field 'Field.slug'
         db.delete_column('forms_field', 'slug')
+        db.delete_unique('forms_field', ['slug', 'form_id'])
 
     models = {
         'forms.field': {
