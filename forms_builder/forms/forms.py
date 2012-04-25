@@ -87,7 +87,7 @@ class FormForForm(forms.ModelForm):
         super(FormForForm, self).__init__(*args, **kwargs)
         # Create the form fields.
         for field in self.form_fields:
-            field_key = "field_%s" % field.id
+            field_key = field.field_name()
             field_class = fields.CLASSES[field.field_type]
             field_widget = fields.WIDGETS.get(field.field_type)
             field_args = {"label": field.label, "required": field.required,

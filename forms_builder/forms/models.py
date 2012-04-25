@@ -1,6 +1,7 @@
 
 from datetime import datetime
 
+from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
 from django.conf import settings as django_settings
 from django.contrib.sites.models import Site
@@ -155,6 +156,7 @@ class AbstractField(models.Model):
     """
 
     label = models.CharField(_("Label"), max_length=settings.LABEL_MAX_LENGTH)
+    slug = models.SlugField(_('Slug'), max_length=100, blank=True, default="")
     field_type = models.IntegerField(_("Type"), choices=fields.NAMES)
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
@@ -202,11 +204,30 @@ class AbstractField(models.Model):
         if choice:
             yield choice, choice
 
+    def clean(self):
+        if self.slug:
+            if self.slug.startswith('field_'):
+                msg = _('Slug cannot start with "field_"')
+                raise ValidationError(msg)
+
+            if self.form.fields.filter(slug=self.slug).count():
+                msg = _('Slug %s already exists for this form') % self.slug
+                raise ValidationError(msg)
+
+
     def is_a(self, *args):
         """
         Helper that returns True if the field's type is given in any arg.
         """
         return self.field_type in args
+
+    def field_name(self):
+        """
+        Returns field name appropriate to reference in form.
+
+        If ``slug`` exists returns it, otherwise "field_ID".
+        """
+        return self.slug or 'field_%s' % self.pk
 
 class AbstractFormEntry(models.Model):
     """
