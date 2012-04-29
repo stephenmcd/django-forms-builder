@@ -14,7 +14,11 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template.defaultfilters import slugify
 from django.utils.translation import ungettext, ugettext_lazy as _
-from django.utils.timezone import now
+try:
+    from django.utils.timezone import now
+except:
+    from datetime import datetime
+    now = datetime.now
 
 from forms_builder.forms.forms import EntriesForm
 from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry

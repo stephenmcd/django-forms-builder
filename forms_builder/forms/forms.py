@@ -10,7 +10,11 @@ from django.core.urlresolvers import reverse
 from django.template import Template
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from django.utils.timezone import now
+try:
+    from django.utils.timezone import now
+except:
+    from datetime import datetime
+    now = datetime.now
 
 from forms_builder.forms import fields
 from forms_builder.forms.models import FormEntry, FieldEntry
