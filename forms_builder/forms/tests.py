@@ -5,12 +5,8 @@ from django.db import IntegrityError
 from django.template import Context, RequestContext, Template
 from django.test import TestCase
 
-from forms_builder.forms.models import (
-        Form,
-        Field,
-        STATUS_DRAFT,
-        STATUS_PUBLISHED,
-        )
+from forms_builder.forms.models import (Form, Field,
+                                        STATUS_DRAFT, STATUS_PUBLISHED)
 from forms_builder.forms.fields import NAMES, FILE
 from forms_builder.forms.settings import USE_SITES
 from forms_builder.forms.signals import form_invalid, form_valid

@@ -6,15 +6,10 @@ from django.db import models
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext, ugettext_lazy as _
-try:
-    from django.utils.timezone import now
-except:
-    from datetime import datetime
-    now = datetime.now
-
 
 from forms_builder.forms import fields
 from forms_builder.forms import settings
+from forms_builder.forms.utils import now
 
 
 STATUS_DRAFT = 1
