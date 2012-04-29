@@ -1,6 +1,5 @@
 
 from csv import writer
-from datetime import datetime
 from mimetypes import guess_type
 from os.path import join
 from cStringIO import StringIO
@@ -15,6 +14,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template.defaultfilters import slugify
 from django.utils.translation import ungettext, ugettext_lazy as _
+from django.utils.timezone import now
 
 from forms_builder.forms.forms import EntriesForm
 from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry
@@ -98,7 +98,7 @@ class FormAdmin(admin.ModelAdmin):
         if submitted:
             if export:
                 response = HttpResponse(mimetype="text/csv")
-                fname = "%s-%s.csv" % (form.slug, slugify(datetime.now().ctime()))
+                fname = "%s-%s.csv" % (form.slug, slugify(now().ctime()))
                 response["Content-Disposition"] = "attachment; filename=%s" % fname
                 queue = StringIO()
                 csv = writer(queue, delimiter=CSV_DELIMITER)

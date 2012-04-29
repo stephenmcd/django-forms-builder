@@ -1,5 +1,5 @@
 
-from datetime import date, datetime
+from datetime import date
 from os.path import join, split
 from uuid import uuid4
 
@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 from django.template import Template
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-
+from django.utils.timezone import now
 
 from forms_builder.forms import fields
 from forms_builder.forms.models import FormEntry, FieldEntry
@@ -124,7 +124,7 @@ class FormForForm(forms.ModelForm):
         """
         entry = super(FormForForm, self).save(commit=False)
         entry.form = self.form
-        entry.entry_time = datetime.now()
+        entry.entry_time = now()
         entry.save()
         for field in self.form_fields:
             field_key = field.slug

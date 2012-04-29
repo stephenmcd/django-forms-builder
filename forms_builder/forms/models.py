@@ -1,6 +1,4 @@
 
-from datetime import datetime
-
 from django.core.urlresolvers import reverse
 from django.conf import settings as django_settings
 from django.contrib.sites.models import Site
@@ -8,6 +6,7 @@ from django.db import models
 from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.timezone import now
 
 from forms_builder.forms import fields
 from forms_builder.forms import settings
@@ -29,8 +28,8 @@ class FormManager(models.Manager):
         if for_user is not None and for_user.is_staff:
             return self.all()
         filters = [
-            Q(publish_date__lte=datetime.now()) | Q(publish_date__isnull=True),
-            Q(expiry_date__gte=datetime.now()) | Q(expiry_date__isnull=True),
+            Q(publish_date__lte=now()) | Q(publish_date__isnull=True),
+            Q(expiry_date__gte=now()) | Q(expiry_date__isnull=True),
             Q(status=STATUS_PUBLISHED),
         ]
         if settings.USE_SITES:
