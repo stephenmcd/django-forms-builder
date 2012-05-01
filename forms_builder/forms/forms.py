@@ -134,6 +134,7 @@ class FormForForm(forms.ModelForm):
         entry.form = self.form
         entry.entry_time = now()
         entry.save()
+        entry_fields = entry.fields.values_list('field_id', flat=True)
         for field in self.form_fields:
             field_key = field.slug
             value = self.cleaned_data[field_key]
@@ -141,9 +142,13 @@ class FormForForm(forms.ModelForm):
                 value = fs.save(join("forms", str(uuid4()), value.name), value)
             if isinstance(value, list):
                 value = ", ".join([v.strip() for v in value])
-            field_entry, _ = entry.fields.get_or_create(field_id=field.id)
-            field_entry.value = value
-            field_entry.save()
+            if field.id in entry_fields:
+                field_entry = entry.fields.get(field_id=field.id)
+                field_entry.value = value
+                field_entry.save()
+            else:
+                field_entry = FieldEntry(entry=entry, field_id=field.id, value=value)
+                field_entry.save()
         return entry
 
     def email_to(self):
