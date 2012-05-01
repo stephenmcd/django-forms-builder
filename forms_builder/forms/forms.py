@@ -78,9 +78,9 @@ class FormForForm(forms.ModelForm):
         """
         self.form = form
         self.form_fields = form.fields.visible()
-        initial = kwargs.get('initial', {})
-        # If a FormEntry instance is given to edit, populate initial
-        # with its field values.
+        initial = kwargs.pop("initial", {})
+        # If a FormEntry instance is given to edit, stores it's field
+        # values for using as initial data.
         field_entries = {}
         if "instance" in kwargs:
             for field_entry in kwargs["instance"].fields.all():
@@ -100,12 +100,22 @@ class FormForForm(forms.ModelForm):
                 field_args["choices"] = field.get_choices()
             if field_widget is not None:
                 field_args["widget"] = field_widget
+            #
+            #   Initial value for field, in order of preference:
+            #
+            # - If a form model instances if given (eg we're editing a
+            #   form response), then use the instance's value for the field.
+            # - If the developer has provided an explicit "initial" dict,
+            #   use it.
+            # - The default value for the field instance as given in the
+            #   admin.
+            #
             try:
                 self.initial[field_key] = field_entries[field.id]
             except KeyError:
-                if field_key in initial:
-                    self.initial[field_key] = initial.get(field_key)
-                else:
+                try:
+                    self.initial[field_key] = initial[field_key]
+                except KeyError:
                     default = Template(field.default).render(context)
                     self.initial[field_key] = default
             self.fields[field_key] = field_class(**field_args)
