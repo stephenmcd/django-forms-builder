@@ -82,6 +82,7 @@ class FormForForm(forms.ModelForm):
         """
         self.form = form
         self.form_fields = form.fields.visible()
+        initial = kwargs.get('initial', {})
         # If a FormEntry instance is given to edit, populate initial
         # with its field values.
         field_entries = {}
@@ -106,8 +107,11 @@ class FormForForm(forms.ModelForm):
             try:
                 self.initial[field_key] = field_entries[field.id]
             except KeyError:
-                default = Template(field.default).render(context)
-                self.initial[field_key] = default
+                if field_key in initial:
+                    self.initial[field_key] = initial.get(field_key)
+                else:
+                    default = Template(field.default).render(context)
+                    self.initial[field_key] = default
             self.fields[field_key] = field_class(**field_args)
             # Add identifying CSS classes to the field.
             css_class = field_class.__name__.lower()
