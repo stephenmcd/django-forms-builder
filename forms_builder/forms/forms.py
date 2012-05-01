@@ -103,12 +103,13 @@ class FormForForm(forms.ModelForm):
             #
             #   Initial value for field, in order of preference:
             #
-            # - If a form model instances if given (eg we're editing a
-            #   form response), then use the instance's value for the field.
-            # - If the developer has provided an explicit "initial" dict,
-            #   use it.
-            # - The default value for the field instance as given in the
-            #   admin.
+            # - If a form model instance is given (eg we're editing a
+            #   form response), then use the instance's value for the
+            #   field.
+            # - If the developer has provided an explicit "initial"
+            #   dict, use it.
+            # - The default value for the field instance as given in
+            #   the admin.
             #
             try:
                 self.initial[field_key] = field_entries[field.id]
