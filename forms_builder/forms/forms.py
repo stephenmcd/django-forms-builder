@@ -3,6 +3,7 @@ from datetime import date
 from os.path import join, split
 from uuid import uuid4
 
+import django
 from django import forms
 from django.forms.extras import SelectDateWidget
 from django.core.files.storage import FileSystemStorage
@@ -141,6 +142,7 @@ class FormForForm(forms.ModelForm):
         entry.entry_time = now()
         entry.save()
         entry_fields = entry.fields.values_list('field_id', flat=True)
+        new_entry_fields = []
         for field in self.form_fields:
             field_key = field.slug
             value = self.cleaned_data[field_key]
@@ -153,8 +155,13 @@ class FormForForm(forms.ModelForm):
                 field_entry.value = value
                 field_entry.save()
             else:
-                field_entry = FieldEntry(entry=entry, field_id=field.id, value=value)
-                field_entry.save()
+                new_entry_fields.append(FieldEntry(entry=entry, field_id=field.id, value=value))
+        if new_entry_fields:
+            if django.VERSION > (1, 4, 0):
+                FieldEntry.objects.bulk_create(new_entry_fields)
+            else:
+                for field_entry in new_entry_fields:
+                    field_entry.save()
         return entry
 
     def email_to(self):
