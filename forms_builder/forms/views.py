@@ -35,8 +35,12 @@ def form_detail(request, slug, template="forms/form_detail.html"):
             subject = form.email_subject
             if not subject:
                 subject = "%s - %s" % (form.title, entry.entry_time)
-            fields = [(v.label, form_for_form.cleaned_data[k])
-                      for (k, v) in form_for_form.fields.items()]
+            fields = []
+            for (k, v) in form_for_form.fields.items():
+                value = form_for_form.cleaned_data[k]
+                if isinstance(value, list):
+                    value = ", ".join([i.strip() for i in value])
+                fields.append((v.label, value))
             context = {
                 "fields": fields,
                 "message": form.email_message,
