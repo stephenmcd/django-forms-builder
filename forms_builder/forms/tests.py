@@ -118,3 +118,11 @@ class Tests(TestCase):
         field_2 = Field(form=form,
                 label="First name", field_type=NAMES[0][0])
         self.assertRaises(IntegrityError, field_2.save)
+
+    def test_field_default_ordering(self):
+        form = Form.objects.create(title="Test")
+        form.fields.create(label="second field",
+                field_type=NAMES[0][0], order=2)
+        f1 = form.fields.create(label="first field",
+                field_type=NAMES[0][0], order=1)
+        self.assertEqual(form.fields.all()[0], f1)
