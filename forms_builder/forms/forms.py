@@ -113,17 +113,17 @@ class FormForForm(forms.ModelForm):
             #   the admin.
             #
             try:
-                ##Fix a problem with the contruction for initial fields
-                if field.field_type in [fields.CHECKBOX_MULTIPLE, fields.SELECT_MULTIPLE]:
-                    field_entries[field.id] = [x.strip() for x in field_entries[field.id].split(',')]
-
-                self.initial[field_key] = field_entries[field.id]
+                initial_val = field_entries[field.id]
             except KeyError:
                 try:
                     self.initial[field_key] = initial[field_key]
                 except KeyError:
                     default = Template(field.default).render(context)
                     self.initial[field_key] = default
+            else:
+                if field.is_a(*fields.MULTIPLE):
+                    initial_val = [x.strip() for x in initial_val.split(",")]
+                self.initial[field_key] = initial_val
             self.fields[field_key] = field_class(**field_args)
             # Add identifying CSS classes to the field.
             css_class = field_class.__name__.lower()
