@@ -1,16 +1,17 @@
-from django.conf.urls.defaults import patterns, include, url
-from django.views.generic.simple import direct_to_template
-from forms_builder.forms.models import Form
-import forms_builder.forms.urls # add this import
 
+from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
+from django.views.generic import TemplateView
+
+from forms_builder.forms.models import Form
+from forms_builder.forms import urls as form_urls
+
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^forms/', include(forms_builder.forms.urls)),
-    url(r'^$', direct_to_template, {
-        "template": "index.html",
-        "extra_context": {"forms": lambda: Form.objects.all()},
-    }),
+    url(r'^forms/', include(form_urls)),
+    url(r'^$', lambda request: TemplateView.as_view(
+        template_name="index.html")(request, forms=Form.objects.all())),
 )
