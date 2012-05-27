@@ -17,10 +17,9 @@ for e in exclude:
         with open(e, "r") as f:
             exclude[e] = (f.read(), os.stat(e))
         os.remove(e)
-    except Exception, e:
-        import pdb; pdb.set_trace()
+    except Exception:
         pass
-import pdb; pdb.set_trace()
+
 
 try:
     setup(
