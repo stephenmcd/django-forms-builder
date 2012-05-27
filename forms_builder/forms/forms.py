@@ -55,7 +55,7 @@ FILTER_FUNCS = {
     FILTER_CHOICE_DOESNT_EQUAL:
         lambda val, field: val.lower() != field.lower(),
     FILTER_CHOICE_BETWEEN:
-        lambda val_from, val_to, field: val_from <= field <=  val_to
+        lambda val_from, val_to, field: val_from <= field <= val_to
 }
 
 text_filter_field = forms.ChoiceField(label=" ", required=False,
@@ -113,6 +113,10 @@ class FormForForm(forms.ModelForm):
             #   the admin.
             #
             try:
+                ##Fix a problem with the contruction for initial fields
+                if field.field_type in [fields.CHECKBOX_MULTIPLE, fields.SELECT_MULTIPLE]:
+                    field_entries[field.id] = [x.strip() for x in field_entries[field.id].split(',')]
+
                 self.initial[field_key] = field_entries[field.id]
             except KeyError:
                 try:
@@ -174,6 +178,7 @@ class FormForForm(forms.ModelForm):
             if field.is_a(fields.EMAIL):
                 return self.cleaned_data[field.slug]
         return None
+
 
 class EntriesForm(forms.Form):
     """
