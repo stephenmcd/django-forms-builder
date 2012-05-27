@@ -1,12 +1,13 @@
 {% extends "admin/change_form.html" %}
 
 {% load i18n %}
+{% load url from future %}
 
 {% block object-tools %}
 {% if change %}{% if not is_popup %}
 <ul class="object-tools">
     <li>
-        <a href="{% url admin:form_entries object_id %}">{% trans "View entries" %}</a>
+        <a href="{% url "admin:form_entries" object_id %}">{% trans "View entries" %}</a>
     </li>
     <li>
         <a href="history/" class="historylink">{% trans "History" %}</a>
