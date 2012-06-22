@@ -126,3 +126,13 @@ class Tests(TestCase):
         f1 = form.fields.create(label="first field",
                 field_type=NAMES[0][0], order=1)
         self.assertEqual(form.fields.all()[0], f1)
+
+    def test_form_errors(self):
+        form = Form.objects.create(title="Test")
+        if USE_SITES:
+            form.sites.add(self._site)
+            form.save()
+        form.fields.create(label="field", field_type=NAMES[0][0],
+                           required=True, visible=True)
+        response = self.client.post(form.get_absolute_url())
+        self.assertTrue("This field is required" in response.content)

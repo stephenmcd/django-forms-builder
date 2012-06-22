@@ -15,8 +15,9 @@ class BuiltFormNode(template.Node):
         self.value = value
 
     def render(self, context):
+        request = context["request"]
         try:
-            user = context["request"].user
+            user = request.user
         except KeyError, AttributeError:
             user = None
         if self.name != "form":
@@ -34,7 +35,9 @@ class BuiltFormNode(template.Node):
             return ""
         t = get_template("forms/includes/built_form.html")
         context["form"] = form
-        context["form_for_form"] = FormForForm(form, context)
+        args = (form, context , getattr(request, "POST", None),
+                getattr(request, "FILES", None))
+        context["form_for_form"] = FormForForm(*args)
         return t.render(context)
 
 
