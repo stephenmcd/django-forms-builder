@@ -16,10 +16,9 @@ class BuiltFormNode(template.Node):
 
     def render(self, context):
         request = context["request"]
-        try:
-            user = request.user
-        except KeyError, AttributeError:
-            user = None
+        user = getattr(request, "user", None)
+        post = getattr(request, "POST", None)
+        files = getattr(request, "FILES", None)
         if self.name != "form":
             lookup = {
                 str(self.name): template.Variable(self.value).resolve(context)
@@ -35,9 +34,7 @@ class BuiltFormNode(template.Node):
             return ""
         t = get_template("forms/includes/built_form.html")
         context["form"] = form
-        args = (form, context , getattr(request, "POST", None),
-                getattr(request, "FILES", None))
-        context["form_for_form"] = FormForForm(*args)
+        context["form_for_form"] = FormForForm(form, context, post, files)
         return t.render(context)
 
 
