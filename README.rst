@@ -1,4 +1,3 @@
-
 .. image:: https://secure.travis-ci.org/stephenmcd/django-forms-builder.png?branch=master
 
 django-forms-builder
@@ -25,38 +24,17 @@ The folliwng HTML5 form features are supported.
 * ``datetime`` fields
 * ``number`` fields
 * ``url`` fields
-=======
-A Django reusable app providing the ability for admin users to create their own forms within the admin interface drawing from a set of fields defined by the developer.
->>>>>>> other
 
 Installation
-<<<<<<< local
 ============
-=======
-------------
->>>>>>> other
 
-<<<<<<< local
 The easiest way to install django-forms-builder is directly from PyPi
 using `pip`_ or `setuptools`_ by running the respective command below::
-=======
-Checkout the source and run ``python setup.py install``. You can then add ``email_extras`` to your ``INSTALLED_APPS`` and ``forms_builder.urls`` to your url conf.
->>>>>>> other
 
-<<<<<<< local
     $ pip install -U django-forms-builder
-=======
-How It Works
-------------
->>>>>>> other
 
-<<<<<<< local
 or::
-=======
-Two models are defined in forms_builder.models - ``BuiltForm`` and ``BuiltFormSubmission`` which represent a user created form and a submission to that form respectively. ``BuiltForm`` contains two special fields called ``mandatory_extra_fields`` and ``optional_extra_fields``. These are present in the admin interface as a list of checkboxes derived from all the fields on the ``BuiltFormSubmission`` model that have the keyword attribute ``blank`` set to ``True``. The difference between these two sets of fields is whether the fields are mandatory for the website user submitting the form.
->>>>>>> other
 
-<<<<<<< local
     $ easy_install -U django-forms-builder
 
 Otherwise you can download django-forms-builder and install it directly
@@ -140,25 +118,13 @@ project's ``MEDIA_ROOT`` directory you just need to define the
 ``FORMS_BUILDER_UPLOAD_ROOT`` setting in your project's ``settings``
 module. Its value should be an absolute path on the web server that
 isn't accessible to the public.
-=======
-The actual form that gets displayed on the website is a ``ModelForm`` for ``BuiltFormSubmission`` and any of the fields within ``mandatory_extra_fields`` and ``optional_extra_fields`` that aren't selected for a given ``BuiltForm`` are excluded from the form on the website. The developer has the ability to define fields that are always present in the website form by not setting the ``blank`` attribute to ``True`` on the relevant fields of the ``BuiltFormSubmission`` model.
->>>>>>> other
 
 Configuration
-<<<<<<< local
 =============
-=======
--------------
->>>>>>> other
 
-<<<<<<< local
 The following settings can be defined in your project's ``settings``
 module.
-=======
-As described above, configuration of website form fields is done entirely on the ``BuiltFormSubmission`` model. Fields with a ``blank`` attribute set to ``True`` will be available as extra fields, and all other fields will always be present on the website form.
->>>>>>> other
 
-<<<<<<< local
 * ``FORMS_BUILDER_FIELD_MAX_LENGTH`` - Maximum allowed length for
   field values. Defaults to ``2000``
 * ``FORMS_BUILDER_LABEL_MAX_LENGTH`` - Maximum allowed length for
@@ -179,27 +145,15 @@ As described above, configuration of website form fields is done entirely on the
 * ``FORMS_BUILDER_SEND_FROM_SUBMITTER`` - Boolean controlling whether
   emails to staff recipients are sent from the form submitter. Defaults
   to ``True``
-=======
-There are also two settings you can configure in your project's ``settings`` module:
->>>>>>> other
 
-<<<<<<< local
 Email Templates
 ===============
-=======
-    * ``FORMS_BUILDER_EMAIL_TO`` - An email address that will be sent an email upon each form submission if the ``send_email`` field is set to ``True`` by the admin user for the given ``BuiltForm``.
->>>>>>> other
 
-<<<<<<< local
 The `django-email-extras`_ package is used to send multipart email
 notifications using Django's templating system for constructing the
 emails, to users submitting forms, and any recipients specified when
 creating a form via Django's admin.
-=======
-    * ``FORMS_BUILDER_UPLOAD_TO`` - The location in your ``MEDIA_ROOT`` that files will be saved to if any ``FileField`` or ``ImageField`` fields are defined on your ``BuiltFormSubmission`` model. These files will also be attached to the email if it is sent.
->>>>>>> other
 
-<<<<<<< local
 Templates for HTML and text versions of the email can be found in the
 ``templates/email_extras`` directory. This allows you to customize the
 look and feel of emails that are sent to form submitters.
@@ -260,6 +214,3 @@ authenticated.
 .. _`South`: http://south.aeracode.org/
 .. _`django-email-extras`: https://github.com/stephenmcd/django-email-extras
 .. _`PGP`: http://en.wikipedia.org/wiki/Pretty_Good_Privacy
-
-=======
->>>>>>> other
