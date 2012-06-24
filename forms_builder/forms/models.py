@@ -36,6 +36,7 @@ class FormManager(models.Manager):
             filters.append(Q(sites=Site.objects.get_current()))
         return self.filter(*filters)
 
+
 ######################################################################
 #                                                                    #
 #   Each of the models are implemented as abstract to allow for      #
@@ -131,6 +132,7 @@ class AbstractForm(models.Model):
     admin_links.allow_tags = True
     admin_links.short_description = ""
 
+
 class FieldManager(models.Manager):
     """
     Only show visible fields when displaying actual form..
@@ -138,15 +140,6 @@ class FieldManager(models.Manager):
     def visible(self):
         return self.filter(visible=True)
 
-def placeholder_text_field():
-    """
-    Return nothing if HTML5 is disabled, otherwise return the
-    ``placeholder_text`` field. Wrapped in a function to trigger the correct
-    field ordering at creation time.
-    """
-    if not settings.USE_HTML5:
-        return None
-    return models.CharField(_("Placeholder Text"), blank=True, max_length=100)
 
 class AbstractField(models.Model):
     """
@@ -166,7 +159,8 @@ class AbstractField(models.Model):
                 (settings.CHOICES_QUOTE, settings.CHOICES_UNQUOTE))
     default = models.CharField(_("Default value"), blank=True,
         max_length=settings.FIELD_MAX_LENGTH)
-    placeholder_text = placeholder_text_field()
+    placeholder_text = models.CharField(_("Placeholder Text"), null=True,
+        blank=True, max_length=100, editable=settings.USE_HTML5)
     help_text = models.CharField(_("Help text"), blank=True, max_length=100)
 
     objects = FieldManager()
@@ -228,6 +222,7 @@ class AbstractFormEntry(models.Model):
         verbose_name_plural = _("Form entries")
         abstract = True
 
+
 class AbstractFieldEntry(models.Model):
     """
     A single field value for a form entry submitted via a user-built form.
@@ -242,6 +237,7 @@ class AbstractFieldEntry(models.Model):
         verbose_name_plural = _("Form field entries")
         abstract = True
 
+
 ###################################################
 #                                                 #
 #   Default concrete implementations are below.   #
@@ -251,11 +247,14 @@ class AbstractFieldEntry(models.Model):
 class FormEntry(AbstractFormEntry):
     form = models.ForeignKey("Form", related_name="entries")
 
+
 class FieldEntry(AbstractFieldEntry):
     entry = models.ForeignKey("FormEntry", related_name="fields")
 
+
 class Form(AbstractForm):
     pass
+
 
 class Field(AbstractField):
     """
