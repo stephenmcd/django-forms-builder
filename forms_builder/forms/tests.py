@@ -134,5 +134,5 @@ class Tests(TestCase):
             form.save()
         form.fields.create(label="field", field_type=NAMES[0][0],
                            required=True, visible=True)
-        response = self.client.post(form.get_absolute_url())
+        response = self.client.post(form.get_absolute_url(), {"foo": "bar"})
         self.assertTrue("This field is required" in response.content)
