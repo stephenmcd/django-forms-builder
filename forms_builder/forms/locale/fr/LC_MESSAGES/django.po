@@ -7,20 +7,20 @@ msgid ""
 msgstr ""
 "Project-Id-Version: django-forms-builder\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-27 12:11+0200\n"
-"PO-Revision-Date: 2012-06-27 12:08+0100\n"
+"POT-Creation-Date: 2012-06-27 12:44+0200\n"
+"PO-Revision-Date: 2012-06-27 12:45+0100\n"
 "Last-Translator: Dominique Guardiola <dguardiola@quinode.fr>\n"
 "Language-Team: Quindoe <contact@quinode.fr>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
-"Plural-Forms: nplurals=2; plural=(n > 1)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "X-Poedit-Language: French\n"
 "X-Poedit-Country: FRANCE\n"
 
-#: admin.py:29 fields.py:29
+#: admin.py:29
+#: fields.py:29
 msgid "Email"
 msgstr "Courriel"
 
@@ -83,7 +83,8 @@ msgstr "Envoi de fichier"
 msgid "Date"
 msgstr "Date"
 
-#: fields.py:39 models.py:218
+#: fields.py:39
+#: models.py:218
 msgid "Date/time"
 msgstr "Date et heure"
 
@@ -91,7 +92,9 @@ msgstr "Date et heure"
 msgid "Hidden"
 msgstr "Caché"
 
-#: forms.py:30 forms.py:38 forms.py:44
+#: forms.py:30
+#: forms.py:38
+#: forms.py:44
 msgid "Nothing"
 msgstr "Rien"
 
@@ -103,11 +106,13 @@ msgstr "Contient"
 msgid "Doesn't contain"
 msgstr "Ne contient pas"
 
-#: forms.py:33 forms.py:39
+#: forms.py:33
+#: forms.py:39
 msgid "Equals"
 msgstr "Est égal à"
 
-#: forms.py:34 forms.py:40
+#: forms.py:34
+#: forms.py:40
 msgid "Doesn't equal"
 msgstr "N'est pas égal à"
 
@@ -123,9 +128,18 @@ msgstr "coché"
 msgid "Not checked"
 msgstr "non coché"
 
-#: forms.py:226 forms.py:241
+#: forms.py:226
+#: forms.py:241
 msgid "and"
 msgstr "et"
+
+#: models.py:18
+msgid "Draft"
+msgstr "Brouillon"
+
+#: models.py:19
+msgid "Published"
+msgstr "Publié"
 
 #: models.py:55
 msgid "Title"
@@ -144,6 +158,7 @@ msgid "Submit"
 msgstr "Envoyer"
 
 #: models.py:60
+#, fuzzy
 msgid "Response"
 msgstr "Message à la réception"
 
@@ -215,6 +230,22 @@ msgstr "Formulaire"
 msgid "Forms"
 msgstr "Formulaires"
 
+#: models.py:124
+msgid "View form on site"
+msgstr "Voir sur le site"
+
+#: models.py:125
+msgid "Filter entries"
+msgstr "Filtrer les réponses"
+
+#: models.py:126
+msgid "View all entries"
+msgstr "Voir toutes les réponses"
+
+#: models.py:127
+msgid "Export all entries"
+msgstr "Exporter toutes les réponses"
+
 #: models.py:149
 msgid "Label"
 msgstr "Libellé"
@@ -251,7 +282,8 @@ msgstr "Texte par défaut"
 msgid "Help text"
 msgstr "Texte d'aide"
 
-#: models.py:169 templates/admin/forms/entries.html:87
+#: models.py:169
+#: templates/admin/forms/entries.html:87
 msgid "Field"
 msgstr "Champ"
 
@@ -336,3 +368,4 @@ msgstr "Effacer la sélection"
 #: templates/admin/forms/entries.html:160
 msgid "No entries to display"
 msgstr "Pas de réponses à afficher"
+
