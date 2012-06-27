@@ -15,8 +15,8 @@ from forms_builder.forms.utils import now
 STATUS_DRAFT = 1
 STATUS_PUBLISHED = 2
 STATUS_CHOICES = (
-    (STATUS_DRAFT, "Draft"),
-    (STATUS_PUBLISHED, "Published"),
+    (STATUS_DRAFT, _("Draft")),
+    (STATUS_PUBLISHED, _("Published")),
 )
 
 
@@ -121,10 +121,10 @@ class AbstractForm(models.Model):
     def admin_links(self):
         kw = {"args": (self.id,)}
         links = [
-            ("View form on site", self.get_absolute_url()),
-            ("Filter entries", reverse("admin:form_entries", **kw)),
-            ("View all entries", reverse("admin:form_entries_show", **kw)),
-            ("Export all entries", reverse("admin:form_entries_export", **kw)),
+            (_("View form on site"), self.get_absolute_url()),
+            (_("Filter entries"), reverse("admin:form_entries", **kw)),
+            (_("View all entries"), reverse("admin:form_entries_show", **kw)),
+            (_("Export all entries"), reverse("admin:form_entries_export", **kw)),
         ]
         for i, (text, url) in enumerate(links):
             links[i] = "<a href='%s'>%s</a>" % (url, ugettext(text))
