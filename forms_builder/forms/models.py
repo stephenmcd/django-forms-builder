@@ -4,13 +4,12 @@ from django.conf import settings as django_settings
 from django.contrib.sites.models import Site
 from django.db import models
 from django.db.models import Q
-from django.template.defaultfilters import slugify
 from django.utils.translation import ugettext, ugettext_lazy as _
 
 from forms_builder.forms import fields
 from forms_builder.forms import settings
 from forms_builder.forms.utils import now
-
+from forms_builder.forms.slugify import slugify
 
 STATUS_DRAFT = 1
 STATUS_PUBLISHED = 2
