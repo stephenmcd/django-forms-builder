@@ -36,6 +36,7 @@ try:
         packages = find_packages(),
         install_requires = [
             "sphinx-me >= 0.1.2",
+            "unidecode",
             "django-email-extras >= 0.1.7",
             "django",
         ],
