@@ -11,9 +11,9 @@ except ImportError:
     now = datetime.now
 
 
-def slugify(ss):
+def slugify(s):
     """
     Translates unicode into closest possible ascii chars before
     slugifying.
     """
-    return django_slugify(unidecode(ss))
+    return django_slugify(unidecode(unicode(s)))
