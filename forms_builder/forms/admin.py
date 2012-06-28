@@ -17,8 +17,7 @@ from django.utils.translation import ungettext, ugettext_lazy as _
 from forms_builder.forms.forms import EntriesForm
 from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry
 from forms_builder.forms.settings import CSV_DELIMITER, UPLOAD_ROOT, USE_SITES
-from forms_builder.forms.utils import now
-from forms_builder.forms.slugify import slugify
+from forms_builder.forms.utils import now, slugify
 
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
