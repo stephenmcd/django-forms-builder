@@ -52,7 +52,8 @@ class AbstractForm(models.Model):
     sites = models.ManyToManyField(Site, editable=settings.USE_SITES,
         default=[django_settings.SITE_ID])
     title = models.CharField(_("Title"), max_length=50)
-    slug = models.SlugField(editable=False, max_length=100, unique=True)
+    slug = models.SlugField(_("Slug"), editable=settings.EDITABLE_SLUGS,
+        max_length=100, unique=True)
     intro = models.TextField(_("Intro"), blank=True)
     button_text = models.CharField(_("Button text"), max_length=50,
         default=_("Submit"))

@@ -16,7 +16,8 @@ from django.utils.translation import ungettext, ugettext_lazy as _
 
 from forms_builder.forms.forms import EntriesForm
 from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry
-from forms_builder.forms.settings import CSV_DELIMITER, UPLOAD_ROOT, USE_SITES
+from forms_builder.forms.settings import CSV_DELIMITER, UPLOAD_ROOT
+from forms_builder.forms.settings import USE_SITES, EDITABLE_SLUGS
 from forms_builder.forms.utils import now, slugify
 
 
@@ -27,6 +28,10 @@ form_admin_fieldsets = [
         ("publish_date", "expiry_date",), "intro", "button_text", "response")}),
     (_("Email"), {"fields": ("send_email", "email_from", "email_copies",
         "email_subject", "email_message")}),]
+
+if EDITABLE_SLUGS:
+    form_admin_fieldsets.append(
+            (_("Slug"), {"fields": ("slug",), "classes": ("collapse",)}))
 
 if USE_SITES:
     form_admin_fieldsets.append((_("Sites"), {"fields": ("sites",),

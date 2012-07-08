@@ -18,6 +18,9 @@ USE_HTML5 = getattr(settings, "FORMS_BUILDER_USE_HTML5", True)
 USE_SITES = getattr(settings, "FORMS_BUILDER_USE_SITES",
                     "django.contrib.sites" in settings.INSTALLED_APPS)
 
+# Boolean controlling whether form slugs are editable in the admin.
+EDITABLE_SLUGS = getattr(settings, "FORMS_BUILDER_EDITABLE_SLUGS", False)
+
 # Char to start a quoted choice with.
 CHOICES_QUOTE = getattr(settings, "FORMS_BUILDER_CHOICES_QUOTE", "`")
 
