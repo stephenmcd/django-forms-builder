@@ -8,7 +8,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 
 from forms_builder.forms import fields
 from forms_builder.forms import settings
-from forms_builder.forms.utils import now, slugify
+from forms_builder.forms.utils import now, slugify, unique_slug
 
 
 STATUS_DRAFT = 1
@@ -85,7 +85,7 @@ class AbstractForm(models.Model):
         abstract = True
 
     def __unicode__(self):
-        return self.title
+        return unicode(self.title)
 
     def save(self, *args, **kwargs):
         """
@@ -93,16 +93,8 @@ class AbstractForm(models.Model):
         already exists.
         """
         if not self.slug:
-            self.slug = slugify(self.title)
-            i = 0
-            while True:
-                if i > 0:
-                    if i > 1:
-                        self.slug = self.slug.rsplit("-", 1)[0]
-                    self.slug = "%s-%s" % (self.slug, i)
-                if not self.__class__.objects.filter(slug=self.slug):
-                    break
-                i += 1
+            slug = slugify(self)
+            self.slug = unique_slug(self.__class__.objects, "slug", slug)
         super(AbstractForm, self).save(*args, **kwargs)
 
     def total_entries(self):
@@ -168,10 +160,9 @@ class AbstractField(models.Model):
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
         abstract = True
-        unique_together = ('form', 'slug',)
 
     def __unicode__(self):
-        return self.label
+        return unicode(self.label)
 
     def get_choices(self):
         """
@@ -199,7 +190,8 @@ class AbstractField(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.label).replace('-', '_')
+            slug = slugify(self).replace('-', '_')
+            self.slug = unique_slug(self.form.fields, "slug", slug)
         return super(AbstractField, self).save(*args, **kwargs)
 
     def is_a(self, *args):

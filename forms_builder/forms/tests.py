@@ -117,7 +117,10 @@ class Tests(TestCase):
 
         field_2 = Field(form=form,
                 label="First name", field_type=NAMES[0][0])
-        self.assertRaises(IntegrityError, field_2.save)
+        try:
+            field_2.save()
+        except IntegrityError:
+            self.fail("Slugs were not auto-unique")
 
     def test_field_default_ordering(self):
         form = Form.objects.create(title="Test")
