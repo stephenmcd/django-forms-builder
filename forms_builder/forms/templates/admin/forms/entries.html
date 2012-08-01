@@ -115,6 +115,9 @@ $(function() {
     <input type="submit" name="back" class="button" value="{% trans "Back to form" %}">
     <input type="submit" class="button default" value="{% trans "View entries" %}">
     <input type="submit" class="button default" name="export" value="{% trans "Export CSV" %}">
+    {% if xlwt_installed %}
+    <input type="submit" class="button default" name="export_xls" value="{% trans "Export XLS" %}">
+    {% endif %}
     {% if submitted %}
     <br clear="both" />
     <h1 id="entries-title">{% trans "Entries" %}</h1>
