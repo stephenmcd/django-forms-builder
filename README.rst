@@ -211,8 +211,18 @@ values. For example you could enter ``{{ request.user.username }}`` and
 the field will be pre-populated with a user's username if they're
 authenticated.
 
+XLS Export
+==========
+
+By default, django-forms-builder provides export of form entries via
+CSV file. You can also enable export via XLS file (Microsoft Excel)
+by installing the `xlwt`_ package::
+
+  $ pip install xlwt
+
 .. _`pip`: http://www.pip-installer.org/
 .. _`setuptools`: http://pypi.python.org/pypi/setuptools
 .. _`South`: http://south.aeracode.org/
 .. _`django-email-extras`: https://github.com/stephenmcd/django-email-extras
 .. _`PGP`: http://en.wikipedia.org/wiki/Pretty_Good_Privacy
+.. _`xlwt`: http://www.python-excel.org/
