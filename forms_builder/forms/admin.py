@@ -3,6 +3,7 @@ from csv import writer
 from mimetypes import guess_type
 from os.path import join
 from cStringIO import StringIO
+from datetime import datetime
 
 from django.conf.urls.defaults import patterns, url
 from django.contrib import admin
@@ -19,6 +20,13 @@ from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry
 from forms_builder.forms.settings import CSV_DELIMITER, UPLOAD_ROOT
 from forms_builder.forms.settings import USE_SITES, EDITABLE_SLUGS
 from forms_builder.forms.utils import now, slugify
+
+try:
+    import xlwt
+    XLWT_INSTALLED = True
+    XLWT_DATETIME_STYLE = xlwt.easyxf(num_format_str='MM/DD/YYYY HH:MM:SS')
+except ImportError:
+    XLWT_INSTALLED = False
 
 
 fs = FileSystemStorage(location=UPLOAD_ROOT)
@@ -85,7 +93,8 @@ class FormAdmin(admin.ModelAdmin):
         )
         return extra_urls + urls
 
-    def entries_view(self, request, form_id, show=False, export=False):
+    def entries_view(self, request, form_id, show=False, export=False,
+                     export_xls=False):
         """
         Displays the form entries in a HTML table with option to
         export as CSV file.
@@ -98,8 +107,9 @@ class FormAdmin(admin.ModelAdmin):
         entries_form = EntriesForm(form, request, request.POST or None)
         delete_entries_perm = "%s.delete_formentry" % FormEntry._meta.app_label
         can_delete_entries = request.user.has_perm(delete_entries_perm)
-        submitted = entries_form.is_valid() or show or export
+        submitted = entries_form.is_valid() or show or export or export_xls
         export = export or request.POST.get("export")
+        export_xls = export_xls or request.POST.get("export_xls")
         if submitted:
             if export:
                 response = HttpResponse(mimetype="text/csv")
@@ -112,6 +122,26 @@ class FormAdmin(admin.ModelAdmin):
                     csv.writerow(row)
                 # Decode and reencode entire queued response into utf-16 to be Excel compatible
                 data = queue.getvalue().decode("utf-8").encode("utf-16")
+                response.write(data)
+                return response
+            elif XLWT_INSTALLED and export_xls:
+                response = HttpResponse(mimetype="application/vnd.ms-excel")
+                fname = "%s-%s.xls" % (form.slug, slugify(now().ctime()))
+                response["Content-Disposition"] = "attachment; filename=%s" % fname
+                queue = StringIO()
+                workbook = xlwt.Workbook(encoding='utf8')
+                sheet = workbook.add_sheet(form.title)
+                for c, col in enumerate(entries_form.columns()):
+                    sheet.write(0, c, col)
+                for r, row in enumerate(entries_form.rows(csv=True)):
+                    for c, item in enumerate(row):
+                        if isinstance(item, datetime):
+                            item = item.replace(tzinfo=None)
+                            sheet.write(r + 2, c, item, XLWT_DATETIME_STYLE)
+                        else:
+                            sheet.write(r + 2, c, item)
+                workbook.save(queue)
+                data = queue.getvalue()
                 response.write(data)
                 return response
             elif request.POST.get("delete") and can_delete_entries:
@@ -133,7 +163,8 @@ class FormAdmin(admin.ModelAdmin):
         context = {"title": _("View Entries"), "entries_form": entries_form,
                    "opts": self.model._meta, "original": form,
                    "can_delete_entries": can_delete_entries,
-                   "submitted": submitted}
+                   "submitted": submitted,
+                   "xlwt_installed": XLWT_INSTALLED}
         return render_to_response(template, context, RequestContext(request))
 
     def file_view(self, request, field_entry_id):
