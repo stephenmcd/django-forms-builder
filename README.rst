@@ -136,7 +136,7 @@ module.
 * ``FORMS_BUILDER_USE_SITES`` - Boolean controlling whether forms are
   associated to Django's Sites framework. Defaults to
   ``"django.contrib.sites" in settings.INSTALLED_APPS``
-* ``FORMS_BUILDER_EDTIABLE_SLUGS`` - Boolean controlling whether form
+* ``FORMS_BUILDER_EDITABLE_SLUGS`` - Boolean controlling whether form
   slugs are editable in the admin. Defaults to ``False``
 * ``FORMS_BUILDER_CHOICES_QUOTE`` - Char to start a quoted choice with.
   Defaults to the backtick char: `
