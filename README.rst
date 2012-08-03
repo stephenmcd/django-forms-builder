@@ -15,7 +15,7 @@ available in the admin via CSV export.
 HTML5 Features
 ==============
 
-The folliwng HTML5 form features are supported.
+The following HTML5 form features are supported.
 
 * ``placeholder`` attributes
 * ``required`` attributes
