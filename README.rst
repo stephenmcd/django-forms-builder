@@ -29,13 +29,9 @@ Installation
 ============
 
 The easiest way to install django-forms-builder is directly from PyPi
-using `pip`_ or `setuptools`_ by running the respective command below::
+using `pip`_ by running the command below::
 
     $ pip install -U django-forms-builder
-
-or::
-
-    $ easy_install -U django-forms-builder
 
 Otherwise you can download django-forms-builder and install it directly
 from source::
@@ -52,21 +48,16 @@ Add ``forms_builder.forms`` to ``INSTALLED_APPS`` in your project's
 ``settings`` module::
 
     INSTALLED_APPS = (
-        'django.contrib.auth',
-        'django.contrib.contenttypes',
-        'django.contrib.sessions',
-        'django.contrib.sites',
-        'django.contrib.messages',
-        'django.contrib.staticfiles',
-        'django.contrib.admin',
+        # other apps
         'forms_builder.forms',
     )
 
-Add ``django.core.context_processors.request`` to ``TEMPLATE_CONTEXT_PROCESSORS`` in your project's
+If you haven't already, ensure ``django.core.context_processors.request``
+is in the ``TEMPLATE_CONTEXT_PROCESSORS`` setting in your project's
 ``settings`` module::
 
-
-    TEMPLATE_CONTEXT_PROCESSORS += (
+    TEMPLATE_CONTEXT_PROCESSORS = (
+        # other context processors
         "django.core.context_processors.request",
     )
 
@@ -80,6 +71,7 @@ module::
     admin.autodiscover()
 
     urlpatterns = patterns('',
+        # other urlpatterns
         url(r'^admin/', include(admin.site.urls)),
         url(r'^forms/', include(forms_builder.forms.urls)),
     )
@@ -229,7 +221,6 @@ by installing the `xlwt`_ package::
   $ pip install xlwt
 
 .. _`pip`: http://www.pip-installer.org/
-.. _`setuptools`: http://pypi.python.org/pypi/setuptools
 .. _`South`: http://south.aeracode.org/
 .. _`django-email-extras`: https://github.com/stephenmcd/django-email-extras
 .. _`PGP`: http://en.wikipedia.org/wiki/Pretty_Good_Privacy
