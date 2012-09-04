@@ -62,6 +62,14 @@ Add ``forms_builder.forms`` to ``INSTALLED_APPS`` in your project's
         'forms_builder.forms',
     )
 
+Add ``django.core.context_processors.request`` to ``TEMPLATE_CONTEXT_PROCESSORS`` in your project's
+``settings`` module::
+
+
+    TEMPLATE_CONTEXT_PROCESSORS += (
+        "django.core.context_processors.request",
+    )
+
 Then add ``forms_builder.forms.urls`` to your project's ``urls``
 module::
 
