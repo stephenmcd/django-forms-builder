@@ -1,4 +1,3 @@
-
 from csv import writer
 from mimetypes import guess_type
 from os.path import join
@@ -130,7 +129,7 @@ class FormAdmin(admin.ModelAdmin):
                 response["Content-Disposition"] = "attachment; filename=%s" % fname
                 queue = StringIO()
                 workbook = xlwt.Workbook(encoding='utf8')
-                sheet = workbook.add_sheet(form.title)
+                sheet = workbook.add_sheet(form.title[:31])
                 for c, col in enumerate(entries_form.columns()):
                     sheet.write(0, c, col)
                 for r, row in enumerate(entries_form.rows(csv=True)):
