@@ -21,6 +21,7 @@ DATE_TIME = 11
 HIDDEN = 12
 NUMBER = 13
 URL = 14
+DOB = 15
 
 # Names for all available field types.
 NAMES = (
@@ -37,6 +38,7 @@ NAMES = (
     (FILE, _("File upload")),
     (DATE, _("Date")),
     (DATE_TIME, _("Date/time")),
+    (DOB, _("Date of birth")),
     (HIDDEN, _("Hidden")),
 )
 
@@ -53,6 +55,7 @@ CLASSES = {
     FILE: forms.FileField,
     DATE: forms.DateField,
     DATE_TIME: forms.DateTimeField,
+    DOB: forms.DateField,
     HIDDEN: forms.CharField,
     NUMBER: forms.FloatField,
     URL: forms.URLField,
@@ -64,12 +67,13 @@ WIDGETS = {
     CHECKBOX_MULTIPLE: forms.CheckboxSelectMultiple,
     RADIO_MULTIPLE: forms.RadioSelect,
     DATE: SelectDateWidget,
+    DOB: SelectDateWidget,
     HIDDEN: forms.HiddenInput,
 }
 
 # Some helper groupings of field types.
 CHOICES = (CHECKBOX, CHECKBOX_MULTIPLE, SELECT, SELECT_MULTIPLE, RADIO_MULTIPLE)
-DATES = (DATE, DATE_TIME)
+DATES = (DATE, DATE_TIME, DOB)
 MULTIPLE = (CHECKBOX_MULTIPLE, SELECT_MULTIPLE)
 
 # HTML5 Widgets
@@ -78,6 +82,7 @@ if USE_HTML5:
     WIDGETS.update({
         DATE: html5_field("date", forms.DateInput),
         DATE_TIME: html5_field("datetime", forms.DateTimeInput),
+        DOB: html5_field("date", forms.DateInput),
         EMAIL: html5_field("email", forms.TextInput),
         NUMBER: html5_field("number", forms.TextInput),
         URL: html5_field("url", forms.TextInput),
