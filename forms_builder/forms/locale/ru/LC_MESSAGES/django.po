@@ -1,7 +1,7 @@
-# Dutch Translation for stephenmcd's django-forms-builder
-# Copyright (C) 2010 THE PACKAGE'S COPYRIGHT HOLDER
+# Russian Translation for stephenmcd's django-forms-builder
+# Copyright (C) 2012 THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# Wouter van der Graaf <wouter@dynora.nl>, 2010.
+# Fill Q <admin@njoyx.net>, 2012.
 #
 #, fuzzy
 msgid ""
