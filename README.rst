@@ -96,10 +96,10 @@ displaying forms outside of the main form view provided. It will
 display a form when given an argument in one of the following
 formats, where ``form_instance`` is an instance of the ``Form`` model::
 
-    {% render_build_form form_instance %}
-    {% render_build_form form=form_instance %}
-    {% render_build_form id=form_instance.id %}
-    {% render_build_form slug=form_instance.slug %}
+    {% render_built_form form_instance %}
+    {% render_built_form form=form_instance %}
+    {% render_built_form id=form_instance.id %}
+    {% render_built_form slug=form_instance.slug %}
 
 This allows forms to be displayed without having a form instance, using
 a form's slug or ID, which could be hard-coded in a template, or stored
