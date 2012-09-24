@@ -64,25 +64,27 @@ def render_built_form(parser, token):
     return BuiltFormNode(name, value)
 
 
-@register.assignment_tag(takes_context=True)
-def form_results(context, form_id, sort_by_cols=None):
-    """
-    form_results requires the form instance id:
+# assignment_tag works only for Django 1.4
+if hasattr(register, 'assignment_tag'):
+    @register.assignment_tag(takes_context=True)
+    def form_results(context, form_id, sort_by_cols=None):
+        """
+        form_results requires the form instance id:
 
-    {% form_results form_instance.id as mytag %}
+        {% form_results form_instance.id as mytag %}
 
-    results may be sorted by given column number(s):
+        results may be sorted by given column number(s):
 
-    {% form_results form_instance.id sort_by_cols="0" as mytag %}
-    {% form_results form_instance.id sort_by_cols="3,1" as mytag %}
+        {% form_results form_instance.id sort_by_cols="0" as mytag %}
+        {% form_results form_instance.id sort_by_cols="3,1" as mytag %}
 
-    """
-    request = context['request']
-    published = Form.objects.published(for_user=request.user)
-    form = get_object_or_404(published, pk=form_id)
-    rows = EntriesForm(form, request, None).rows()
-    if sort_by_cols:
-        cols = [int(c) for c in sort_by_cols.split(',')]
-        rows = sorted(rows,
-            key=lambda x: ''.join(operator.itemgetter(*cols)(x)).lower())
-    return rows
+        """
+        request = context['request']
+        published = Form.objects.published(for_user=request.user)
+        form = get_object_or_404(published, pk=form_id)
+        rows = EntriesForm(form, request, None).rows()
+        if sort_by_cols:
+            cols = [int(c) for c in sort_by_cols.split(',')]
+            rows = sorted(rows,
+                key=lambda x: ''.join(operator.itemgetter(*cols)(x)).lower())
+        return rows
