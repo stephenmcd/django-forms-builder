@@ -1,9 +1,11 @@
 
+from django.core.exceptions import ImproperlyConfigured
 from django import forms
 from django.forms.extras import SelectDateWidget
+from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
 
-from forms_builder.forms.settings import USE_HTML5
+from forms_builder.forms.settings import USE_HTML5, EXTRA_FIELDS
 
 
 # Constants for all available field types.
@@ -87,3 +89,12 @@ if USE_HTML5:
         NUMBER: html5_field("number", forms.TextInput),
         URL: html5_field("url", forms.TextInput),
     })
+
+# Add any custom fields defined.
+for field_id, field_path, field_name in EXTRA_FIELDS:
+    if field_id in CLASSES:
+        err = "ID %s for field %s in FORMS_EXTRA_FIELDS already exists"
+        raise ImproperlyConfigured(err % (field_id, field_name))
+    module_path, member_name = field_path.rsplit(".", 1)
+    CLASSES[field_id] = getattr(import_module(module_path), member_name)
+    NAMES += ((field_id, _(field_name)),)

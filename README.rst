@@ -130,6 +130,8 @@ module.
   field values. Defaults to ``2000``
 * ``FORMS_BUILDER_LABEL_MAX_LENGTH`` - Maximum allowed length for
   field labels. Defaults to ``20``
+* ``FORMS_BUILDER_EXTRA_FIELDS`` - Sequence of custom fields that
+  will be added to the form field types. Defaults to ``()``
 * ``FORMS_BUILDER_UPLOAD_ROOT`` - The absolute path where files will
   be uploaded to. Defaults to ``None``
 * ``FORMS_BUILDER_USE_HTML5`` - Boolean controlling whether HTML5 form
@@ -148,6 +150,26 @@ module.
 * ``FORMS_BUILDER_SEND_FROM_SUBMITTER`` - Boolean controlling whether
   emails to staff recipients are sent from the form submitter. Defaults
   to ``True``
+
+Custom Field Types
+==================
+
+You can also add your own custom field types to the choices of fields
+available for a form. Simply define a sequence for the
+``FORMS_BUILDER_EXTRA_FIELDS`` setting in your project's ``settings``
+module, where each item in the sequence is a custom field that will
+be available.
+
+Each field in the sequence should be a three-item sequence containing
+an ID, a dotted import path for the field class, and a field name, for
+each custom field type. The ID is simply a numeric constant for the
+field, but cannot be a value already used, so choose a high number
+such as 100 or greater to avoid conflicts::
+
+  FORMS_BUILDER_EXTRA_FIELDS = (
+      (100, "django.forms.BooleanField", "My cool checkbox"),
+      (101, "my_module.MyCustomField", "Another field"),
+  )
 
 Email Templates
 ===============

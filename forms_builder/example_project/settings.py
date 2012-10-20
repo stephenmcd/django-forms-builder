@@ -65,6 +65,10 @@ except ImportError:
 else:
     INSTALLED_APPS += ("south",)
 
+FORMS_BUILDER_EXTRA_FIELDS = (
+    (100, "django.forms.BooleanField", "My cool checkbox"),
+)
+
 try:
     from local_settings import *
 except ImportError:
