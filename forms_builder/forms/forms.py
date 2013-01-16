@@ -67,7 +67,8 @@ date_filter_field = forms.ChoiceField(label=" ", required=False,
 
 
 class FormForForm(forms.ModelForm):
-
+    field_entry_model = FieldEntry
+    
     class Meta:
         model = FormEntry
         exclude = ("form", "entry_time")
@@ -167,10 +168,10 @@ class FormForForm(forms.ModelForm):
                 field_entry.save()
             else:
                 new = {"entry": entry, "field_id": field.id, "value": value}
-                new_entry_fields.append(FieldEntry(**new))
+                new_entry_fields.append(self.field_entry_model(**new))
         if new_entry_fields:
             if django.VERSION >= (1, 4, 0):
-                FieldEntry.objects.bulk_create(new_entry_fields)
+                self.field_entry_model.objects.bulk_create(new_entry_fields)
             else:
                 for field_entry in new_entry_fields:
                     field_entry.save()
