@@ -100,9 +100,9 @@ class FormAdmin(admin.ModelAdmin):
         """
         if request.POST.get("back"):
             change_url = reverse("admin:%s_%s_change" %
-                (Form._meta.app_label, Form.__name__.lower()), args=(form_id,))
+                (self.model._meta.app_label, self.model.__name__.lower()), args=(form_id,))
             return HttpResponseRedirect(change_url)
-        form = get_object_or_404(Form, id=form_id)
+        form = get_object_or_404(self.model, id=form_id)
         entries_form = EntriesForm(form, request, request.POST or None)
         delete_entries_perm = "%s.delete_formentry" % FormEntry._meta.app_label
         can_delete_entries = request.user.has_perm(delete_entries_perm)
