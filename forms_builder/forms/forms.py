@@ -193,7 +193,7 @@ class EntriesForm(forms.Form):
     filter entries for the given ``forms.models.Form`` instance.
     """
 
-    def __init__(self, form, request, *args, **kwargs):
+    def __init__(self, form, request, formentry_model = FormEntry, fieldentry_model = FieldEntry, *args, **kwargs):
         """
         Iterate through the fields of the ``forms.models.Form`` instance and
         create the form fields required to control including the field in
@@ -204,8 +204,10 @@ class EntriesForm(forms.Form):
         """
         self.form = form
         self.request = request
+        self.formentry_model = formentry_model
+        self.fieldentry_model = fieldentry_model
         self.form_fields = form.fields.all()
-        self.entry_time_name = unicode(FormEntry._meta.get_field(
+        self.entry_time_name = unicode(self.formentry_model._meta.get_field(
             "entry_time").verbose_name).encode("utf-8")
         super(EntriesForm, self).__init__(*args, **kwargs)
         for field in self.form_fields:
@@ -239,7 +241,7 @@ class EntriesForm(forms.Form):
         # Add ``FormEntry.entry_time`` as a field.
         field_key = "field_0"
         self.fields["%s_export" % field_key] = forms.BooleanField(initial=True,
-            label=FormEntry._meta.get_field("entry_time").verbose_name,
+            label=self.formentry_model._meta.get_field("entry_time").verbose_name,
             required=False)
         self.fields["%s_filter" % field_key] = date_filter_field
         self.fields["%s_from" % field_key] = forms.DateField(
@@ -305,7 +307,7 @@ class EntriesForm(forms.Form):
 
         # Get the field entries for the given form and filter by entry_time
         # if specified.
-        field_entries = FieldEntry.objects.filter(entry__form=self.form
+        field_entries = self.fieldentry_model.objects.filter(entry__form=self.form
             ).order_by("-entry__id").select_related(depth=1)
         if self.posted_data("field_0_filter") == FILTER_CHOICE_BETWEEN:
             time_from = self.posted_data("field_0_from")
