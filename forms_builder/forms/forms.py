@@ -68,7 +68,7 @@ date_filter_field = forms.ChoiceField(label=" ", required=False,
 
 class FormForForm(forms.ModelForm):
     field_entry_model = FieldEntry
-    
+
     class Meta:
         model = FormEntry
         exclude = ("form", "entry_time")
@@ -193,7 +193,8 @@ class EntriesForm(forms.Form):
     filter entries for the given ``forms.models.Form`` instance.
     """
 
-    def __init__(self, form, request, formentry_model = FormEntry, fieldentry_model = FieldEntry, *args, **kwargs):
+    def __init__(self, form, request, formentry_model=FormEntry,
+                 fieldentry_model=FieldEntry, *args, **kwargs):
         """
         Iterate through the fields of the ``forms.models.Form`` instance and
         create the form fields required to control including the field in
@@ -240,9 +241,9 @@ class EntriesForm(forms.Form):
                 self.fields["%s_contains" % field_key] = contains_field
         # Add ``FormEntry.entry_time`` as a field.
         field_key = "field_0"
-        self.fields["%s_export" % field_key] = forms.BooleanField(initial=True,
-            label=self.formentry_model._meta.get_field("entry_time").verbose_name,
-            required=False)
+        label = self.formentry_model._meta.get_field("entry_time").verbose_name
+        self.fields["%s_export" % field_key] = forms.BooleanField(
+            initial=True, label=label, required=False)
         self.fields["%s_filter" % field_key] = date_filter_field
         self.fields["%s_from" % field_key] = forms.DateField(
             label=" ", widget=SelectDateWidget(), required=False)
@@ -307,7 +308,8 @@ class EntriesForm(forms.Form):
 
         # Get the field entries for the given form and filter by entry_time
         # if specified.
-        field_entries = self.fieldentry_model.objects.filter(entry__form=self.form
+        model = self.fieldentry_model
+        field_entries = model.objects.filter(entry__form=self.form
             ).order_by("-entry__id").select_related(depth=1)
         if self.posted_data("field_0_filter") == FILTER_CHOICE_BETWEEN:
             time_from = self.posted_data("field_0_from")
@@ -378,7 +380,8 @@ class EntriesForm(forms.Form):
                     field_value = mark_safe("<a href=\"%s\">%s</a>" % parts)
             # Only use values for fields that were selected.
             try:
-                current_row[field_indexes[field_id]] = field_value.encode("utf-8")
+                field_value = field_value.encode("utf-8")
+                current_row[field_indexes[field_id]] = field_value
             except KeyError:
                 pass
         # Output the final row.

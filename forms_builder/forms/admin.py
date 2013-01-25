@@ -32,7 +32,8 @@ fs = FileSystemStorage(location=UPLOAD_ROOT)
 form_admin_filter_horizontal = ()
 form_admin_fieldsets = [
     (None, {"fields": ("title", ("status", "login_required",),
-        ("publish_date", "expiry_date",), "intro", "button_text", "response")}),
+        ("publish_date", "expiry_date",),
+        "intro", "button_text", "response")}),
     (_("Email"), {"fields": ("send_email", "email_from", "email_copies",
         "email_subject", "email_message")}),]
 
@@ -45,9 +46,11 @@ if USE_SITES:
         "classes": ("collapse",)}))
     form_admin_filter_horizontal = ("sites",)
 
+
 class FieldAdmin(admin.TabularInline):
     model = Field
     exclude = ('slug', )
+
 
 class FormAdmin(admin.ModelAdmin):
     formentry_model = FormEntry
@@ -64,8 +67,6 @@ class FormAdmin(admin.ModelAdmin):
                      "email_copies")
     radio_fields = {"status": admin.HORIZONTAL}
     fieldsets = form_admin_fieldsets
-
-     
 
     def queryset(self, request):
         """
@@ -103,13 +104,15 @@ class FormAdmin(admin.ModelAdmin):
         export as CSV file.
         """
         if request.POST.get("back"):
-            change_url = reverse("admin:%s_%s_change" %
-                (self.model._meta.app_label, self.model.__name__.lower()), args=(form_id,))
+            bits = (self.model._meta.app_label, self.model.__name__.lower())
+            change_url = reverse("admin:%s_%s_change" % bits, args=(form_id,))
             return HttpResponseRedirect(change_url)
         form = get_object_or_404(self.model, id=form_id)
-        entries_form = EntriesForm(form, request, self.formentry_model, self.fieldentry_model, request.POST or None)
-        delete_entries_perm = "%s.delete_formentry" % self.formentry_model._meta.app_label
-        can_delete_entries = request.user.has_perm(delete_entries_perm)
+        post = request.POST or None
+        args = form, request, self.formentry_model, self.fieldentry_model, post
+        entries_form = EntriesForm(*args)
+        delete = "%s.delete_formentry" % self.formentry_model._meta.app_label
+        can_delete_entries = request.user.has_perm(delete)
         submitted = entries_form.is_valid() or show or export or export_xls
         export = export or request.POST.get("export")
         export_xls = export_xls or request.POST.get("export_xls")
@@ -117,20 +120,23 @@ class FormAdmin(admin.ModelAdmin):
             if export:
                 response = HttpResponse(mimetype="text/csv")
                 fname = "%s-%s.csv" % (form.slug, slugify(now().ctime()))
-                response["Content-Disposition"] = "attachment; filename=%s" % fname
+                attachment = "attachment; filename=%s" % fname
+                response["Content-Disposition"] = attachment
                 queue = StringIO()
                 csv = writer(queue, delimiter=CSV_DELIMITER)
                 csv.writerow(entries_form.columns())
                 for row in entries_form.rows(csv=True):
                     csv.writerow(row)
-                # Decode and reencode entire queued response into utf-16 to be Excel compatible
+                # Decode and reencode entire queued response
+                # into utf-16 to be Excel compatible
                 data = queue.getvalue().decode("utf-8").encode("utf-16")
                 response.write(data)
                 return response
             elif XLWT_INSTALLED and export_xls:
                 response = HttpResponse(mimetype="application/vnd.ms-excel")
                 fname = "%s-%s.xls" % (form.slug, slugify(now().ctime()))
-                response["Content-Disposition"] = "attachment; filename=%s" % fname
+                attachment = "attachment; filename=%s" % fname
+                response["Content-Disposition"] = attachment
                 queue = StringIO()
                 workbook = xlwt.Workbook(encoding='utf8')
                 sheet = workbook.add_sheet(form.title[:31])
@@ -174,7 +180,8 @@ class FormAdmin(admin.ModelAdmin):
         """
         Output the file for the requested field entry.
         """
-        field_entry = get_object_or_404(self.fieldentry_model, id=field_entry_id)
+        model = self.fieldentry_model
+        field_entry = get_object_or_404(model, id=field_entry_id)
         path = join(fs.location, field_entry.value)
         response = HttpResponse(mimetype=guess_type(path)[0])
         f = open(path, "r+b")
@@ -182,5 +189,6 @@ class FormAdmin(admin.ModelAdmin):
         response.write(f.read())
         f.close()
         return response
+
 
 admin.site.register(Form, FormAdmin)
