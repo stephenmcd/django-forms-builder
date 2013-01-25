@@ -50,6 +50,8 @@ class FieldAdmin(admin.TabularInline):
     exclude = ('slug', )
 
 class FormAdmin(admin.ModelAdmin):
+    formentry_model = FormEntry
+    fieldentry_model = FieldEntry
 
     inlines = (FieldAdmin,)
     list_display = ("title", "status", "email_copies", "publish_date",
@@ -62,6 +64,8 @@ class FormAdmin(admin.ModelAdmin):
                      "email_copies")
     radio_fields = {"status": admin.HORIZONTAL}
     fieldsets = form_admin_fieldsets
+
+     
 
     def queryset(self, request):
         """
@@ -103,8 +107,8 @@ class FormAdmin(admin.ModelAdmin):
                 (self.model._meta.app_label, self.model.__name__.lower()), args=(form_id,))
             return HttpResponseRedirect(change_url)
         form = get_object_or_404(self.model, id=form_id)
-        entries_form = EntriesForm(form, request, request.POST or None)
-        delete_entries_perm = "%s.delete_formentry" % FormEntry._meta.app_label
+        entries_form = EntriesForm(form, request, self.formentry_model, self.fieldentry_model, request.POST or None)
+        delete_entries_perm = "%s.delete_formentry" % self.formentry_model._meta.app_label
         can_delete_entries = request.user.has_perm(delete_entries_perm)
         submitted = entries_form.is_valid() or show or export or export_xls
         export = export or request.POST.get("export")
@@ -170,7 +174,7 @@ class FormAdmin(admin.ModelAdmin):
         """
         Output the file for the requested field entry.
         """
-        field_entry = get_object_or_404(FieldEntry, id=field_entry_id)
+        field_entry = get_object_or_404(self.fieldentry_model, id=field_entry_id)
         path = join(fs.location, field_entry.value)
         response = HttpResponse(mimetype=guess_type(path)[0])
         f = open(path, "r+b")
