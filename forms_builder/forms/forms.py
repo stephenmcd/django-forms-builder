@@ -87,7 +87,10 @@ FILTER_FUNCS = {
     FILTER_CHOICE_DOESNT_EQUAL:
         lambda val, field: val.lower() != field.lower(),
     FILTER_CHOICE_BETWEEN:
-        lambda val_from, val_to, field: val_from <= field <= val_to,
+        lambda val_from, val_to, field: (
+            (not val_from or val_from <= field) and
+            (not val_to or val_to >= field)
+        ),
     FILTER_CHOICE_CONTAINS_ANY:
         lambda val, field: set(val) & set(split_choices(field)),
     FILTER_CHOICE_CONTAINS_ALL:
@@ -399,8 +402,6 @@ class EntriesForm(forms.Form):
                 if filter_type == FILTER_CHOICE_BETWEEN:
                     f, t = "field_%s_from" % field_id, "field_%s_to" % field_id
                     filter_args = [self.posted_data(f), self.posted_data(t)]
-                    if filter_args[0] is None or filter_args[1] is None:
-                        filter_args = None
                 else:
                     field_name = "field_%s_contains" % field_id
                     filter_args = self.posted_data(field_name)
