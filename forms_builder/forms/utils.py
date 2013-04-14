@@ -35,3 +35,9 @@ def unique_slug(manager, slug_field, slug):
         i += 1
     return slug
 
+
+def split_choices(choices_string):
+    """
+    Convert a comma separated choices string to a list.
+    """
+    return filter(None, [x.strip() for x in choices_string.split(",")])

@@ -13,6 +13,7 @@ from forms_builder.forms.forms import FormForForm
 from forms_builder.forms.models import Form
 from forms_builder.forms.settings import SEND_FROM_SUBMITTER, USE_SITES
 from forms_builder.forms.signals import form_invalid, form_valid
+from forms_builder.forms.utils import split_choices
 
 
 def form_detail(request, slug, template="forms/form_detail.html"):
@@ -52,8 +53,7 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 send_mail_template(subject, "form_response", email_from,
                                    email_to, context=context,
                                    fail_silently=settings.DEBUG)
-            email_copies = [e.strip() for e in form.email_copies.split(",")
-                            if e.strip()]
+            email_copies = split_choices(form.email_copies)
             if email_copies:
                 if email_to and SEND_FROM_SUBMITTER:
                     # Send from the email entered.
