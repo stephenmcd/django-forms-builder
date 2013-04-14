@@ -125,8 +125,7 @@ class FormForForm(forms.ModelForm):
                 if field.is_a(*fields.MULTIPLE):
                     initial_val = [x.strip() for x in initial_val.split(",")]
                 if field.field_type == fields.CHECKBOX:
-                    # Clean boolean value
-                    initial_val = (initial_val == 'True')
+                    initial_val = initial_val != "False"
                 self.initial[field_key] = initial_val
             self.fields[field_key] = field_class(**field_args)
 
