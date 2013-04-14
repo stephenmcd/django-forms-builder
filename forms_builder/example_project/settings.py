@@ -1,6 +1,6 @@
 
 
-import os
+import os, sys
 
 DEBUG = True
 SITE_ID = 1
@@ -13,10 +13,11 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT, *MEDIA_URL.strip("/").split("/"))
 ADMIN_MEDIA_PREFIX = STATIC_URL + "admin/"
 ROOT_URLCONF = "%s.urls" % PROJECT_DIRNAME
 TEMPLATE_DIRS = (os.path.join(PROJECT_ROOT, "templates"),)
-SECRET_KEY = ""
+SECRET_KEY = "asdfa4wtW#$Gse4aGdfs"
 ADMINS = ()
 MANAGERS = ADMINS
-LOGIN_URL = "/admin/"
+if "test" not in sys.argv:
+    LOGIN_URL = "/admin/"
 
 DATABASES = {
     'default': {
