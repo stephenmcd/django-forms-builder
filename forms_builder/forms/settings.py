@@ -35,3 +35,9 @@ CSV_DELIMITER = getattr(settings, "FORMS_BUILDER_CSV_DELIMITER", ",")
 
 # Boolean controlling whether emails to staff recipients are sent from the form submitter.
 SEND_FROM_SUBMITTER = getattr(settings, "FORMS_BUILDER_SEND_FROM_SUBMITTER", True)
+
+# The maximum allowed length for field help text
+HELPTEXT_MAX_LENGTH = getattr(settings, "FORMS_BUILDER_HELPTEXT_MAX_LENGTH", 100)
+
+# The maximum allowed length for field choices
+CHOICES_MAX_LENGTH = getattr(settings, "FORMS_BUILDER_CHOICES_MAX_LENGTH", 1000)
