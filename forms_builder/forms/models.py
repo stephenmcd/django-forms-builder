@@ -144,7 +144,7 @@ class AbstractField(models.Model):
     field_type = models.IntegerField(_("Type"), choices=fields.NAMES)
     required = models.BooleanField(_("Required"), default=True)
     visible = models.BooleanField(_("Visible"), default=True)
-    choices = models.CharField(_("Choices"), max_length=1000, blank=True,
+    choices = models.CharField(_("Choices"), max_length=settings.CHOICES_MAX_LENGTH, blank=True,
         help_text="Comma separated options where applicable. If an option "
             "itself contains commas, surround the option starting with the %s"
             "character and ending with the %s character." %
@@ -153,7 +153,7 @@ class AbstractField(models.Model):
         max_length=settings.FIELD_MAX_LENGTH)
     placeholder_text = models.CharField(_("Placeholder Text"), null=True,
         blank=True, max_length=100, editable=settings.USE_HTML5)
-    help_text = models.CharField(_("Help text"), blank=True, max_length=100)
+    help_text = models.CharField(_("Help text"), blank=True, max_length=settings.HELPTEXT_MAX_LENGTH)
 
     objects = FieldManager()
 
