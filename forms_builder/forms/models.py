@@ -153,6 +153,10 @@ class AbstractField(models.Model):
         max_length=settings.FIELD_MAX_LENGTH)
     placeholder_text = models.CharField(_("Placeholder Text"), null=True,
         blank=True, max_length=100, editable=settings.USE_HTML5)
+    pattern = models.CharField(_("Regex Pattern"), null=True, blank=True,
+        max_length=100, editable=settings.USE_HTML5)
+    error_text = models.CharField(_("Balloon Error Text"), null=True, blank=True,
+        max_length=255, editable=settings.USE_HTML5)
     help_text = models.CharField(_("Help text"), blank=True, max_length=settings.HELPTEXT_MAX_LENGTH)
 
     objects = FieldManager()
