@@ -66,7 +66,7 @@ class AbstractForm(models.Model):
     expiry_date = models.DateTimeField(_("Expires on"),
         help_text=_("With published selected, won't be shown after this time"),
         blank=True, null=True)
-    login_required = models.BooleanField(_("Login required"),
+    login_required = models.BooleanField(_("Login required"), default=False,
         help_text=_("If checked, only logged in users can view the form"))
     send_email = models.BooleanField(_("Send email"), default=True, help_text=
         _("If checked, the person entering the form will be sent an email"))
