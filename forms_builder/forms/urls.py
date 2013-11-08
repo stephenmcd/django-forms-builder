@@ -1,5 +1,5 @@
 
-from django.conf.urls.defaults import *
+from django.conf.urls import *
 
 urlpatterns = patterns("forms_builder.forms.views",
     url(r"(?P<slug>.*)/sent/$", "form_sent", name="form_sent"),
