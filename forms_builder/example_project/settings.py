@@ -15,6 +15,8 @@ ROOT_URLCONF = "%s.urls" % PROJECT_DIRNAME
 TEMPLATE_DIRS = (os.path.join(PROJECT_ROOT, "templates"),)
 SECRET_KEY = "asdfa4wtW#$Gse4aGdfs"
 ADMINS = ()
+TEST_RUNNER = 'django.test.simple.DjangoTestSuiteRunner'
+
 MANAGERS = ADMINS
 if "test" not in sys.argv:
     LOGIN_URL = "/admin/"
