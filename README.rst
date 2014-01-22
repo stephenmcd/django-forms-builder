@@ -60,6 +60,8 @@ is in the ``TEMPLATE_CONTEXT_PROCESSORS`` setting in your project's
     TEMPLATE_CONTEXT_PROCESSORS = (
         # other context processors
         "django.core.context_processors.request",
+        # Django 1.6 also needs:
+        'django.contrib.auth.context_processors.auth',
     )
 
 Then add ``forms_builder.forms.urls`` to your project's ``urls``
