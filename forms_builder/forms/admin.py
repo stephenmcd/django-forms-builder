@@ -1,3 +1,5 @@
+import unicodecsv
+
 from csv import writer
 from mimetypes import guess_type
 from os.path import join
@@ -19,6 +21,8 @@ from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry
 from forms_builder.forms.settings import CSV_DELIMITER, UPLOAD_ROOT
 from forms_builder.forms.settings import USE_SITES, EDITABLE_SLUGS
 from forms_builder.forms.utils import now, slugify
+
+from cStringIO import StringIO
 
 try:
     import xlwt
@@ -123,7 +127,7 @@ class FormAdmin(admin.ModelAdmin):
                 attachment = "attachment; filename=%s" % fname
                 response["Content-Disposition"] = attachment
                 queue = StringIO()
-                csv = writer(queue, delimiter=CSV_DELIMITER)
+                csv = unicodecsv.writer(queue, delimiter=CSV_DELIMITER, encoding='utf-8')
                 csv.writerow(entries_form.columns())
                 for row in entries_form.rows(csv=True):
                     csv.writerow(row)
