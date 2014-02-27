@@ -1,4 +1,3 @@
-
 from __future__ import with_statement
 import os
 from setuptools import setup, find_packages
@@ -39,6 +38,7 @@ try:
             "unidecode",
             "django-email-extras >= 0.1.9",
             "django >= 1.4, < 1.7",
+            "unicodecsv",
         ],
         classifiers = [
             "Development Status :: 5 - Production/Stable",
