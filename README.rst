@@ -149,9 +149,6 @@ module.
   Defaults to the backtick char: `
 * ``FORMS_BUILDER_CSV_DELIMITER`` - Char to use as a field delimiter
   when exporting form responses as CSV. Defaults to a comma: ,
-* ``FORMS_BUILDER_SEND_FROM_SUBMITTER`` - Boolean controlling whether
-  emails to staff recipients are sent from the form submitter. Defaults
-  to ``True``
 
 Custom Field Types
 ==================
