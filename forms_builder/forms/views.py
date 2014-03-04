@@ -53,11 +53,12 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 send_mail_template(subject, "form_response", email_from,
                                    email_to, context=context,
                                    fail_silently=settings.DEBUG)
+            headers = None
+            if email_to:
+                # Add the email entered as a Reply-To header
+                headers = {'Reply-To': email_to}
             email_copies = split_choices(form.email_copies)
             if email_copies:
-                if email_to and SEND_FROM_SUBMITTER:
-                    # Send from the email entered.
-                    email_from = email_to
                 attachments = []
                 for f in form_for_form.files.values():
                     f.seek(0)
@@ -65,7 +66,8 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                 send_mail_template(subject, "form_response", email_from,
                                    email_copies, context=context,
                                    attachments=attachments,
-                                   fail_silently=settings.DEBUG)
+                                   fail_silently=settings.DEBUG,
+                                   headers=headers)
             form_valid.send(sender=request, form=form_for_form, entry=entry)
             return redirect(reverse("form_sent", kwargs={"slug": form.slug}))
     context = {"form": form}
