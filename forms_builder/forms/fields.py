@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 
 from django.core.exceptions import ImproperlyConfigured
 from django import forms
@@ -79,8 +80,8 @@ DATES = (DATE, DATE_TIME, DOB)
 MULTIPLE = (CHECKBOX_MULTIPLE, SELECT_MULTIPLE)
 
 # HTML5 Widgets
+html5_field = lambda name, base: type(str(""), (base,), {"input_type": name})
 if USE_HTML5:
-    html5_field = lambda name, base: type("", (base,), {"input_type": name})
     WIDGETS.update({
         DATE: html5_field("date", forms.DateInput),
         DATE_TIME: html5_field("datetime", forms.DateTimeInput),

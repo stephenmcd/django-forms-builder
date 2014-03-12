@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+from future.builtins import str
 
 from django.template.defaultfilters import slugify as django_slugify
 from unidecode import unidecode
@@ -16,7 +18,7 @@ def slugify(s):
     Translates unicode into closest possible ascii chars before
     slugifying.
     """
-    return django_slugify(unidecode(unicode(s)))
+    return django_slugify(unidecode(str(s)))
 
 
 def unique_slug(manager, slug_field, slug):
@@ -40,4 +42,4 @@ def split_choices(choices_string):
     """
     Convert a comma separated choices string to a list.
     """
-    return filter(None, [x.strip() for x in choices_string.split(",")])
+    return [x.strip() for x in choices_string.split(",") if x.strip()]

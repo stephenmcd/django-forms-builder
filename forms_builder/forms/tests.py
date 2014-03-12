@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django.conf import settings
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
@@ -83,7 +85,7 @@ class Tests(TestCase):
         tag all work.
         """
         form = Form.objects.create(title="Tags", status=STATUS_PUBLISHED)
-        request = type("Request", (), {"META": {}, "user": AnonymousUser()})()
+        request = type(str(""), (), {"META": {}, "user": AnonymousUser()})()
         context = RequestContext(request, {"form": form})
         template = "{%% load forms_builder_tags %%}{%% render_built_form %s %%}"
         formats = ("form", "form=form", "id=form.id", "slug=form.slug")
@@ -131,6 +133,7 @@ class Tests(TestCase):
         self.assertEqual(form.fields.all()[0], f1)
 
     def test_form_errors(self):
+        from future.builtins import str
         form = Form.objects.create(title="Test")
         if USE_SITES:
             form.sites.add(self._site)
@@ -138,4 +141,4 @@ class Tests(TestCase):
         form.fields.create(label="field", field_type=NAMES[0][0],
                            required=True, visible=True)
         response = self.client.post(form.get_absolute_url(), {"foo": "bar"})
-        self.assertTrue("This field is required" in response.content)
+        self.assertTrue("This field is required" in str(response.content))

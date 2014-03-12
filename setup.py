@@ -1,5 +1,4 @@
 
-from __future__ import with_statement
 import os
 from setuptools import setup, find_packages
 
@@ -27,8 +26,8 @@ try:
         version = __import__("forms_builder").__version__,
         author = "Stephen McDonald",
         author_email = "stephen.mc@gmail.com",
-        description = ("A Django reusable app providing the ability for admin "
-            "users to create their own forms."),
+        description = ("A Django reusable app providing the ability for "
+                       "admin users to create their own forms."),
         long_description = open("README.rst").read(),
         url = "http://github.com/stephenmcd/django-forms-builder",
         zip_safe = False,
@@ -39,6 +38,7 @@ try:
             "unidecode",
             "django-email-extras >= 0.2",
             "django >= 1.4, < 1.7",
+            "future == 0.9.0",
         ],
         classifiers = [
             "Development Status :: 5 - Production/Stable",
@@ -46,6 +46,10 @@ try:
             "Intended Audience :: Developers",
             "Operating System :: OS Independent",
             "Programming Language :: Python",
+            "Programming Language :: Python :: 2.6",
+            "Programming Language :: Python :: 2.7",
+            "Programming Language :: Python :: 3",
+            "Programming Language :: Python :: 3.3",
             "Framework :: Django",
             "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
             "Topic :: Internet :: WWW/HTTP :: Site Management",

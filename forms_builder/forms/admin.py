@@ -1,8 +1,11 @@
+from __future__ import unicode_literals
+from future.builtins import bytes, open
+
 from csv import writer
 from mimetypes import guess_type
 from os.path import join
-from cStringIO import StringIO
 from datetime import datetime
+from io import BytesIO, StringIO
 
 from django.conf.urls import patterns, url
 from django.contrib import admin
@@ -123,13 +126,19 @@ class FormAdmin(admin.ModelAdmin):
                 attachment = "attachment; filename=%s" % fname
                 response["Content-Disposition"] = attachment
                 queue = StringIO()
-                csv = writer(queue, delimiter=CSV_DELIMITER)
-                csv.writerow(entries_form.columns())
+                try:
+                    csv = writer(queue, delimiter=CSV_DELIMITER)
+                    writerow = csv.writerow
+                except TypeError:
+                    queue = BytesIO()
+                    delimiter = bytes(CSV_DELIMITER, encoding="utf-8")
+                    csv = writer(queue, delimiter=delimiter)
+                    writerow = lambda row: csv.writerow([c.encode("utf-8")
+                        if hasattr(c, "encode") else c for c in row])
+                writerow(entries_form.columns())
                 for row in entries_form.rows(csv=True):
-                    csv.writerow(row)
-                # Decode and reencode entire queued response
-                # into utf-16 to be Excel compatible
-                data = queue.getvalue().decode("utf-8").encode("utf-16")
+                    writerow(row)
+                data = queue.getvalue()
                 response.write(data)
                 return response
             elif XLWT_INSTALLED and export_xls:
@@ -137,7 +146,7 @@ class FormAdmin(admin.ModelAdmin):
                 fname = "%s-%s.xls" % (form.slug, slugify(now().ctime()))
                 attachment = "attachment; filename=%s" % fname
                 response["Content-Disposition"] = attachment
-                queue = StringIO()
+                queue = BytesIO()
                 workbook = xlwt.Workbook(encoding='utf8')
                 sheet = workbook.add_sheet(form.title[:31])
                 for c, col in enumerate(entries_form.columns()):

@@ -1,9 +1,12 @@
+from __future__ import unicode_literals
+from future.builtins import str
 
 from django.core.urlresolvers import reverse
 from django.conf import settings as django_settings
 from django.contrib.sites.models import Site
 from django.db import models
 from django.db.models import Q
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext, ugettext_lazy as _
 
 from forms_builder.forms import fields
@@ -44,6 +47,7 @@ class FormManager(models.Manager):
 #                                                                    #
 ######################################################################
 
+@python_2_unicode_compatible
 class AbstractForm(models.Model):
     """
     A user-built form.
@@ -85,8 +89,8 @@ class AbstractForm(models.Model):
         verbose_name_plural = _("Forms")
         abstract = True
 
-    def __unicode__(self):
-        return unicode(self.title)
+    def __str__(self):
+        return str(self.title)
 
     def save(self, *args, **kwargs):
         """
@@ -133,6 +137,7 @@ class FieldManager(models.Manager):
         return self.filter(visible=True)
 
 
+@python_2_unicode_compatible
 class AbstractField(models.Model):
     """
     A field for a user-built form.
@@ -162,8 +167,8 @@ class AbstractField(models.Model):
         verbose_name_plural = _("Fields")
         abstract = True
 
-    def __unicode__(self):
-        return unicode(self.label)
+    def __str__(self):
+        return str(self.label)
 
     def get_choices(self):
         """

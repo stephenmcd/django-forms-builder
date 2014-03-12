@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+from future.builtins import int, range, str
 
 from datetime import date, datetime
 from os.path import join, split
@@ -141,7 +143,7 @@ class FormForForm(forms.ModelForm):
             field_widget = fields.WIDGETS.get(field.field_type)
             field_args = {"label": field.label, "required": field.required,
                           "help_text": field.help_text}
-            arg_names = field_class.__init__.im_func.func_code.co_varnames
+            arg_names = field_class.__init__.__code__.co_varnames
             if "max_length" in arg_names:
                 field_args["max_length"] = settings.FIELD_MAX_LENGTH
             if "choices" in arg_names:
@@ -177,7 +179,7 @@ class FormForForm(forms.ModelForm):
 
             if field.field_type == fields.DOB:
                 now = datetime.now()
-                years = range(now.year, now.year - 120, -1)
+                years = list(range(now.year, now.year - 120, -1))
                 self.fields[field_key].widget.years = years
 
             # Add identifying CSS classes to the field.
@@ -256,8 +258,8 @@ class EntriesForm(forms.Form):
         self.formentry_model = formentry_model
         self.fieldentry_model = fieldentry_model
         self.form_fields = form.fields.all()
-        self.entry_time_name = unicode(self.formentry_model._meta.get_field(
-            "entry_time").verbose_name).encode("utf-8")
+        self.entry_time_name = str(self.formentry_model._meta.get_field(
+            "entry_time").verbose_name)
         super(EntriesForm, self).__init__(*args, **kwargs)
         for field in self.form_fields:
             field_key = "field_%s" % field.id
@@ -333,7 +335,7 @@ class EntriesForm(forms.Form):
         """
         Returns the list of selected column names.
         """
-        fields = [f.label.encode("utf-8") for f in self.form_fields
+        fields = [f.label for f in self.form_fields
                   if self.posted_data("field_%s_export" % f.id)]
         if self.posted_data("field_0_export"):
             fields.append(self.entry_time_name)
@@ -427,7 +429,6 @@ class EntriesForm(forms.Form):
                     field_value = mark_safe("<a href=\"%s\">%s</a>" % parts)
             # Only use values for fields that were selected.
             try:
-                field_value = field_value.encode("utf-8")
                 current_row[field_indexes[field_id]] = field_value
             except KeyError:
                 pass
