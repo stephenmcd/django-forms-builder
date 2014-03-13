@@ -139,8 +139,8 @@ module.
 * ``FORMS_BUILDER_USE_HTML5`` - Boolean controlling whether HTML5 form
   fields are used. Defaults to ``True``
 * ``FORMS_BUILDER_USE_SITES`` - Boolean controlling whether forms are
-  associated to Django's Sites framework. Defaults to
-  ``"django.contrib.sites" in settings.INSTALLED_APPS``
+  associated to Django's Sites framework.
+  Defaults to ``"django.contrib.sites" in settings.INSTALLED_APPS``
 * ``FORMS_BUILDER_EDITABLE_SLUGS`` - Boolean controlling whether form
   slugs are editable in the admin. Defaults to ``False``
 * ``FORMS_BUILDER_CHOICES_QUOTE`` - Char to start a quoted choice with.
@@ -149,6 +149,9 @@ module.
   Defaults to the backtick char: `
 * ``FORMS_BUILDER_CSV_DELIMITER`` - Char to use as a field delimiter
   when exporting form responses as CSV. Defaults to a comma: ,
+* ``FORMS_BUILDER_EMAIL_FAIL_SILENTLY`` - Bool used for Django's
+  ``fail_silently`` argument when sending email.
+  Defaults to ``settings.DEBUG``.
 
 Custom Field Types
 ==================
