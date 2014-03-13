@@ -27,7 +27,8 @@ try:
         author = "Stephen McDonald",
         author_email = "stephen.mc@gmail.com",
         description = ("A Django reusable app providing the ability for "
-                       "admin users to create their own forms."),
+                       "admin users to create their own forms and report "
+                       "on their collected data."),
         long_description = open("README.rst").read(),
         url = "http://github.com/stephenmcd/django-forms-builder",
         zip_safe = False,

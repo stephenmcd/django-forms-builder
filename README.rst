@@ -7,11 +7,16 @@ django-forms-builder
 Created by `Stephen McDonald <http://twitter.com/stephen_mcd>`_
 
 A Django reusable app providing the ability for admin users to create
-their own forms within the admin interface drawing from a range of
+their own forms within the admin interface, drawing from a range of
 field widgets such as regular text fields, drop-down lists and file
 uploads. Options are also provided for controlling who gets sent email
 notifications when a form is submitted. All form entries are made
-available in the admin via CSV export.
+available in the admin via filterable reporting with CSV/XLS export.
+
+.. image:: http://github.com/stephenmcd/django-forms-builder/raw/master/docs/img/fields.png
+
+.. image:: http://github.com/stephenmcd/django-forms-builder/raw/master/docs/img/report.png
+
 
 HTML5 Features
 ==============
@@ -38,9 +43,6 @@ Otherwise you can download django-forms-builder and install it directly
 from source::
 
     $ python setup.py install
-
-Project Configuration
-=====================
 
 Once installed you can configure your project to use
 django-forms-builder with the following steps.
@@ -83,8 +85,8 @@ Finally, sync your database::
 
     $ python manage.py syncdb
 
-As of version 0.5, django-forms-builder provides `South`_ migrations. If
-you use south in your project, you'll also need to run migrations::
+As of version 0.5, django-forms-builder provides `South`_ migrations.
+If you use south in your project, you'll also need to run migrations::
 
     $ python manage.py migrate forms
 
