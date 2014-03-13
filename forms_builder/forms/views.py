@@ -1,10 +1,13 @@
 from __future__ import unicode_literals
 
+import json
+
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext
 from django.utils.http import urlquote
@@ -13,7 +16,7 @@ from email_extras.utils import send_mail_template
 
 from forms_builder.forms.forms import FormForForm
 from forms_builder.forms.models import Form
-from forms_builder.forms.settings import USE_SITES
+from forms_builder.forms.settings import USE_SITES, EMAIL_FAIL_SILENTLY
 from forms_builder.forms.signals import form_invalid, form_valid
 from forms_builder.forms.utils import split_choices
 
@@ -54,6 +57,16 @@ class FormDetail(TemplateView):
         context = {"form": form, "form_for_form": form_for_form}
         return self.render_to_response(context)
 
+    def render_to_response(self, context, **kwargs):
+        if self.request.is_ajax():
+            json_context = json.dumps({
+                "errors": context["form_for_form"].errors,
+                "form": context["form_for_form"].as_p(),
+                "message": context["form"].response,
+            })
+            return HttpResponse(json_context, content_type="application/json")
+        return super(FormDetail, self).render_to_response(context, **kwargs)
+
     def send_emails(self, request, form_for_form, form, entry):
         subject = form.email_subject
         if not subject:
@@ -74,7 +87,7 @@ class FormDetail(TemplateView):
         if email_to and form.send_email:
             send_mail_template(subject, "form_response", email_from,
                                email_to, context=context,
-                               fail_silently=settings.DEBUG)
+                               fail_silently=EMAIL_FAIL_SILENTLY)
         headers = None
         if email_to:
             headers = {"Reply-To": email_to}
@@ -87,7 +100,7 @@ class FormDetail(TemplateView):
             send_mail_template(subject, "form_response", email_from,
                                email_copies, context=context,
                                attachments=attachments,
-                               fail_silently=settings.DEBUG,
+                               fail_silently=EMAIL_FAIL_SILENTLY,
                                headers=headers)
 
 form_detail = FormDetail.as_view()
