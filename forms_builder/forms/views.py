@@ -8,7 +8,6 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext
-from django.template.loader import render_to_string
 from django.utils.http import urlquote
 from django.views.generic.base import TemplateView
 from email_extras.utils import send_mail_template
