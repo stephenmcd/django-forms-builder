@@ -1,11 +1,14 @@
 
+import json
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext
+from django.template.loader import render_to_string
 from django.utils.http import urlquote
 from django.views.generic.base import TemplateView
 from email_extras.utils import send_mail_template
@@ -22,7 +25,7 @@ class FormDetail(TemplateView):
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        if context['form'].login_required \
+        if context["form"].login_required \
                 and not request.user.is_authenticated():
             return redirect("%s?%s=%s" %
                             (settings.LOGIN_URL, REDIRECT_FIELD_NAME,
@@ -32,13 +35,13 @@ class FormDetail(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(FormDetail, self).get_context_data(**kwargs)
         published = Form.objects.published(for_user=self.request.user)
-        form = get_object_or_404(published, slug=kwargs['slug'])
+        form = get_object_or_404(published, slug=kwargs["slug"])
         context["form"] = form
         return context
 
     def post(self, request, *args, **kwargs):
         published = Form.objects.published(for_user=request.user)
-        form = get_object_or_404(published, slug=kwargs['slug'])
+        form = get_object_or_404(published, slug=kwargs["slug"])
 
         request_context = RequestContext(request)
         args = (form, request_context, request.POST or None,
@@ -72,7 +75,7 @@ class FormDetail(TemplateView):
             headers = None
             if email_to:
                 # Add the email entered as a Reply-To header
-                headers = {'Reply-To': email_to}
+                headers = {"Reply-To": email_to}
             email_copies = split_choices(form.email_copies)
             if email_copies:
                 attachments = []
@@ -87,8 +90,20 @@ class FormDetail(TemplateView):
             form_valid.send(sender=request, form=form_for_form, entry=entry)
             if not self.request.is_ajax():
                 return redirect(reverse("form_sent", kwargs=kwargs))
-        context = {"form": form, 'form_for_form': form_for_form}
+        context = {"form": form, "form_for_form": form_for_form}
         return self.render_to_response(context)
+
+    def render_to_response(self, context, **response_kwargs):
+        if self.request.is_ajax():
+            json_context = {
+                "errors": context["form_for_form"].errors,
+                "form": context["form_for_form"].as_p(),
+                "message": context["form"].response,
+            }
+            return HttpResponse(json.dumps(json_context),
+                                content_type="application/json")
+        return super(FormDetail, self).render_to_response(context,
+                                                          **response_kwargs)
 
 
 def form_sent(request, slug, template="forms/form_sent.html"):
