@@ -369,7 +369,7 @@ class EntriesForm(forms.Form):
         # if specified.
         model = self.fieldentry_model
         field_entries = model.objects.filter(entry__form=self.form
-            ).order_by("-entry__id").select_related(depth=1)
+            ).order_by("-entry__id").select_related("entry")
         if self.posted_data("field_0_filter") == FILTER_CHOICE_BETWEEN:
             time_from = self.posted_data("field_0_from")
             time_to = self.posted_data("field_0_to")
