@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext
 from django.utils.http import urlquote
+from django.views.generic.base import TemplateView
 from email_extras.utils import send_mail_template
 
 from forms_builder.forms.forms import FormForForm
@@ -17,19 +18,34 @@ from forms_builder.forms.signals import form_invalid, form_valid
 from forms_builder.forms.utils import split_choices
 
 
-def form_detail(request, slug, template="forms/form_detail.html"):
-    """
-    Display a built form and handle submission.
-    """
-    published = Form.objects.published(for_user=request.user)
-    form = get_object_or_404(published, slug=slug)
-    if form.login_required and not request.user.is_authenticated():
-        return redirect("%s?%s=%s" % (settings.LOGIN_URL, REDIRECT_FIELD_NAME,
-                        urlquote(request.get_full_path())))
-    request_context = RequestContext(request)
-    args = (form, request_context, request.POST or None, request.FILES or None)
-    form_for_form = FormForForm(*args)
-    if request.method == "POST":
+class FormDetail(TemplateView):
+    template_name = "forms/form_detail.html"
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        if context['form'].login_required \
+                and not request.user.is_authenticated():
+            return redirect("%s?%s=%s" %
+                            (settings.LOGIN_URL, REDIRECT_FIELD_NAME,
+                             urlquote(request.get_full_path())))
+        return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs):
+        context = super(FormDetail, self).get_context_data(**kwargs)
+        published = Form.objects.published(for_user=self.request.user)
+        form = get_object_or_404(published, slug=kwargs['slug'])
+        context["form"] = form
+        return context
+
+    def post(self, request, *args, **kwargs):
+        published = Form.objects.published(for_user=request.user)
+        form = get_object_or_404(published, slug=kwargs['slug'])
+
+        request_context = RequestContext(request)
+        args = (form, request_context, request.POST or None,
+                request.FILES or None)
+        form_for_form = FormForForm(*args)
+
         if not form_for_form.is_valid():
             form_invalid.send(sender=request, form=form_for_form)
         else:
@@ -70,9 +86,10 @@ def form_detail(request, slug, template="forms/form_detail.html"):
                                    fail_silently=settings.DEBUG,
                                    headers=headers)
             form_valid.send(sender=request, form=form_for_form, entry=entry)
-            return redirect(reverse("form_sent", kwargs={"slug": form.slug}))
-    context = {"form": form}
-    return render_to_response(template, context, request_context)
+            if not self.request.is_ajax():
+                return redirect(reverse("form_sent", kwargs=kwargs))
+        context = {"form": form, 'form_for_form': form_for_form}
+        return self.render_to_response(context)
 
 
 def form_sent(request, slug, template="forms/form_sent.html"):
