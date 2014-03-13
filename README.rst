@@ -13,7 +13,11 @@ uploads. Options are also provided for controlling who gets sent email
 notifications when a form is submitted. All form entries are made
 available in the admin via filterable reporting with CSV/XLS export.
 
+Form builder:
+
 .. image:: http://github.com/stephenmcd/django-forms-builder/raw/master/docs/img/fields.png
+
+Data reporting:
 
 .. image:: http://github.com/stephenmcd/django-forms-builder/raw/master/docs/img/report.png
 
