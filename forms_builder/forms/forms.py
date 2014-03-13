@@ -412,9 +412,13 @@ class EntriesForm(forms.Form):
             if filter_args:
                 # Convert dates before checking filter.
                 if field_id in date_field_ids:
-                    y, m, d = field_value.split(" ")[0].split("-")
-                    dte = date(int(y), int(m), int(d))
-                    filter_args.append(dte)
+                    try:
+                        y, m, d = field_value.split(" ")[0].split("-")
+                    except ValueError:
+                        filter_args.append(field_value)
+                    else:
+                        dte = date(int(y), int(m), int(d))
+                        filter_args.append(dte)
                 else:
                     filter_args.append(field_value)
                 filter_func = FILTER_FUNCS[filter_type]
