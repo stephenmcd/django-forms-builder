@@ -1,5 +1,4 @@
 from __future__ import unicode_literals
-from future.builtins import str
 
 from django.template.defaultfilters import slugify as django_slugify
 from django.utils.importlib import import_module
@@ -19,6 +18,7 @@ def slugify(s):
     Translates unicode into closest possible ascii chars before
     slugifying.
     """
+    from future.builtins import str
     return django_slugify(unidecode(str(s)))
 
 
