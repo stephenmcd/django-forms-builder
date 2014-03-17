@@ -3,10 +3,10 @@ from __future__ import unicode_literals
 from django.core.exceptions import ImproperlyConfigured
 from django import forms
 from django.forms.extras import SelectDateWidget
-from django.utils.importlib import import_module
 from django.utils.translation import ugettext_lazy as _
 
 from forms_builder.forms.settings import USE_HTML5, EXTRA_FIELDS, EXTRA_WIDGETS
+from forms_builder.forms.utils import html5_field, import_attr
 
 
 # Constants for all available field types.
@@ -80,7 +80,6 @@ DATES = (DATE, DATE_TIME, DOB)
 MULTIPLE = (CHECKBOX_MULTIPLE, SELECT_MULTIPLE)
 
 # HTML5 Widgets
-html5_field = lambda name, base: type(str(""), (base,), {"input_type": name})
 if USE_HTML5:
     WIDGETS.update({
         DATE: html5_field("date", forms.DateInput),
@@ -96,11 +95,9 @@ for field_id, field_path, field_name in EXTRA_FIELDS:
     if field_id in CLASSES:
         err = "ID %s for field %s in FORMS_EXTRA_FIELDS already exists"
         raise ImproperlyConfigured(err % (field_id, field_name))
-    module_path, member_name = field_path.rsplit(".", 1)
-    CLASSES[field_id] = getattr(import_module(module_path), member_name)
+    CLASSES[field_id] = import_attr(field_path)
     NAMES += ((field_id, _(field_name)),)
 
 # Add/update custom widgets.
 for field_id, widget_path in EXTRA_WIDGETS:
-    module_path, member_name = widget_path.rsplit(".", 1)
-    WIDGETS[field_id] = getattr(import_module(module_path), member_name)
+    WIDGETS[field_id] = import_attr(widget_path)

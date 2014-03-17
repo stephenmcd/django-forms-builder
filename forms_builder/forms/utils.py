@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from future.builtins import str
 
 from django.template.defaultfilters import slugify as django_slugify
+from django.utils.importlib import import_module
 from unidecode import unidecode
 
 
@@ -43,3 +44,20 @@ def split_choices(choices_string):
     Convert a comma separated choices string to a list.
     """
     return [x.strip() for x in choices_string.split(",") if x.strip()]
+
+
+def html5_field(name, base):
+    """
+    Takes a Django form field class and returns a subclass of
+    it with the given name as its input type.
+    """
+    return type(str(""), (base,), {"input_type": name})
+
+
+def import_attr(path):
+    """
+    Given a a Python dotted path to a variable in a module,
+    imports the module and returns the variable in it.
+    """
+    module_path, attr_name = path.rsplit(".", 1)
+    return getattr(import_module(module_path), attr_name)
