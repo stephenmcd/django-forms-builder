@@ -35,6 +35,7 @@ The following HTML5 form features are supported.
 * ``number`` fields
 * ``url`` fields
 
+
 Installation
 ============
 
@@ -94,6 +95,7 @@ If you use south in your project, you'll also need to run migrations::
 
     $ python manage.py migrate forms
 
+
 Usage
 =====
 
@@ -114,6 +116,7 @@ This allows forms to be displayed without having a form instance, using
 a form's slug or ID, which could be hard-coded in a template, or stored
 in another model instance.
 
+
 File Uploads
 ============
 
@@ -127,6 +130,7 @@ project's ``MEDIA_ROOT`` directory you just need to define the
 ``FORMS_BUILDER_UPLOAD_ROOT`` setting in your project's ``settings``
 module. Its value should be an absolute path on the web server that
 isn't accessible to the public.
+
 
 Configuration
 =============
@@ -159,11 +163,12 @@ module.
   ``fail_silently`` argument when sending email.
   Defaults to ``settings.DEBUG``.
 
-Custom Field Types
-==================
 
-You can also add your own custom field types to the choices of fields
-available for a form. Simply define a sequence for the
+Custom Fields and Widgets
+=========================
+
+You can also add your own custom fields or widgets to the choices of
+fields available for a form. Simply define a sequence for the
 ``FORMS_BUILDER_EXTRA_FIELDS`` setting in your project's ``settings``
 module, where each item in the sequence is a custom field that will
 be available.
@@ -178,6 +183,23 @@ such as 100 or greater to avoid conflicts::
       (100, "django.forms.BooleanField", "My cool checkbox"),
       (101, "my_module.MyCustomField", "Another field"),
   )
+
+You can also define custom widget classes for any of the existing or
+custom form fields via the ``FORMS_BUILDER_EXTRA_WIDGETS`` setting.
+Each field in the sequence should be a two-item sequence containing
+the same ID referred to above for the form field class, and a dotted
+import path for the widget class::
+
+  FORMS_BUILDER_EXTRA_WIDGETS = (
+      (100, "django.forms.BooleanField", "my_module.MyCoolWidget"),
+      (101, "my_module.MyCustomField", "my_other_module.AnotherWidget"),
+  )
+
+Note that using the ``FORMS_BUILDER_EXTRA_WIDGETS`` setting to define
+custom widgets for field classes of your own is somewhat redundant,
+since you could simply define the widgets on the field classes directly
+in their code.
+
 
 Email Templates
 ===============
@@ -197,6 +219,7 @@ look and feel of emails that are sent to form submitters.
     configure `PGP`_ encrypted emails to be send to staff members,
     allowing forms to be built for capturing sensitive information.
     Consult the `django-email-extras`_ documentation for more info.
+
 
 Signals
 =======
@@ -234,6 +257,7 @@ field_type set to ``Hidden``::
             field_entry.value = request.user.username
             field_entry.save()
 
+
 Dynamic Field Defaults
 ======================
 
@@ -241,6 +265,7 @@ As of version 0.6, you can use Django template code for default field
 values. For example you could enter ``{{ request.user.username }}`` and
 the field will be pre-populated with a user's username if they're
 authenticated.
+
 
 XLS Export
 ==========
@@ -250,6 +275,7 @@ CSV file. You can also enable export via XLS file (Microsoft Excel)
 by installing the `xlwt`_ package::
 
   $ pip install xlwt
+
 
 .. _`pip`: http://www.pip-installer.org/
 .. _`South`: http://south.aeracode.org/
