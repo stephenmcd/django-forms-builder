@@ -100,4 +100,7 @@ for field_id, field_path, field_name in EXTRA_FIELDS:
 
 # Add/update custom widgets.
 for field_id, widget_path in EXTRA_WIDGETS:
+    if field_id not in CLASSES:
+        err = "ID %s in FORMS_EXTRA_WIDGETS does not match a field"
+        raise ImproperlyConfigured(err % field_id)
     WIDGETS[field_id] = import_attr(widget_path)
