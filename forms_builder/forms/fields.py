@@ -91,30 +91,16 @@ if USE_HTML5:
         URL: html5_field("url", forms.TextInput),
     })
 
-def update_field_widget(field_id, widget_path):
-    if isinstance(widget_path, tuple):
-        module_path, member_name = widget_path[1].rsplit(".", 1)
-        widget_class = getattr(import_module(module_path), member_name)
-        WIDGETS[field_id] = html5_field(widget_path[0], widget_class)
-    else:
-        module_path, member_name = widget_path.rsplit(".", 1)
-        WIDGETS[field_id] = getattr(import_module(module_path), member_name)
-
 # Add any custom fields defined.
-for field in EXTRA_FIELDS:
-    field_id = field[0]
-    field_path = field[1]
-    field_name = field[2]
-    field_widget = field[3:]
+for field_id, field_path, field_name in EXTRA_FIELDS:
     if field_id in CLASSES:
         err = "ID %s for field %s in FORMS_EXTRA_FIELDS already exists"
         raise ImproperlyConfigured(err % (field_id, field_name))
     module_path, member_name = field_path.rsplit(".", 1)
     CLASSES[field_id] = getattr(import_module(module_path), member_name)
     NAMES += ((field_id, _(field_name)),)
-    if field_widget:
-        update_field_widget(field_id, field_widget[0])
 
-# Update widgets.
+# Add/update custom widgets.
 for field_id, widget_path in EXTRA_WIDGETS:
-    update_field_widget(field_id, widget_path)
+    module_path, member_name = widget_path.rsplit(".", 1)
+    WIDGETS[field_id] = getattr(import_module(module_path), member_name)
