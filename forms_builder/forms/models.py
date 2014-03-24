@@ -76,11 +76,16 @@ class AbstractForm(models.Model):
         _("If checked, the person entering the form will be sent an email"))
     email_from = models.EmailField(_("From address"), blank=True,
         help_text=_("The address the email will be sent from"))
+    email_subject = models.CharField(_("Subject for user"), max_length=200,
+        blank=True)
+    email_message = models.TextField(_("Message for user"), blank=True)
     email_copies = models.CharField(_("Send copies to"), blank=True,
         help_text=_("One or more email addresses, separated by commas"),
         max_length=200)
-    email_subject = models.CharField(_("Subject"), max_length=200, blank=True)
-    email_message = models.TextField(_("Message"), blank=True)
+    email_subject_copies = models.CharField(_("Subject for copies"),
+        max_length=200, blank=True)
+    email_message_copies = models.TextField(_("Message for copies"),
+        blank=True)
 
     objects = FormManager()
 
@@ -159,6 +164,7 @@ class AbstractField(models.Model):
     placeholder_text = models.CharField(_("Placeholder Text"), null=True,
         blank=True, max_length=100, editable=settings.USE_HTML5)
     help_text = models.CharField(_("Help text"), blank=True, max_length=settings.HELPTEXT_MAX_LENGTH)
+    send_to_email = models.BooleanField(_("Send to email"), default=True)
 
     objects = FieldManager()
 

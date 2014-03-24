@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-06 19:08+0400\n"
+"POT-Creation-Date: 2014-03-21 19:41+0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Fill Q <admin@njoyx.net>\n"
 "Language-Team: RU LANGUAGE <LL@li.org>\n"
@@ -16,21 +16,22 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: admin.py:36 fields.py:30
+#: admin.py:40 fields.py:33
 msgid "Email"
 msgstr "Емайл"
 
-#: admin.py:41 models.py:55 models.py:142
+#: admin.py:46 models.py:59 models.py:152
 msgid "Slug"
 msgstr "Краткое имя(slug)"
 
-#: admin.py:44
+#: admin.py:49
 msgid "Sites"
 msgstr "Сайты"
 
-#: admin.py:158
+#: admin.py:178
 #, python-format
 msgid "1 entry deleted"
 msgid_plural "%(count)s entries deleted"
@@ -38,282 +39,317 @@ msgstr[0] "1 запись удалена"
 msgstr[1] "%(count)s записи удалено"
 msgstr[2] "%(count)s записей удалено"
 
-#: admin.py:162
-#, fuzzy
+#: admin.py:182
 msgid "View Entries"
 msgstr "Показать данные"
 
-#: fields.py:28
+#: fields.py:31
 msgid "Single line text"
 msgstr "Однострочный текст"
 
-#: fields.py:29
+#: fields.py:32
 msgid "Multi line text"
 msgstr "Многострочный текст"
 
-#: fields.py:31
+#: fields.py:34
 msgid "Number"
 msgstr "Номер"
 
-#: fields.py:32
+#: fields.py:35
 msgid "URL"
 msgstr "URL"
 
-#: fields.py:33
+#: fields.py:36
 msgid "Check box"
 msgstr "Чекбокс"
 
-#: fields.py:34
+#: fields.py:37
 msgid "Check boxes"
 msgstr "Чекбоксы"
 
-#: fields.py:35
+#: fields.py:38
 msgid "Drop down"
 msgstr "Выпадающее меню"
 
-#: fields.py:36
+#: fields.py:39
 msgid "Multi select"
 msgstr "Мультивыбор"
 
-#: fields.py:37
+#: fields.py:40
 msgid "Radio buttons"
 msgstr "Радио-кнопки"
 
-#: fields.py:38
+#: fields.py:41
 msgid "File upload"
 msgstr "Загрузка файлов"
 
-#: fields.py:39
+#: fields.py:42
 msgid "Date"
 msgstr "Дата"
 
-#: fields.py:40 models.py:210
+#: fields.py:43 models.py:221
 msgid "Date/time"
 msgstr "Дата/время"
 
-#: fields.py:41
+#: fields.py:44
 msgid "Date of birth"
 msgstr "Дата рождения"
 
-#: fields.py:42
+#: fields.py:45
 msgid "Hidden"
 msgstr "Скрыто"
 
-#: forms.py:30 forms.py:38 forms.py:44
+#: forms.py:52 forms.py:61 forms.py:68 forms.py:77
 msgid "Nothing"
 msgstr "Ничего"
 
-#: forms.py:31
+#: forms.py:53
 msgid "Contains"
 msgstr "Содержит"
 
-#: forms.py:32
+#: forms.py:54
 msgid "Doesn't contain"
 msgstr "Не содержит"
 
-#: forms.py:33 forms.py:39
+#: forms.py:55
 msgid "Equals"
 msgstr "Равняется"
 
-#: forms.py:34 forms.py:40
+#: forms.py:56
 msgid "Doesn't equal"
 msgstr "Не равняется"
 
-#: forms.py:45
+#: forms.py:62
+msgid "Equals any"
+msgstr "Равняется"
+
+#: forms.py:63
+msgid "Doesn't equal any"
+msgstr "Не равняется"
+
+#: forms.py:69
+msgid "Contains any"
+msgstr "Содержит"
+
+#: forms.py:70
+msgid "Contains all"
+msgstr "Содержит"
+
+#: forms.py:71
+msgid "Doesn't contain any"
+msgstr "Не содержит"
+
+#: forms.py:72
+msgid "Doesn't contain all"
+msgstr "Не содержит"
+
+#: forms.py:78
 msgid "Is between"
 msgstr "Между"
 
-#: forms.py:218
+#: forms.py:273
 msgid "Checked"
 msgstr "Выбрано"
 
-#: forms.py:218
+#: forms.py:273
 msgid "Not checked"
 msgstr "Не выбрано"
 
-#: forms.py:232 forms.py:247
+#: forms.py:296 forms.py:311
 msgid "and"
 msgstr "и"
 
-#: models.py:17
+#: models.py:20
 msgid "Draft"
 msgstr "Черновик"
 
-#: models.py:18
+#: models.py:21
 msgid "Published"
 msgstr "Опубликовано"
 
-#: models.py:54
+#: models.py:58
 msgid "Title"
 msgstr "Название"
 
-#: models.py:57
+#: models.py:61
 msgid "Intro"
 msgstr "Вступление"
 
-#: models.py:58
+#: models.py:62
 msgid "Button text"
 msgstr "Текст кнопки"
 
-#: models.py:59
+#: models.py:63
 msgid "Submit"
 msgstr "Отправить"
 
-#: models.py:60
+#: models.py:64
 msgid "Response"
 msgstr "Ответ"
 
-#: models.py:61
+#: models.py:65
 msgid "Status"
 msgstr "Статус"
 
-#: models.py:63
+#: models.py:67
 msgid "Published from"
 msgstr "Опубликовано с"
 
-#: models.py:64
+#: models.py:68
 msgid "With published selected, won't be shown until this time"
 msgstr ""
 "Форма не будет показана до даты/времени которое указано в публикации(если "
 "отмечено \"опубликовать\")."
 
-#: models.py:66
+#: models.py:70
 msgid "Expires on"
 msgstr "Действительно до"
 
-#: models.py:67
+#: models.py:71
 msgid "With published selected, won't be shown after this time"
 msgstr ""
 "Форма не будет показана после даты/времени которое указано в публикации(если "
 "отмечено \"опубликовать\")."
 
-#: models.py:69
+#: models.py:73
 msgid "Login required"
 msgstr "Требуется авторизация"
 
-#: models.py:70
+#: models.py:74
 msgid "If checked, only logged in users can view the form"
 msgstr ""
 "Если отмечено, только зарегестрированные пользователи могут видеть форму"
 
-#: models.py:71
+#: models.py:75
 msgid "Send email"
 msgstr "Отослать емайл"
 
-#: models.py:72
+#: models.py:76
 msgid "If checked, the person entering the form will be sent an email"
 msgstr "Если выбрано, данные формы будут отосланы на емайл"
 
-#: models.py:73
+#: models.py:77
 msgid "From address"
 msgstr "С адреса"
 
-#: models.py:74
+#: models.py:78
 msgid "The address the email will be sent from"
 msgstr "Адрес емайла с которого будет отослано письмо"
 
-#: models.py:75
+#: models.py:79
+msgid "Subject for user"
+msgstr "Тема"
+
+#: models.py:81
+msgid "Message for user"
+msgstr "Сообщение"
+
+#: models.py:82
 msgid "Send copies to"
 msgstr "Отправить копию по адресу"
 
-#: models.py:76
+#: models.py:83
 msgid "One or more email addresses, separated by commas"
 msgstr "Одно или более емайлов, разделенных запятой"
 
-#: models.py:78
-msgid "Subject"
-msgstr "Тема"
+#: models.py:85
+msgid "Subject for copies"
+msgstr "Тема для копии"
 
-#: models.py:79
-msgid "Message"
-msgstr "Сообщение"
+#: models.py:87
+msgid "Message for copies"
+msgstr "Сообщение для копии"
 
-#: models.py:84
+#: models.py:93
 msgid "Form"
 msgstr "Форму"
 
-#: models.py:85
+#: models.py:94
 msgid "Forms"
 msgstr "Формы"
 
-#: models.py:116
+#: models.py:125
 msgid "View form on site"
 msgstr "Показать форму на сайте"
 
-#: models.py:117
+#: models.py:126
 msgid "Filter entries"
 msgstr "Данные формы"
 
-#: models.py:118
+#: models.py:127
 msgid "View all entries"
 msgstr "Показать все данные"
 
-#: models.py:119
+#: models.py:128
 msgid "Export all entries"
 msgstr "Экспорт всех данных"
 
-#: models.py:141
+#: models.py:151
 msgid "Label"
 msgstr "Метка"
 
-#: models.py:144
+#: models.py:154
 msgid "Type"
 msgstr "Тип"
 
-#: models.py:145
+#: models.py:155
 msgid "Required"
 msgstr "Обязательное"
 
-#: models.py:146
+#: models.py:156
 msgid "Visible"
 msgstr "Видимое"
 
-#: models.py:147
+#: models.py:157
 msgid "Choices"
 msgstr "Выбор"
 
-#: models.py:152
+#: models.py:162
 msgid "Default value"
 msgstr "Стандартное значение"
 
-#: models.py:154
+#: models.py:164
 msgid "Placeholder Text"
 msgstr "Текст заполнителя"
 
-#: models.py:156
+#: models.py:166
 msgid "Help text"
 msgstr "Текст помощи"
 
-#: models.py:161 templates/admin/forms/entries.html:87
+#: models.py:167
+msgid "Send to email"
+msgstr "Отправить на email"
+
+#: models.py:172 templates/admin/forms/entries.html:88
 msgid "Field"
 msgstr "Поле"
 
-#: models.py:162
+#: models.py:173
 msgid "Fields"
 msgstr "Поля"
 
-#: models.py:213
+#: models.py:224
 msgid "Form entry"
 msgstr "Данные формы"
 
-#: models.py:214
+#: models.py:225
 msgid "Form entries"
 msgstr "Данные формы"
 
-#: models.py:228
+#: models.py:239
 msgid "Form field entry"
 msgstr "Данные поля формы"
 
-#: models.py:229
+#: models.py:240
 msgid "Form field entries"
 msgstr "Данные поля формы"
 
-#: models.py:257
+#: models.py:268
 msgid "Order"
 msgstr "Сортировка"
 
 #: templates/admin/forms/change_form.html:10
-#: templates/admin/forms/entries.html:116
+#: templates/admin/forms/entries.html:117
 msgid "View entries"
 msgstr "Показать данные формы"
 
@@ -325,53 +361,51 @@ msgstr "История"
 msgid "View on site"
 msgstr "Показать на сайте"
 
-#: templates/admin/forms/entries.html:61
+#: templates/admin/forms/entries.html:62
 msgid "No entries selected"
 msgstr "Нет выбранных записей"
 
-#: templates/admin/forms/entries.html:64
+#: templates/admin/forms/entries.html:65
 msgid "Delete selected entries?"
 msgstr "Удалить выбранные записи?"
 
-#: templates/admin/forms/entries.html:73
+#: templates/admin/forms/entries.html:74
 msgid "Home"
 msgstr "Домой"
 
-#: templates/admin/forms/entries.html:88
+#: templates/admin/forms/entries.html:89
 msgid "Include"
 msgstr "Содержит"
 
-#: templates/admin/forms/entries.html:89
+#: templates/admin/forms/entries.html:90
 msgid "Filter by"
 msgstr "Фильтровать по"
 
-#: templates/admin/forms/entries.html:107
+#: templates/admin/forms/entries.html:108
 msgid "All"
 msgstr "Все"
 
-#: templates/admin/forms/entries.html:115
-#: templates/admin/forms/entries.html:158
+#: templates/admin/forms/entries.html:116
+#: templates/admin/forms/entries.html:157
 msgid "Back to form"
 msgstr "Вернуться к форме"
 
-#: templates/admin/forms/entries.html:117
+#: templates/admin/forms/entries.html:118
 msgid "Export CSV"
 msgstr "Экспортировать в CSV"
 
-#: templates/admin/forms/entries.html:119
+#: templates/admin/forms/entries.html:120
 msgid "Export XLS"
 msgstr "Экспортировать в XLS"
 
-#: templates/admin/forms/entries.html:123
-#, fuzzy
+#: templates/admin/forms/entries.html:124
 msgid "Entries"
 msgstr "Данные"
 
-#: templates/admin/forms/entries.html:159
-#, fuzzy
+#: templates/admin/forms/entries.html:158
 msgid "Delete selected"
 msgstr "Удалить выбранные"
 
-#: templates/admin/forms/entries.html:163
+#: templates/admin/forms/entries.html:162
 msgid "No entries to display"
 msgstr "Нет данных для показа"
