@@ -211,7 +211,14 @@ creating a form via Django's admin.
 
 Templates for HTML and text versions of the email can be found in the
 ``templates/email_extras`` directory. This allows you to customize the
-look and feel of emails that are sent to form submitters.
+look and feel of emails that are sent to form submitters. Along with
+each of the ``form_response`` email templates which are used to email
+the form submitter, you'll also find corresponding
+``form_response_copies`` templates, that extend the former set - these
+are used as the templates for emailing any extra recipients specified
+for the form in the admin interface. By default they simply extend
+the ``form_response`` templates, but you can modify them should you
+need to customize the emails sent to any extra recipients.
 
 .. note::
 

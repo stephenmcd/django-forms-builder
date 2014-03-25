@@ -97,7 +97,7 @@ class FormDetail(TemplateView):
             for f in form_for_form.files.values():
                 f.seek(0)
                 attachments.append((f.name, f.read()))
-            send_mail_template(subject, "form_response", email_from,
+            send_mail_template(subject, "form_response_copies", email_from,
                                email_copies, context=context,
                                attachments=attachments,
                                fail_silently=EMAIL_FAIL_SILENTLY,
