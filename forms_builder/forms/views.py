@@ -76,7 +76,8 @@ class FormDetail(TemplateView):
             value = form_for_form.cleaned_data[k]
             if isinstance(value, list):
                 value = ", ".join([i.strip() for i in value])
-            fields.append((v.label, value))
+            if v.send and value:
+                fields.append((v.label, value))
         context = {
             "fields": fields,
             "message": form.email_message,
@@ -93,6 +94,9 @@ class FormDetail(TemplateView):
             headers = {"Reply-To": email_to}
         email_copies = split_choices(form.email_copies)
         if email_copies:
+            context.update({"message": form.email_message_copies})
+            subject = form.email_subject_copies if form.email_subject_copies \
+                else "%s - %s" % (form.title, entry.entry_time)
             attachments = []
             for f in form_for_form.files.values():
                 f.seek(0)

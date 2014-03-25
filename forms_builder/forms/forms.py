@@ -176,6 +176,7 @@ class FormForForm(forms.ModelForm):
                     initial_val = initial_val != "False"
                 self.initial[field_key] = initial_val
             self.fields[field_key] = field_class(**field_args)
+            self.fields[field_key].send = field.send_to_email
 
             if field.field_type == fields.DOB:
                 now = datetime.now()
