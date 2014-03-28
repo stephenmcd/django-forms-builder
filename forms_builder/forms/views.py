@@ -49,9 +49,10 @@ class FormDetail(TemplateView):
         if not form_for_form.is_valid():
             form_invalid.send(sender=request, form=form_for_form)
         else:
+            attachments = self.assemble_attachments(request, form_for_form, form)
             entry = form_for_form.save()
             form_valid.send(sender=request, form=form_for_form, entry=entry)
-            self.send_emails(request, form_for_form, form, entry)
+            self.send_emails(request, form_for_form, form, entry, attachments)
             if not self.request.is_ajax():
                 return redirect("form_sent", slug=form.slug)
         context = {"form": form, "form_for_form": form_for_form}
@@ -67,7 +68,19 @@ class FormDetail(TemplateView):
             return HttpResponse(json_context, content_type="application/json")
         return super(FormDetail, self).render_to_response(context, **kwargs)
 
-    def send_emails(self, request, form_for_form, form, entry):
+    def assemble_attachments(self, request, form_for_form, form):
+        """
+        Prepaires the content of the email. Returns a list of assembled attachments.
+        """
+        email_copies = split_choices(form.email_copies)
+        if email_copies:
+            attachments = []
+            for f in form_for_form.files.values():
+                f.seek(0)
+                attachments.append((f.name, f.read()))
+        return attachments
+
+    def send_emails(self, request, form_for_form, form, entry, attachments):
         subject = form.email_subject
         if not subject:
             subject = "%s - %s" % (form.title, entry.entry_time)
@@ -93,10 +106,6 @@ class FormDetail(TemplateView):
             headers = {"Reply-To": email_to}
         email_copies = split_choices(form.email_copies)
         if email_copies:
-            attachments = []
-            for f in form_for_form.files.values():
-                f.seek(0)
-                attachments.append((f.name, f.read()))
             send_mail_template(subject, "form_response_copies", email_from,
                                email_copies, context=context,
                                attachments=attachments,
