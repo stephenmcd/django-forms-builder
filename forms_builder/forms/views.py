@@ -73,8 +73,8 @@ class FormDetail(TemplateView):
         Prepaires the content of the email. Returns a list of assembled attachments.
         """
         email_copies = split_choices(form.email_copies)
+        attachments = []
         if email_copies:
-            attachments = []
             for f in form_for_form.files.values():
                 f.seek(0)
                 attachments.append((f.name, f.read()))
