@@ -3,3 +3,12 @@ ve
 *.egg-info
 
 .DS_Store
+
+.gitignore~
+tmp/
+build/
+dist/
+forms_builder/example_project/local_settings.py
+forms_builder/example_project/dev.db
+forms_builder/example_project/static/
+forms_builder/example_project/tmp/
