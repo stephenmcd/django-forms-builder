@@ -49,7 +49,12 @@ class FormDetail(TemplateView):
         if not form_for_form.is_valid():
             form_invalid.send(sender=request, form=form_for_form)
         else:
-            attachments = self.assemble_attachments(request, form_for_form, form)
+            # Attachments read must occur before model save,
+            # or seek() will fail on large uploads.
+            attachments = []
+            for f in form_for_form.files.values():
+                f.seek(0)
+                attachments.append((f.name, f.read()))
             entry = form_for_form.save()
             form_valid.send(sender=request, form=form_for_form, entry=entry)
             self.send_emails(request, form_for_form, form, entry, attachments)
@@ -67,18 +72,6 @@ class FormDetail(TemplateView):
             })
             return HttpResponse(json_context, content_type="application/json")
         return super(FormDetail, self).render_to_response(context, **kwargs)
-
-    def assemble_attachments(self, request, form_for_form, form):
-        """
-        Prepaires the content of the email. Returns a list of assembled attachments.
-        """
-        email_copies = split_choices(form.email_copies)
-        attachments = []
-        if email_copies:
-            for f in form_for_form.files.values():
-                f.seek(0)
-                attachments.append((f.name, f.read()))
-        return attachments
 
     def send_emails(self, request, form_for_form, form, entry, attachments):
         subject = form.email_subject
