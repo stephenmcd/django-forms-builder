@@ -170,7 +170,7 @@ class FormAdmin(admin.ModelAdmin):
                     except ImportError:
                         def info(request, message, fail_silently=True):
                             request.user.message_set.create(message=message)
-                    entries = FormEntry.objects.filter(id__in=selected)
+                    entries = self.formentry_model.objects.filter(id__in=selected)
                     count = entries.count()
                     if count > 0:
                         entries.delete()
