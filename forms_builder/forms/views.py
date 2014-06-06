@@ -95,8 +95,8 @@ class FormDetail(TemplateView, FormDetailMixin):
 
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
-        done, bits = self.form_get(request, context)
-        if not done:
+        allowed, bits = self.form_get(request, context)
+        if not allowed:
             return redirect("%s?%s=%s" % bits)
         return self.render_to_response(context)
 
