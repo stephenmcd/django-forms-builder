@@ -4,9 +4,6 @@ import json
 
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.contrib.sites.models import Site
-from django.core.mail import EmailMessage
-from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext
@@ -16,33 +13,23 @@ from email_extras.utils import send_mail_template
 
 from forms_builder.forms.forms import FormForForm
 from forms_builder.forms.models import Form
-from forms_builder.forms.settings import USE_SITES, EMAIL_FAIL_SILENTLY
+from forms_builder.forms.settings import EMAIL_FAIL_SILENTLY
 from forms_builder.forms.signals import form_invalid, form_valid
 from forms_builder.forms.utils import split_choices
 
 
-class FormDetail(TemplateView):
+class FormDetailMixin(object):
 
-    template_name = "forms/form_detail.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(FormDetail, self).get_context_data(**kwargs)
-        published = Form.objects.published(for_user=self.request.user)
-        context["form"] = get_object_or_404(published, slug=kwargs["slug"])
-        return context
-
-    def get(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        login_required = context["form"].login_required
-        if login_required and not request.user.is_authenticated():
+    def form_get(self, request, context):
+        if context['form'].login_required and not request.user.is_authenticated():
             path = urlquote(request.get_full_path())
             bits = (settings.LOGIN_URL, REDIRECT_FIELD_NAME, path)
-            return redirect("%s?%s=%s" % bits)
-        return self.render_to_response(context)
+            return False, bits
+        return True, None
 
-    def post(self, request, *args, **kwargs):
+    def form_post(self, request, slug):
         published = Form.objects.published(for_user=request.user)
-        form = get_object_or_404(published, slug=kwargs["slug"])
+        form = get_object_or_404(published, slug=slug)
         form_for_form = FormForForm(form, RequestContext(request),
                                     request.POST or None,
                                     request.FILES or None)
@@ -58,20 +45,10 @@ class FormDetail(TemplateView):
             entry = form_for_form.save()
             form_valid.send(sender=request, form=form_for_form, entry=entry)
             self.send_emails(request, form_for_form, form, entry, attachments)
-            if not self.request.is_ajax():
-                return redirect("form_sent", slug=form.slug)
+            if not request.is_ajax():
+                return False, form, {}
         context = {"form": form, "form_for_form": form_for_form}
-        return self.render_to_response(context)
-
-    def render_to_response(self, context, **kwargs):
-        if self.request.is_ajax():
-            json_context = json.dumps({
-                "errors": context["form_for_form"].errors,
-                "form": context["form_for_form"].as_p(),
-                "message": context["form"].response,
-            })
-            return HttpResponse(json_context, content_type="application/json")
-        return super(FormDetail, self).render_to_response(context, **kwargs)
+        return True, form, context
 
     def send_emails(self, request, form_for_form, form, entry, attachments):
         subject = form.email_subject
@@ -104,6 +81,40 @@ class FormDetail(TemplateView):
                                attachments=attachments,
                                fail_silently=EMAIL_FAIL_SILENTLY,
                                headers=headers)
+
+
+class FormDetail(TemplateView, FormDetailMixin):
+
+    template_name = "forms/form_detail.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(FormDetail, self).get_context_data(**kwargs)
+        published = Form.objects.published(for_user=self.request.user)
+        context["form"] = get_object_or_404(published, slug=kwargs["slug"])
+        return context
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        done, bits = self.form_get(request, context)
+        if not done:
+            return redirect("%s?%s=%s" % bits)
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        is_ajax, form, context = self.form_post(request, kwargs['slug'])
+        if not is_ajax:
+            return redirect("form_sent", slug=form.slug)
+        return self.render_to_response(context)
+
+    def render_to_response(self, context, **kwargs):
+        if self.request.is_ajax():
+            json_context = json.dumps({
+                "errors": context["form_for_form"].errors,
+                "form": context["form_for_form"].as_p(),
+                "message": context["form"].response,
+            })
+            return HttpResponse(json_context, content_type="application/json")
+        return super(FormDetail, self).render_to_response(context, **kwargs)
 
 form_detail = FormDetail.as_view()
 
