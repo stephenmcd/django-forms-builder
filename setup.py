@@ -1,5 +1,6 @@
 
 import os
+import sys
 from setuptools import setup, find_packages
 
 
@@ -19,6 +20,15 @@ for e in exclude:
     except Exception:
         pass
 
+if sys.argv[:2] == ["setup.py", "bdist_wheel"]:
+    # Remove previous build dir when creating a wheel build,
+    # since if files have been removed from the project,
+    # they'll still be cached in the build dir and end up
+    # as part of the build, which is really neat!
+    try:
+        rmtree("build")
+    except:
+        pass
 
 try:
     setup(
