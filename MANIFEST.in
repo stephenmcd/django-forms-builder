@@ -1,4 +1,4 @@
 include LICENSE
 include README.rst
 recursive-include forms_builder *
-
+recursive-exclude */example_project/static *
