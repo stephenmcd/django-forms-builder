@@ -4,8 +4,6 @@ import json
 
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.contrib.sites.models import Site
-from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render_to_response
@@ -16,7 +14,7 @@ from email_extras.utils import send_mail_template
 
 from forms_builder.forms.forms import FormForForm
 from forms_builder.forms.models import Form
-from forms_builder.forms.settings import USE_SITES, EMAIL_FAIL_SILENTLY
+from forms_builder.forms.settings import EMAIL_FAIL_SILENTLY
 from forms_builder.forms.signals import form_invalid, form_valid
 from forms_builder.forms.utils import split_choices
 
@@ -59,7 +57,11 @@ class FormDetail(TemplateView):
             form_valid.send(sender=request, form=form_for_form, entry=entry)
             self.send_emails(request, form_for_form, form, entry, attachments)
             if not self.request.is_ajax():
-                return redirect("form_sent", slug=form.slug)
+                if form.redirect_url:
+                    successful_redirect = form.redirect_url
+                else:
+                    successful_redirect = reverse("form_sent", kwargs={"slug": form.slug})
+                return redirect(successful_redirect)
         context = {"form": form, "form_for_form": form_for_form}
         return self.render_to_response(context)
 
