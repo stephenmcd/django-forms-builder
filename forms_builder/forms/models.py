@@ -4,7 +4,6 @@ from django.conf import settings as django_settings
 from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.core.validators import URLValidator, RegexValidator
 from django.db import models
 from django.db.models import Q
 from django.utils.encoding import python_2_unicode_compatible
@@ -23,24 +22,6 @@ STATUS_CHOICES = (
     (STATUS_PUBLISHED, _("Published")),
 )
 
-class RedirectUrlValidator(object):
-    message = _('Enter a valid value.')
-    code = 'invalid'
-    url_validator = URLValidator()
-    path_validator = RegexValidator(r'(^/[/\S]+)$')
-    
-    def __call__(self, value):
-        passed = False
-        for validator in [self.path_validator, self.url_validator]:
-            try: 
-                validator(value)
-            except:
-                pass
-            else:
-                passed |= True
-                break
-        if not passed:
-            raise ValidationError(self.message, code=self.code)
 
 class FormManager(models.Manager):
     """
@@ -82,6 +63,9 @@ class AbstractForm(models.Model):
     button_text = models.CharField(_("Button text"), max_length=50,
         default=_("Submit"))
     response = models.TextField(_("Response"), blank=True)
+    redirect_url = models.CharField(_("Redirect url"), max_length=200,
+        null=True, blank=True,
+        help_text=_("An alternate URL to redirect to after form submission"))
     status = models.IntegerField(_("Status"), choices=STATUS_CHOICES,
         default=STATUS_PUBLISHED)
     publish_date = models.DateTimeField(_("Published from"),
@@ -101,15 +85,6 @@ class AbstractForm(models.Model):
         max_length=200)
     email_subject = models.CharField(_("Subject"), max_length=200, blank=True)
     email_message = models.TextField(_("Message"), blank=True)
-    
-    redirect_url = models.CharField(_("Redirect url"), 
-                max_length=200, null=True, blank=True, validators=[RedirectUrlValidator()], 
-                help_text=_(' '.join(["Special for CMS integration ONLY.",
-                    "The url redirect to after a form successful submission.", 
-                    "Usually a URL starts with 'http:// or https://' for other domain",
-                    "or a plain path starting with '/' counting from the first file path within the same domain of this form",
-                    "<br/>e.g.: a form shows at 'http://example.com/a/b' and Redirect url defines '/c/d',",
-                    "redirection will result in http://example.com/c/d"])))
 
     objects = FormManager()
 
