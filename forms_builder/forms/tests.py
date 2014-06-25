@@ -107,7 +107,8 @@ class Tests(TestCase):
         data = {'field_%s' % fields[0].id: ''}
         context = Context({})
         form_for_form = FormForForm(form, context, data=data)
-        #should not raise IntegrityError: forms_fieldentry.value may not be NULL
+        # Should not raise IntegrityError: forms_fieldentry.value
+        # may not be NULL
         form_for_form.save()
 
 
@@ -145,16 +146,15 @@ class Tests(TestCase):
         self.assertTrue("This field is required" in str(response.content))
 
     def test_form_redirect(self):
-        redirect_url='http://example.com/foo'
+        redirect_url = 'http://example.com/foo'
         form = Form.objects.create(title='Test', redirect_url=redirect_url)
         if USE_SITES:
             form.sites.add(self._site)
             form.save()
-        form.fields.create(label='field', field_type=NAMES[3][0], #Number
+        form.fields.create(label='field', field_type=NAMES[3][0],
                            required=True, visible=True)
         form_absolute_url = form.get_absolute_url()
         response = self.client.post(form_absolute_url, {'field': '0'})
-        self.assertEqual(response.url, redirect_url)
+        self.assertEqual(response["location"], redirect_url)
         response = self.client.post(form_absolute_url, {'field': 'bar'})
-        self.assertFalse(isinstance(response , HttpResponseRedirectBase),
-                         'a validation failure should not trigger a redirection to display validation message')
+        self.assertFalse(isinstance(response , HttpResponseRedirectBase))
