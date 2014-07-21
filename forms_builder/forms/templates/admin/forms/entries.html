@@ -1,4 +1,5 @@
 {% extends "admin/base_site.html" %}
+{% load staticfiles %}
 
 {% load i18n %}
 
@@ -25,6 +26,7 @@ td.include, th.include-all, td.include-all {text-align:center; width:10px;}
 .off {background:#fff;}
 .button {float:left !important; margin-right:10px; cursor:pointer;}
 </style>
+<link href="{% static 'admin/css/blue/style.css' %}" rel="stylesheet" type="text/css">
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js"></script>
 <script>
 $(function() {
@@ -65,8 +67,14 @@ $(function() {
             return confirm('{% trans "Delete selected entries?" %}');
         }
     });
+    $("#entries-table").tablesorter({
+        headers: {
+            0: { sorter:false }
+        }
+    }); 
 });
 </script>
+<script type="text/javascript" src="{% static 'admin/js/jquery.tablesorter.min.js' %}"></script> 
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -124,7 +132,8 @@ $(function() {
     <h1 id="entries-title">{% trans "Entries" %}</h1>
     {% for row in entries_form.rows %}
     {% if forloop.first %}
-    <table id="entries-table">
+    <table id="entries-table" class="tablesorter">        
+        <thead> 
         <tr>
             {% if can_delete_entries %}
             <th class="include-all"><input type="checkbox"></th>
@@ -133,7 +142,9 @@ $(function() {
             <th{% if forloop.last %} class="last"{% endif %}>{{ column }}</th>
             {% endfor %}
         </tr>
-    {% endif %}
+        </thead>
+        <tbody> 
+    {% endif %}        
         <tr class="{% cycle on,off %}">
             {% if can_delete_entries %}
             <td class="include">
@@ -147,6 +158,7 @@ $(function() {
             {% endfor %}
         </tr>
     {% if forloop.last %}
+        </tbody> 
     </table>
     <!--
     count is injected into the title here with the :after selector
