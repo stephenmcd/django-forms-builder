@@ -1,6 +1,7 @@
 
 import os
 import sys
+from shutil import rmtree
 from setuptools import setup, find_packages
 
 
@@ -24,7 +25,7 @@ if sys.argv[:2] == ["setup.py", "bdist_wheel"]:
     # Remove previous build dir when creating a wheel build,
     # since if files have been removed from the project,
     # they'll still be cached in the build dir and end up
-    # as part of the build, which is really neat!
+    # as part of the build, which is unexpected.
     try:
         rmtree("build")
     except:
