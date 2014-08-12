@@ -174,7 +174,9 @@ class FormForForm(forms.ModelForm):
                 except KeyError:
                     initial_val = Template(field.default).render(context)
             if initial_val:
-                if field.is_a(*fields.MULTIPLE):
+                if field.is_a(*fields.MULTIPLE) or issubclass(field_class,
+                        (forms.MultipleChoiceField,
+                         forms.ModelMultipleChoiceField)):
                     initial_val = split_choices(initial_val)
                 if field.field_type == fields.CHECKBOX:
                     initial_val = initial_val != "False"
