@@ -1,14 +1,13 @@
 from __future__ import unicode_literals
+from future.builtins import str
 
+from django.core.urlresolvers import reverse
 from django.conf import settings as django_settings
 from django.contrib.sites.models import Site
-from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext, ugettext_lazy as _
-from future.builtins import str
 
 from forms_builder.forms import fields
 from forms_builder.forms import settings
@@ -63,9 +62,6 @@ class AbstractForm(models.Model):
     button_text = models.CharField(_("Button text"), max_length=50,
         default=_("Submit"))
     response = models.TextField(_("Response"), blank=True)
-    redirect_url = models.CharField(_("Redirect url"), max_length=200,
-        null=True, blank=True,
-        help_text=_("An alternate URL to redirect to after form submission"))
     status = models.IntegerField(_("Status"), choices=STATUS_CHOICES,
         default=STATUS_PUBLISHED)
     publish_date = models.DateTimeField(_("Published from"),
@@ -158,6 +154,8 @@ class AbstractField(models.Model):
             "itself contains commas, surround the option starting with the %s"
             "character and ending with the %s character." %
                 (settings.CHOICES_QUOTE, settings.CHOICES_UNQUOTE))
+    max_available = models.CharField(_("Max available"), max_length=settings.CHOICES_MAX_LENGTH, blank=True,
+        help_text="Comma separated maximum available forms to send with checked predefined choices.")
     default = models.CharField(_("Default value"), blank=True,
         max_length=settings.FIELD_MAX_LENGTH)
     placeholder_text = models.CharField(_("Placeholder Text"), null=True,
@@ -198,6 +196,10 @@ class AbstractField(models.Model):
         if choice:
             yield choice, choice
 
+    def get_max_available(self):
+        max_values = self.max_available.split(',')
+        return max_values
+
     def save(self, *args, **kwargs):
         if not self.slug:
             slug = slugify(self).replace('-', '_')
@@ -217,6 +219,7 @@ class AbstractFormEntry(models.Model):
     """
 
     entry_time = models.DateTimeField(_("Date/time"))
+    reserve = models.BooleanField(_("Reserve"), default=False)
 
     class Meta:
         verbose_name = _("Form entry")
