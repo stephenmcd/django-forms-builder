@@ -311,6 +311,12 @@ class EntriesForm(forms.Form):
             label=" ", widget=SelectDateWidget(), required=False)
         self.fields["%s_to" % field_key] = forms.DateField(
             label=_("and"), widget=SelectDateWidget(), required=False)
+        # Add ``FormEntry.reserve`` as a field.
+        field_key_reserve = "field_reserve"
+        label_reserve = self.formentry_model._meta.get_field("reserve").verbose_name
+        self.fields["%s_export" % field_key_reserve] = forms.BooleanField(
+            label=label_reserve, initial=True, required=False)
+        self.fields["%s_filter" % field_key_reserve] = choice_filter_field
 
     def __iter__(self):
         """
