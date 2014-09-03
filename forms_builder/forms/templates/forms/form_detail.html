@@ -15,6 +15,7 @@
 </head>
 <body>
     <script type="text/javascript">
+        var formWarnings = "{{ form_warnings }}".replace(/&quot;/g,"\"");
         var formRestrictions = "{{ form_restrictions }}".replace(/&quot;/g,"\"");
     </script>
     {% render_built_form form %}
