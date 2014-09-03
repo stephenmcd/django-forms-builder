@@ -2,11 +2,8 @@
     {% if form.intro %}
     <p>{{ form.intro }}</p>
     {% endif %}
-    <p>{{ form_restrictions }}</p>
     <div class="form-warnings">
-        {% for warning in form_warnings %}
-            <p>{{ warning|safe }}</p>
-        {% endfor %}
+
     </div>
     <form action="{{ form.get_absolute_url }}" method="post"
         {% if form_for_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
@@ -18,6 +15,7 @@
                 {{ field.label_tag }} {{ field }}
             </p>
         {% endfor %}
+        <input id="id_form_warnings" type="hidden" />
         <div style="clear:left;">&nbsp;</div>
         <input type="submit" value="{{ form.button_text }}">
     </form>

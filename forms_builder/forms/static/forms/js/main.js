@@ -2,92 +2,116 @@
 
     $( document ).ready(function() {
 
-        var FIELD_TYPES = {
-            0: 'TEXT',
-            1: 'TEXTAREA',
-            2: 'EMAIL',
-            3: 'NUMBER',
-            4: 'URL',
-            5: 'CHECKBOX',
-            6: 'CHECKBOX_MULTIPLE',
-            7: 'SELECT',
-            8: 'SELECT_MULTIPLE',
-            9: 'RADIO_MULTIPLE',
-            10: 'FILE',
-            11: 'DATE',
-            12: 'DATE_TIME',
-            13: 'DOB',
-            14: 'HIDDEN'
+        FIELD_TYPES = {
+            1: 'TEXT',
+            2: 'TEXTAREA',
+            3: 'EMAIL',
+            4: 'CHECKBOX',
+            5: 'CHECKBOX_MULTIPLE',
+            6: 'SELECT',
+            7: 'SELECT_MULTIPLE',
+            8: 'RADIO_MULTIPLE',
+            9: 'FILE',
+            10: 'DATE',
+            11: 'DATE_TIME',
+            12: 'HIDDEN',
+            13: 'NUMBER',
+            14: 'URL',
+            15: 'DOB'
         };
 
         var $form = $($.find('form'));
-        var $formRestrictions = jQuery.parseJSON(formRestrictions);
+        var $formWarnings = $.parseJSON(formWarnings);
+        var $formRestrictions = $.parseJSON(formRestrictions);
 
-        initActions($form, $formRestrictions);
-
-
-
-
-
-//    //    console.log($formRestrictions);
-//        $.each($formRestrictions, function(index, value) {
-////            console.log(index, value);
-//            var maxExceeds = getFieldExceedingMaxAvailable(index, value);
-////            console.log(maxExceeds);
-//    //        var $field = $form.find('');
-//        });
+        initActions($form, $formWarnings, $formRestrictions);
 
     });
 
-    function initActions($form, $formRestrictions) {
-            var warningData = getWarningMessagesData($formRestrictions);
-            displayWarningMessages($form, warningData);
-        }
-
-    function getWarningMessagesData($formRestrictions) {
-        var warningData = [];
-
-        $.each($formRestrictions, function(index, value) {
-            var maxExceeds = getFieldExceedingMaxAvailable(index, value);
-            warningData.push(maxExceeds);
-        });
-
-        return warningData;
+    function initActions($form, $formWarnings, $formRestrictions) {
+        assignFormWarningsToField($form, $formWarnings);
+        hideReserveButton($form);
+        displayWarningMessages($form, $formWarnings);
+        monitorChangesOfFieldsToSetReservedTrue($form, $formWarnings, $formRestrictions);
     }
 
-    function getFieldExceedingMaxAvailable(index, value) {
-        var maxExceeds = {};
-        $.each(value, function(k, v) {
-            if (v.sent >= v.max) {
-                maxExceeds[index] = {name:k, value:v};
-//                console.log('przekroczono max');
-//                console.log(k);
-//                console.log(v);
-//                console.log(index);
-//                console.log(value);
-            }
-            else {
-//                console.log('jest jeszze miejsce');
-            }
-        });
-        console.log(maxExceeds);
-        return maxExceeds;
+    function assignFormWarningsToField($form, $formWarnings) {
+        $form.find('#id_form_warnings').val($formWarnings);
+    }
+
+    function hideReserveButton($form) {
+        $form.find('#id_reserve').parent().hide();
     }
 
     function displayWarningMessages($form, warningData) {
-//        console.log(warningData);
-        for (var i = 0; i < warningData.length; i++) {
-//            console.log('co tu?');
-//            console.log(warningData[i]);
-            for (var key in warningData[i]) {
-//                console.log(key);
-//                console.log(warningData[i][key].name);
-                for (var group in warningData[i][key]) {}
-//                    console.log(warningData[i][key][group]);
-//                $('body').find('.form-warnings').append('<p class="warning">Dla pola ' + key + ' wyczerpany został limit miejsc w grupach: ' + warningData[i][key].name + '</p>');
+        if (!$.isEmptyObject(warningData)) {
+            for (var question in warningData) {
+                var answers = [];
+                for (var option in warningData[question]) {
+                    for (var key in warningData[question][option])
+                        answers.push(key);
+                }
+                $form.parent().find('div.form-warnings').append("W pytaniu: '" + question + "' opcje odpowiedzi: '" + answers.join(", ") + "' osiągnęły już maksymalną liczbę zgłoszeń.\n");
             }
+            $form.parent().find('div.form-warnings').append("Wciąż możesz zapisać się do grup, które osiągnęły swój limit zgłoszeń. Trafisz wtedy na listę rezerwową.");
+        } else {
+          return false;
         }
     }
+
+    function monitorChangesOfFieldsToSetReservedTrue($form, warningData, $formRestrictions) {
+        for (var key in warningData) {
+            var fieldID = "id_" + normalizeString(key);
+            var fieldType = getFieldType(key, $formRestrictions);
+            console.log(fieldType);
+            findFormFieldAndSetMonitoring($form, warningData, fieldID, fieldType, key);
+        }
+    }
+
+    function getFieldType(fieldName, $formRestrictions) {
+        return $formRestrictions[fieldName]['field_type'];
+    }
+
+    function normalizeString(s){
+        var r = s.toLowerCase();
+        r = r.replace(/À|Á|Â|Ã|Ä|Å|Ą/g, "A");
+        r = r.replace(/à|á|â|ã|ä|å|ą/g, "a");
+        r = r.replace(/Ò|Ó|Ô|Õ|Õ|Ö|Ø|Ó/g, "O");
+        r = r.replace(/ò|ó|ô|õ|ö|ø|ó/g, "o");
+        r = r.replace(/È|É|Ê|Ë|Ę/g, "E");
+        r = r.replace(/è|é|ê|ë|ę/g, "e");
+        r = r.replace(/Ç|ç|Ć|ć/g, "c");
+        r = r.replace(/Ì|Í|Î|Ï/g, "I");
+        r = r.replace(/ì|í|î|ï/g, "i");
+        r = r.replace(/Ù|Ú|Û|Ü/g, "U");
+        r = r.replace(/ù|ú|û|ü/g, "u");
+        r = r.replace(/Ź|ź|Ż|ż/g, "z");
+        r = r.replace(/Ś|ś/g, "s");
+        r = r.replace(/Ł|ł/g, "l");
+        r = r.replace(/Ń|ń/g, "n");
+        return r;
+    }
+
+    function findFormFieldAndSetMonitoring($form, warningData, fieldID, fieldType, key) {
+        var $reserveField = $form.find('#id_reserve');
+        if (FIELD_TYPES[fieldType] == "RADIO_MULTIPLE") {
+            $form.find('ul#'+fieldID+'').on('change', function(event) {
+                var checkedOption = $(event.target).val();
+                for (var i = 0; i < warningData[key].length; i++) {
+                    if (warningData[key][i].hasOwnProperty(checkedOption)) {
+                        $reserveField.attr('checked', true);
+                    } else {
+                        $reserveField.attr('checked', false);
+                    }
+                }
+//                if (warningData[key].hasOwnProperty("Kobieta")) {
+//                    console.log('true');
+//                }
+            });
+//            console.log("RADIO_MULTIPLE");
+        }
+    }
+
 
 })();
 

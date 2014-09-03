@@ -202,6 +202,7 @@ class FormForForm(forms.ModelForm):
         entry = super(FormForForm, self).save(commit=False)
         entry.form = self.form
         entry.entry_time = now()
+        entry.reserve = kwargs['reserved']
         entry.save()
         entry_fields = entry.fields.values_list("field_id", flat=True)
         new_entry_fields = []
