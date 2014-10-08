@@ -191,8 +191,8 @@ the same ID referred to above for the form field class, and a dotted
 import path for the widget class::
 
   FORMS_BUILDER_EXTRA_WIDGETS = (
-      (100, "django.forms.BooleanField", "my_module.MyCoolWidget"),
-      (101, "my_module.MyCustomField", "my_other_module.AnotherWidget"),
+      (100, "my_module.MyCoolWidget"),
+      (101, "my_other_module.AnotherWidget"),
   )
 
 Note that using the ``FORMS_BUILDER_EXTRA_WIDGETS`` setting to define
