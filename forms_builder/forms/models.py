@@ -106,6 +106,22 @@ class AbstractForm(models.Model):
             self.slug = unique_slug(self.__class__.objects, "slug", slug)
         super(AbstractForm, self).save(*args, **kwargs)
 
+    def published(self, for_user=None):
+        """
+        Mimics the queryset logic in ``FormManager.published``, so we
+        can check a form is published when it wasn't loaded via the
+        queryset's ``published`` method, and is passed to the
+        ``render_built_form`` template tag.
+        """
+        if for_user is not None and for_user.is_staff:
+            return True
+        status = self.status == STATUS_PUBLISHED
+        publish_date = self.publish_date is None or self.publish_date <= now()
+        expiry_date = self.expiry_date is None or self.expiry_date >= now()
+        authenticated = for_user is not None and for_user.is_authenticated()
+        login_required = (not self.login_required or authenticated)
+        return status and publish_date and expiry_date and login_required
+
     def total_entries(self):
         """
         Called by the admin list view where the queryset is annotated
