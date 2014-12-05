@@ -1,4 +1,5 @@
 <!doctype html>
+{% load staticfiles %}
 {% load forms_builder_tags %}
 <head>
     <meta charset="utf-8">
@@ -13,5 +14,11 @@
     </style>
 </head>
 <body>
+    <script type="text/javascript">
+        var formWarnings = "{{ form_warnings }}".replace(/&quot;/g,"\"");
+        var formRestrictions = "{{ form_restrictions }}".replace(/&quot;/g,"\"");
+    </script>
     {% render_built_form form %}
+    <script src="{% static 'forms/js/jquery-1.11.1.min.js' %}"></script>
+    <script src="{% static 'forms/js/main.js' %}"></script>
 </body>

@@ -147,11 +147,7 @@ class FormForForm(forms.ModelForm):
             if "max_length" in arg_names:
                 field_args["max_length"] = settings.FIELD_MAX_LENGTH
             if "choices" in arg_names:
-                choices = list(field.get_choices())
-                if (field.field_type == fields.SELECT and
-                        field.default not in [c[0] for c in choices]):
-                    choices.insert(0, ("", field.placeholder_text))
-                field_args["choices"] = choices
+                field_args["choices"] = field.get_choices()
             if field_widget is not None:
                 field_args["widget"] = field_widget
             #
@@ -206,6 +202,7 @@ class FormForForm(forms.ModelForm):
         entry = super(FormForForm, self).save(commit=False)
         entry.form = self.form
         entry.entry_time = now()
+        entry.reserve = kwargs['reserved']
         entry.save()
         entry_fields = entry.fields.values_list("field_id", flat=True)
         new_entry_fields = []
@@ -264,6 +261,8 @@ class EntriesForm(forms.Form):
         self.form_fields = form.fields.all()
         self.entry_time_name = str(self.formentry_model._meta.get_field(
             "entry_time").verbose_name)
+        self.reserve_name = str(self.formentry_model._meta.get_field(
+            "reserve").verbose_name)
         super(EntriesForm, self).__init__(*args, **kwargs)
         for field in self.form_fields:
             field_key = "field_%s" % field.id
@@ -312,6 +311,12 @@ class EntriesForm(forms.Form):
             label=" ", widget=SelectDateWidget(), required=False)
         self.fields["%s_to" % field_key] = forms.DateField(
             label=_("and"), widget=SelectDateWidget(), required=False)
+        # Add ``FormEntry.reserve`` as a field.
+        field_key_reserve = "field_reserve"
+        label_reserve = self.formentry_model._meta.get_field("reserve").verbose_name
+        self.fields["%s_export" % field_key_reserve] = forms.BooleanField(
+            label=label_reserve, initial=True, required=False)
+        self.fields["%s_filter" % field_key_reserve] = choice_filter_field
 
     def __iter__(self):
         """
@@ -343,6 +348,7 @@ class EntriesForm(forms.Form):
                   if self.posted_data("field_%s_export" % f.id)]
         if self.posted_data("field_0_export"):
             fields.append(self.entry_time_name)
+            fields.append(self.reserve_name)
         return fields
 
     def rows(self, csv=False):
@@ -395,10 +401,11 @@ class EntriesForm(forms.Form):
                         current_row.insert(0, current_entry)
                     yield current_row
                 current_entry = field_entry.entry_id
-                current_row = [""] * num_columns
+                current_row = [""] * (num_columns + 1)
                 valid_row = True
                 if include_entry_time:
-                    current_row[-1] = field_entry.entry.entry_time
+                    current_row[-2] = field_entry.entry.entry_time
+                current_row[-1] = field_entry.entry.reserve
             field_value = field_entry.value or ""
             # Check for filter.
             field_id = field_entry.field_id
