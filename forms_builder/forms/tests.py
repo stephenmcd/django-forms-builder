@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
 from django.db import IntegrityError
-from django.http.response import HttpResponseRedirectBase
+from django.http import HttpResponseRedirect
 from django.template import Context, RequestContext, Template
 from django.test import TestCase
 
@@ -157,4 +157,4 @@ class Tests(TestCase):
         response = self.client.post(form_absolute_url, {'field': '0'})
         self.assertEqual(response["location"], redirect_url)
         response = self.client.post(form_absolute_url, {'field': 'bar'})
-        self.assertFalse(isinstance(response , HttpResponseRedirectBase))
+        self.assertFalse(isinstance(response, HttpResponseRedirect))
