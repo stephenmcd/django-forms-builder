@@ -16,3 +16,4 @@ matrix:
 install:
   - pip install $DJANGO_VERSION --use-mirrors
   - pip install . --use-mirrors
+script: ./forms_builder/example_project/manage.py test
