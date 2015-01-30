@@ -1,146 +1,105 @@
-# encoding: utf-8
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-class Migration(SchemaMigration):
-
-    def forwards(self, orm):
-        
-        # Adding model 'Form'
-        db.create_table('forms_form', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=50)),
-            ('slug', self.gf('django.db.models.fields.SlugField')(unique=True, max_length=100, db_index=True)),
-            ('intro', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('button_text', self.gf('django.db.models.fields.CharField')(default=u'Submit', max_length=50)),
-            ('response', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('status', self.gf('django.db.models.fields.IntegerField')(default=2)),
-            ('publish_date', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
-            ('expiry_date', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
-            ('login_required', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('send_email', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('email_from', self.gf('django.db.models.fields.EmailField')(max_length=75, blank=True)),
-            ('email_copies', self.gf('django.db.models.fields.CharField')(max_length=200, blank=True)),
-            ('email_subject', self.gf('django.db.models.fields.CharField')(max_length=200, blank=True)),
-            ('email_message', self.gf('django.db.models.fields.TextField')(blank=True)),
-        ))
-        db.send_create_signal('forms', ['Form'])
-
-        # Adding M2M table for field sites on 'Form'
-        db.create_table('forms_form_sites', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('form', models.ForeignKey(orm['forms.form'], null=False)),
-            ('site', models.ForeignKey(orm['sites.site'], null=False))
-        ))
-        db.create_unique('forms_form_sites', ['form_id', 'site_id'])
-
-        # Adding model 'Field'
-        db.create_table('forms_field', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('label', self.gf('django.db.models.fields.CharField')(max_length=200)),
-            ('field_type', self.gf('django.db.models.fields.IntegerField')()),
-            ('required', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('visible', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('choices', self.gf('django.db.models.fields.CharField')(max_length=1000, blank=True)),
-            ('default', self.gf('django.db.models.fields.CharField')(max_length=2000, blank=True)),
-            ('placeholder_text', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)),
-            ('help_text', self.gf('django.db.models.fields.CharField')(max_length=100, blank=True)),
-            ('form', self.gf('django.db.models.fields.related.ForeignKey')(related_name='fields', to=orm['forms.Form'])),
-            ('_order', self.gf('django.db.models.fields.IntegerField')(default=0)),
-        ))
-        db.send_create_signal('forms', ['Field'])
-
-        # Adding model 'FormEntry'
-        db.create_table('forms_formentry', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('entry_time', self.gf('django.db.models.fields.DateTimeField')()),
-            ('form', self.gf('django.db.models.fields.related.ForeignKey')(related_name='entries', to=orm['forms.Form'])),
-        ))
-        db.send_create_signal('forms', ['FormEntry'])
-
-        # Adding model 'FieldEntry'
-        db.create_table('forms_fieldentry', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('field_id', self.gf('django.db.models.fields.IntegerField')()),
-            ('value', self.gf('django.db.models.fields.CharField')(max_length=2000)),
-            ('entry', self.gf('django.db.models.fields.related.ForeignKey')(related_name='fields', to=orm['forms.FormEntry'])),
-        ))
-        db.send_create_signal('forms', ['FieldEntry'])
+from django.db import models, migrations
 
 
-    def backwards(self, orm):
-        
-        # Deleting model 'Form'
-        db.delete_table('forms_form')
+class Migration(migrations.Migration):
 
-        # Removing M2M table for field sites on 'Form'
-        db.delete_table('forms_form_sites')
+    dependencies = [
+        ('sites', '0001_initial'),
+    ]
 
-        # Deleting model 'Field'
-        db.delete_table('forms_field')
-
-        # Deleting model 'FormEntry'
-        db.delete_table('forms_formentry')
-
-        # Deleting model 'FieldEntry'
-        db.delete_table('forms_fieldentry')
-
-
-    models = {
-        'forms.field': {
-            'Meta': {'ordering': "('_order',)", 'object_name': 'Field'},
-            '_order': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'choices': ('django.db.models.fields.CharField', [], {'max_length': '1000', 'blank': 'True'}),
-            'default': ('django.db.models.fields.CharField', [], {'max_length': '2000', 'blank': 'True'}),
-            'field_type': ('django.db.models.fields.IntegerField', [], {}),
-            'form': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'fields'", 'to': "orm['forms.Form']"}),
-            'help_text': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'label': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            'placeholder_text': ('django.db.models.fields.CharField', [], {'max_length': '100', 'blank': 'True'}),
-            'required': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'visible': ('django.db.models.fields.BooleanField', [], {'default': 'True'})
-        },
-        'forms.fieldentry': {
-            'Meta': {'object_name': 'FieldEntry'},
-            'entry': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'fields'", 'to': "orm['forms.FormEntry']"}),
-            'field_id': ('django.db.models.fields.IntegerField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'value': ('django.db.models.fields.CharField', [], {'max_length': '2000'})
-        },
-        'forms.form': {
-            'Meta': {'object_name': 'Form'},
-            'button_text': ('django.db.models.fields.CharField', [], {'default': "u'Submit'", 'max_length': '50'}),
-            'email_copies': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
-            'email_from': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
-            'email_message': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'email_subject': ('django.db.models.fields.CharField', [], {'max_length': '200', 'blank': 'True'}),
-            'expiry_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'intro': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'login_required': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'publish_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'response': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'send_email': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'sites': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['sites.Site']", 'symmetrical': 'False'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '100', 'db_index': 'True'}),
-            'status': ('django.db.models.fields.IntegerField', [], {'default': '2'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        'forms.formentry': {
-            'Meta': {'object_name': 'FormEntry'},
-            'entry_time': ('django.db.models.fields.DateTimeField', [], {}),
-            'form': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'entries'", 'to': "orm['forms.Form']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
-        },
-        'sites.site': {
-            'Meta': {'ordering': "('domain',)", 'object_name': 'Site', 'db_table': "'django_site'"},
-            'domain': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        }
-    }
-
-    complete_apps = ['forms']
+    operations = [
+        migrations.CreateModel(
+            name='Field',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('label', models.CharField(max_length=200, verbose_name='Label')),
+                ('slug', models.SlugField(default='', max_length=100, verbose_name='Slug', blank=True)),
+                ('field_type', models.IntegerField(verbose_name='Type', choices=[(1, 'Single line text'), (2, 'Multi line text'), (3, 'Email'), (13, 'Number'), (14, 'URL'), (4, 'Check box'), (5, 'Check boxes'), (6, 'Drop down'), (7, 'Multi select'), (8, 'Radio buttons'), (9, 'File upload'), (10, 'Date'), (11, 'Date/time'), (15, 'Date of birth'), (12, 'Hidden')])),
+                ('required', models.BooleanField(default=True, verbose_name='Required')),
+                ('visible', models.BooleanField(default=True, verbose_name='Visible')),
+                ('choices', models.CharField(help_text='Comma separated options where applicable. If an option itself contains commas, surround the option starting with the `character and ending with the ` character.', max_length=1000, verbose_name='Choices', blank=True)),
+                ('default', models.CharField(max_length=2000, verbose_name='Default value', blank=True)),
+                ('placeholder_text', models.CharField(max_length=100, null=True, verbose_name='Placeholder Text', blank=True)),
+                ('help_text', models.CharField(max_length=100, verbose_name='Help text', blank=True)),
+                ('order', models.IntegerField(null=True, verbose_name='Order', blank=True)),
+            ],
+            options={
+                'ordering': ('order',),
+                'abstract': False,
+                'verbose_name': 'Field',
+                'verbose_name_plural': 'Fields',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='FieldEntry',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('field_id', models.IntegerField()),
+                ('value', models.CharField(max_length=2000, null=True)),
+            ],
+            options={
+                'abstract': False,
+                'verbose_name': 'Form field entry',
+                'verbose_name_plural': 'Form field entries',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Form',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('title', models.CharField(max_length=50, verbose_name='Title')),
+                ('slug', models.SlugField(verbose_name='Slug', unique=True, max_length=100, editable=False)),
+                ('intro', models.TextField(verbose_name='Intro', blank=True)),
+                ('button_text', models.CharField(default='Submit', max_length=50, verbose_name='Button text')),
+                ('response', models.TextField(verbose_name='Response', blank=True)),
+                ('redirect_url', models.CharField(help_text='An alternate URL to redirect to after form submission', max_length=200, null=True, verbose_name='Redirect url', blank=True)),
+                ('status', models.IntegerField(default=2, verbose_name='Status', choices=[(1, 'Draft'), (2, 'Published')])),
+                ('publish_date', models.DateTimeField(help_text="With published selected, won't be shown until this time", null=True, verbose_name='Published from', blank=True)),
+                ('expiry_date', models.DateTimeField(help_text="With published selected, won't be shown after this time", null=True, verbose_name='Expires on', blank=True)),
+                ('login_required', models.BooleanField(default=False, help_text='If checked, only logged in users can view the form', verbose_name='Login required')),
+                ('send_email', models.BooleanField(default=True, help_text='If checked, the person entering the form will be sent an email', verbose_name='Send email')),
+                ('email_from', models.EmailField(help_text='The address the email will be sent from', max_length=75, verbose_name='From address', blank=True)),
+                ('email_copies', models.CharField(help_text='One or more email addresses, separated by commas', max_length=200, verbose_name='Send copies to', blank=True)),
+                ('email_subject', models.CharField(max_length=200, verbose_name='Subject', blank=True)),
+                ('email_message', models.TextField(verbose_name='Message', blank=True)),
+                ('sites', models.ManyToManyField(default=[1], related_name='forms_form_forms', to='sites.Site')),
+            ],
+            options={
+                'abstract': False,
+                'verbose_name': 'Form',
+                'verbose_name_plural': 'Forms',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='FormEntry',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('entry_time', models.DateTimeField(verbose_name='Date/time')),
+                ('form', models.ForeignKey(related_name='entries', to='forms.Form')),
+            ],
+            options={
+                'abstract': False,
+                'verbose_name': 'Form entry',
+                'verbose_name_plural': 'Form entries',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AddField(
+            model_name='fieldentry',
+            name='entry',
+            field=models.ForeignKey(related_name='fields', to='forms.FormEntry'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='field',
+            name='form',
+            field=models.ForeignKey(related_name='fields', to='forms.Form'),
+            preserve_default=True,
+        ),
+    ]
