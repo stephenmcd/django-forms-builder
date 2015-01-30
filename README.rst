@@ -15,11 +15,11 @@ available in the admin via filterable reporting with CSV/XLS export.
 
 Form builder:
 
-.. image:: http://github.com/stephenmcd/django-forms-builder/raw/master/docs/img/fields.png
+.. image:: https://raw.githubusercontent.com/stephenmcd/django-forms-builder/master/docs/img/fields.png
 
 Data reporting:
 
-.. image:: http://github.com/stephenmcd/django-forms-builder/raw/master/docs/img/report.png
+.. image:: https://raw.githubusercontent.com/stephenmcd/django-forms-builder/master/docs/img/report.png
 
 
 HTML5 Features
