@@ -13,5 +13,6 @@ matrix:
   exclude:
      - python: "2.6"
        env: DJANGO_VERSION=https://github.com/django/django/archive/stable/1.7.x.zip
-install: pip install . --use-mirrors
-script: ./forms_builder/example_project/manage.py test
+install:
+  - pip install $DJANGO_VERSION --use-mirrors
+  - pip install . --use-mirrors
