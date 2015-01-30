@@ -62,12 +62,14 @@ INSTALLED_APPS = (
     'forms_builder.forms',
 )
 
-try:
-    import south
-except ImportError:
-    pass
-else:
-    INSTALLED_APPS += ("south",)
+from django import VERSION
+if VERSION < (1, 7):
+    try:
+        import south
+    except ImportError:
+        pass
+    else:
+        INSTALLED_APPS += ("south",)
 
 FORMS_BUILDER_EXTRA_FIELDS = (
     (100, "django.forms.BooleanField", "My cool checkbox"),
