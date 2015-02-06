@@ -46,3 +46,6 @@ CHOICES_MAX_LENGTH = getattr(settings, "FORMS_BUILDER_CHOICES_MAX_LENGTH", 1000)
 # Does sending emails fail silently or raise an exception.
 EMAIL_FAIL_SILENTLY = getattr(settings, "FORMS_BUILDER_EMAIL_FAIL_SILENTLY",
                               settings.DEBUG)
+
+# Django SITE_ID - need a default since no longer provided in settings.py.
+SITE_ID = getattr(settings, "SITE_ID", 1)

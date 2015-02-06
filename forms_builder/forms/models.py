@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 
-from django.conf import settings as django_settings
 from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -55,7 +54,7 @@ class AbstractForm(models.Model):
     """
 
     sites = models.ManyToManyField(Site, editable=settings.USE_SITES,
-        default=[django_settings.SITE_ID], related_name="%(app_label)s_%(class)s_forms")
+        default=[settings.SITE_ID], related_name="%(app_label)s_%(class)s_forms")
     title = models.CharField(_("Title"), max_length=50)
     slug = models.SlugField(_("Slug"), editable=settings.EDITABLE_SLUGS,
         max_length=100, unique=True)
