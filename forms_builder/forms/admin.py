@@ -121,7 +121,7 @@ class FormAdmin(admin.ModelAdmin):
         export_xls = export_xls or request.POST.get("export_xls")
         if submitted:
             if export:
-                response = HttpResponse(mimetype="text/csv")
+                response = HttpResponse(content_type="text/csv")
                 fname = "%s-%s.csv" % (form.slug, slugify(now().ctime()))
                 attachment = "attachment; filename=%s" % fname
                 response["Content-Disposition"] = attachment
