@@ -121,7 +121,7 @@ class FormAdmin(admin.ModelAdmin):
         export_xls = export_xls or request.POST.get("export_xls")
         if submitted:
             if export:
-                response = HttpResponse(mimetype="text/csv")
+                response = HttpResponse(content_type="text/csv")
                 fname = "%s-%s.csv" % (form.slug, slugify(now().ctime()))
                 attachment = "attachment; filename=%s" % fname
                 response["Content-Disposition"] = attachment
@@ -142,7 +142,7 @@ class FormAdmin(admin.ModelAdmin):
                 response.write(data)
                 return response
             elif XLWT_INSTALLED and export_xls:
-                response = HttpResponse(mimetype="application/vnd.ms-excel")
+                response = HttpResponse(content_type="application/vnd.ms-excel")
                 fname = "%s-%s.xls" % (form.slug, slugify(now().ctime()))
                 attachment = "attachment; filename=%s" % fname
                 response["Content-Disposition"] = attachment
@@ -192,7 +192,7 @@ class FormAdmin(admin.ModelAdmin):
         model = self.fieldentry_model
         field_entry = get_object_or_404(model, id=field_entry_id)
         path = join(fs.location, field_entry.value)
-        response = HttpResponse(mimetype=guess_type(path)[0])
+        response = HttpResponse(content_type=guess_type(path)[0])
         f = open(path, "r+b")
         response["Content-Disposition"] = "attachment; filename=%s" % f.name
         response.write(f.read())
