@@ -53,7 +53,7 @@ class AbstractForm(models.Model):
     A user-built form.
     """
 
-    sites = models.ManyToManyField(Site, editable=settings.USE_SITES,
+    sites = models.ManyToManyField(Site,
         default=[settings.SITE_ID], related_name="%(app_label)s_%(class)s_forms")
     title = models.CharField(_("Title"), max_length=50)
     slug = models.SlugField(_("Slug"), editable=settings.EDITABLE_SLUGS,
