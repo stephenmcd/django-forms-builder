@@ -8,220 +8,409 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-16 14:40+0200\n"
+"POT-Creation-Date: 2015-07-16 15:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Wouter van der Graaf <wouter@dynora.nl>\n"
+"Last-Translator: Fluxility <info@fluxility.nl>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: admin.py:26 models.py:38
+#: admin.py:40 fields.py:33
 msgid "Email"
 msgstr "E-mail"
 
-#: admin.py:30
+#: admin.py:45 models.py:59 models.py:166
+msgid "Slug"
+msgstr "Slug"
+
+#: admin.py:48
 msgid "Sites"
 msgstr "Sites"
 
-#: models.py:36
+#: admin.py:177
+#, python-format
+msgid "1 entry deleted"
+msgid_plural "%(count)s entries deleted"
+msgstr[0] "1 inzending verwijderd"
+msgstr[1] "%(count)s inzendingen verwijderd"
+
+#: admin.py:181
+#| msgid "View on site"
+msgid "View Entries"
+msgstr "Bekijk op site"
+
+#: fields.py:31
 msgid "Single line text"
 msgstr "Enkele rij tekst"
 
-#: models.py:37
+#: fields.py:32
 msgid "Multi line text"
 msgstr "Meerdere rijen tekst"
 
-#: models.py:39
+#: fields.py:34
+msgid "Number"
+msgstr "Nummer"
+
+#: fields.py:35
+msgid "URL"
+msgstr "URL"
+
+#: fields.py:36
 msgid "Check box"
 msgstr "Aankruisvakje"
 
-#: models.py:41
+#: fields.py:37
 msgid "Check boxes"
 msgstr "Aankruisvakjes"
 
-#: models.py:42
+#: fields.py:38
 msgid "Drop down"
 msgstr "Uitklapveld"
 
-#: models.py:43
+#: fields.py:39
 msgid "Multi select"
 msgstr "Lijstveld"
 
-#: models.py:44
+#: fields.py:40
 msgid "Radio buttons"
 msgstr "Keuzerondjes"
 
-#: models.py:45
+#: fields.py:41
 msgid "File upload"
 msgstr "Bestand upload"
 
-#: models.py:46
+#: fields.py:42
 msgid "Date"
 msgstr "Datum"
 
-#: models.py:47 models.py:185
+#: fields.py:43 models.py:234
 msgid "Date/time"
 msgstr "Datum/tijd"
 
-#: models.py:48
+#: fields.py:44
+msgid "Date of birth"
+msgstr "Geboortedatum"
+
+#: fields.py:45
 msgid "Hidden"
 msgstr "Verborgen"
 
-#: models.py:77
+#: forms.py:52 forms.py:61 forms.py:68 forms.py:77
+msgid "Nothing"
+msgstr "Niets"
+
+#: forms.py:53
+msgid "Contains"
+msgstr "Bevat"
+
+#: forms.py:54
+msgid "Doesn't contain"
+msgstr "Bevat niet"
+
+#: forms.py:55
+msgid "Equals"
+msgstr "Gelijk aan"
+
+#: forms.py:56
+msgid "Doesn't equal"
+msgstr "Niet gelijk aan"
+
+#: forms.py:62
+msgid "Equals any"
+msgstr "Gelijk aan één van"
+
+#: forms.py:63
+msgid "Doesn't equal any"
+msgstr "Niet gelijk aan één van"
+
+#: forms.py:69
+msgid "Contains any"
+msgstr "Bevat minstens één van"
+
+#: forms.py:70
+msgid "Contains all"
+msgstr "Bevat alle van"
+
+#: forms.py:71
+msgid "Doesn't contain any"
+msgstr "Bevat geen enkele van"
+
+#: forms.py:72
+msgid "Doesn't contain all"
+msgstr "Bevat niet alle van"
+
+#: forms.py:78
+msgid "Is between"
+msgstr "Is tussen"
+
+#: forms.py:276
+#| msgid "Check boxes"
+msgid "Checked"
+msgstr "Aangevinkt"
+
+#: forms.py:276
+msgid "Not checked"
+msgstr "Niet aangevinkt"
+
+#: forms.py:299 forms.py:314
+msgid "and"
+msgstr "en"
+
+#: models.py:20
+msgid "Draft"
+msgstr "Opzet"
+
+#: models.py:21
+#| msgid "Published from"
+msgid "Published"
+msgstr "Gepubliceerd"
+
+#: models.py:58
 msgid "Title"
 msgstr "Titel"
 
-#: models.py:79
+#: models.py:61
 msgid "Intro"
 msgstr "Intro"
 
-#: models.py:80
+#: models.py:62
 msgid "Button text"
 msgstr "Knoptekst"
 
-#: models.py:81
+#: models.py:63
 msgid "Submit"
 msgstr "Verzenden"
 
-#: models.py:82
+#: models.py:64
 msgid "Response"
 msgstr "Respons"
 
-#: models.py:83
+#: models.py:65
+msgid "Redirect url"
+msgstr "Doorverwijs URL"
+
+#: models.py:67
+msgid "An alternate URL to redirect to after form submission"
+msgstr "Een URL om de gebruiker naar door te verwijzen nadat hij het"
+" formulier heeft verstuurd"
+
+#: models.py:68
 msgid "Status"
 msgstr "Status"
 
-#: models.py:85
+#: models.py:70
 msgid "Published from"
 msgstr "Gepubliceerd vanaf"
 
-#: models.py:86
+#: models.py:71
 msgid "With published selected, won't be shown until this time"
 msgstr ""
 "Met gepubliceerd geselecteerd, wordt deze niet getoond tot dit tijdstip"
 
-#: models.py:88
+#: models.py:73
 msgid "Expires on"
 msgstr "Vervalt op"
 
-#: models.py:89
+#: models.py:74
 msgid "With published selected, won't be shown after this time"
 msgstr ""
 "Met gepubliceerd geselecteerd, wordt deze niet getoond vanaf dit tijdstip"
 
-#: models.py:91
+#: models.py:76
 msgid "Login required"
 msgstr "Inloggen vereist"
 
-#: models.py:92
+#: models.py:77
 msgid "If checked, only logged in users can view the form"
 msgstr ""
 "Als aangevinkt, dan kunnen alleen ingelogde gebruikers het formulier zien"
 
-#: models.py:93
+#: models.py:78
 msgid "Send email"
 msgstr "Verstuur e-mail"
 
-#: models.py:94
+#: models.py:79
 msgid "If checked, the person entering the form will be sent an email"
 msgstr ""
 "Als aangevinkt, dan krijgt de persoon die het formulier heeft ingevuld een e-"
 "mail"
 
-#: models.py:95
+#: models.py:80
 msgid "From address"
 msgstr "Van adres"
 
-#: models.py:96
+#: models.py:81
 msgid "The address the email will be sent from"
 msgstr "Het adres waarvandaan de e-mail verzonden wordt"
 
-#: models.py:97
+#: models.py:82
 msgid "Send copies to"
 msgstr "Stuur kopie naar"
 
-#: models.py:98
+#: models.py:83
 msgid "One or more email addresses, separated by commas"
 msgstr "Een of meer e-mailadressen, gescheiden door komma's"
 
-#: models.py:100
+#: models.py:85
 msgid "Subject"
 msgstr "Onderwerp"
 
-#: models.py:101
+#: models.py:86
 msgid "Message"
 msgstr "Bericht"
 
-#: models.py:106
+#: models.py:91
 msgid "Form"
 msgstr "Formulier"
 
-#: models.py:107
+#: models.py:92
 msgid "Forms"
 msgstr "Formulieren"
 
-#: models.py:137 templates/admin/forms/change_form.html:10
-msgid "View on site"
-msgstr "Bekijk op site"
+#: models.py:139
+#| msgid "View on site"
+msgid "View form on site"
+msgstr "Bekijk formulier op site"
 
-#: models.py:143
-msgid "Export entries"
-msgstr "Exporteer inzendingen"
+#: models.py:140
+#| msgid "Form entries"
+msgid "Filter entries"
+msgstr "Filter inzendingen"
 
-#: models.py:159
+#: models.py:141
+#| msgid "Form field entries"
+msgid "View all entries"
+msgstr "Bekijk alle inzendingen"
+
+#: models.py:142
+#| msgid "Export entries"
+msgid "Export all entries"
+msgstr "Exporteer alle inzendingen"
+
+#: models.py:165
 msgid "Label"
 msgstr "Naam"
 
-#: models.py:160
+#: models.py:168
 msgid "Type"
 msgstr "Type"
 
-#: models.py:162
+#: models.py:169
 msgid "Required"
 msgstr "Verplicht"
 
-#: models.py:163
+#: models.py:170
 msgid "Visible"
 msgstr "Zichtbaar"
 
-#: models.py:164
+#: models.py:171
 msgid "Choices"
 msgstr "Keuzes"
 
-#: models.py:166
+#: models.py:176
 msgid "Default value"
 msgstr "Standaardwaarde"
 
-#: models.py:168
+#: models.py:178
+msgid "Placeholder Text"
+msgstr "Voorbeeldtekst"
+
+#: models.py:180
 msgid "Help text"
 msgstr "Helptekst"
 
-#: models.py:173
+#: models.py:185 templates/admin/forms/entries.html:88
 msgid "Field"
 msgstr "Veld"
 
-#: models.py:174
+#: models.py:186
 msgid "Fields"
 msgstr "Velden"
 
-#: models.py:188
+#: models.py:237
 msgid "Form entry"
 msgstr "Formulierinzending"
 
-#: models.py:189
+#: models.py:238
 msgid "Form entries"
 msgstr "Formulierinzendingen"
 
-#: models.py:201
+#: models.py:252
 msgid "Form field entry"
 msgstr "Formulierveldinzending"
 
-#: models.py:202
+#: models.py:253
 msgid "Form field entries"
 msgstr "Formulierveldinzendingen"
 
+#: models.py:281
+msgid "Order"
+msgstr "Volgorde"
+
 #: templates/admin/forms/change_form.html:9
+#: templates/admin/forms/entries.html:117
+#| msgid "Form entries"
+msgid "View entries"
+msgstr "Bekijk inzendingen"
+
+#: templates/admin/forms/change_form.html:12
 msgid "History"
 msgstr "Geschiedenis"
+
+#: templates/admin/forms/change_form.html:16
+msgid "View on site"
+msgstr "Bekijk op site"
+
+#: templates/admin/forms/entries.html:62
+msgid "No entries selected"
+msgstr "Geen inzendingen geselecteerd"
+
+#: templates/admin/forms/entries.html:65
+msgid "Delete selected entries?"
+msgstr "Verwijder geselecteerde inzendingen?"
+
+#: templates/admin/forms/entries.html:74
+msgid "Home"
+msgstr "Home"
+
+#: templates/admin/forms/entries.html:89
+msgid "Include"
+msgstr "Toon"
+
+#: templates/admin/forms/entries.html:90
+msgid "Filter by"
+msgstr "Filter op"
+
+#: templates/admin/forms/entries.html:108
+msgid "All"
+msgstr "Alle"
+
+#: templates/admin/forms/entries.html:116
+#: templates/admin/forms/entries.html:157
+msgid "Back to form"
+msgstr "Terug naar formulier"
+
+#: templates/admin/forms/entries.html:118
+msgid "Export CSV"
+msgstr "Exporteer CSV"
+
+#: templates/admin/forms/entries.html:120
+msgid "Export XLS"
+msgstr "Exporteer XLS"
+
+#: templates/admin/forms/entries.html:124
+#| msgid "Export entries"
+msgid "Entries"
+msgstr "Inzendingen"
+
+#: templates/admin/forms/entries.html:158
+#| msgid "Multi select"
+msgid "Delete selected"
+msgstr "Verwijder geselecteerde"
+
+#: templates/admin/forms/entries.html:162
+msgid "No entries to display"
+msgstr "Geen inzendingen om te tonen"
