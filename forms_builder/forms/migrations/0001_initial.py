@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 
+from forms_builder.forms import settings
+
 
 class Migration(migrations.Migration):
 
@@ -67,7 +69,7 @@ class Migration(migrations.Migration):
                 ('email_copies', models.CharField(help_text='One or more email addresses, separated by commas', max_length=200, verbose_name='Send copies to', blank=True)),
                 ('email_subject', models.CharField(max_length=200, verbose_name='Subject', blank=True)),
                 ('email_message', models.TextField(verbose_name='Message', blank=True)),
-                ('sites', models.ManyToManyField(default=[1], related_name='forms_form_forms', to='sites.Site')),
+                ('sites', models.ManyToManyField(default=[settings.SITE_ID], related_name='forms_form_forms', to='sites.Site')),
             ],
             options={
                 'abstract': False,
