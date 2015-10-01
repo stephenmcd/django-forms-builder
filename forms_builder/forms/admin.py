@@ -148,7 +148,7 @@ class FormAdmin(admin.ModelAdmin):
                 response["Content-Disposition"] = attachment
                 queue = BytesIO()
                 workbook = xlwt.Workbook(encoding='utf8')
-                sheet = workbook.add_sheet(form.title[:31])
+                sheet = workbook.add_sheet(slugify(form.title[:31]))
                 for c, col in enumerate(entries_form.columns()):
                     sheet.write(0, c, col)
                 for r, row in enumerate(entries_form.rows(csv=True)):
