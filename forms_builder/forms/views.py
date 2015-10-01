@@ -63,7 +63,7 @@ class FormDetail(TemplateView):
         return self.render_to_response(context)
 
     def render_to_response(self, context, **kwargs):
-        if self.request.is_ajax():
+        if self.request.is_ajax() and getattr(settings, 'FORM_BUILDER_AJAX_RESPONSE_TYPE', 'json') == 'json':
             json_context = json.dumps({
                 "errors": context["form_for_form"].errors,
                 "form": context["form_for_form"].as_p(),
