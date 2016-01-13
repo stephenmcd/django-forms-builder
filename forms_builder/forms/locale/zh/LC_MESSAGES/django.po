@@ -1,0 +1,400 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: forms_builder\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-01-13 17:23+0800\n"
+"PO-Revision-Date: 2016-01-13 17:54+0800\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"Last-Translator: Bill Zhang\n"
+"Language-Team: 张春晖 <zchv@msn.com>\n"
+"X-Generator: Poedit 1.8.6\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: admin.py:40 fields.py:33
+msgid "Email"
+msgstr "电子邮件"
+
+#: admin.py:45 models.py:59 models.py:166
+msgid "Slug"
+msgstr "slug节点"
+
+#: admin.py:48
+msgid "Sites"
+msgstr "站点"
+
+#: admin.py:177
+#, python-format
+msgid "1 entry deleted"
+msgid_plural "%(count)s entries deleted"
+msgstr[0] "%(count)s 条目已删除。"
+
+#: admin.py:181
+msgid "View Entries"
+msgstr "查看条目"
+
+#: fields.py:31
+msgid "Single line text"
+msgstr "单行文本"
+
+#: fields.py:32
+msgid "Multi line text"
+msgstr "多行文本"
+
+#: fields.py:34
+msgid "Number"
+msgstr "数字"
+
+#: fields.py:35
+msgid "URL"
+msgstr "网址"
+
+#: fields.py:36
+msgid "Check box"
+msgstr "复选框"
+
+#: fields.py:37
+msgid "Check boxes"
+msgstr "复选框"
+
+#: fields.py:38
+msgid "Drop down"
+msgstr "下拉"
+
+#: fields.py:39
+msgid "Multi select"
+msgstr "多选择"
+
+#: fields.py:40
+msgid "Radio buttons"
+msgstr "单选按钮"
+
+#: fields.py:41
+msgid "File upload"
+msgstr "上传文件"
+
+#: fields.py:42
+msgid "Date"
+msgstr "日期"
+
+#: fields.py:43 models.py:234
+msgid "Date/time"
+msgstr "日期时间"
+
+#: fields.py:44
+msgid "Date of birth"
+msgstr "出生日期"
+
+#: fields.py:45
+msgid "Hidden"
+msgstr "隐藏"
+
+#: forms.py:52 forms.py:61 forms.py:68 forms.py:77
+msgid "Nothing"
+msgstr "无"
+
+#: forms.py:53
+msgid "Contains"
+msgstr "包含"
+
+#: forms.py:54
+msgid "Doesn't contain"
+msgstr "不含"
+
+#: forms.py:55
+msgid "Equals"
+msgstr "等于"
+
+#: forms.py:56
+msgid "Doesn't equal"
+msgstr "不等于"
+
+#: forms.py:62
+msgid "Equals any"
+msgstr "等于任何"
+
+#: forms.py:63
+msgid "Doesn't equal any"
+msgstr "不等于任何"
+
+#: forms.py:69
+msgid "Contains any"
+msgstr "包含任何"
+
+#: forms.py:70
+msgid "Contains all"
+msgstr "包含所有"
+
+#: forms.py:71
+msgid "Doesn't contain any"
+msgstr "不含任何"
+
+#: forms.py:72
+msgid "Doesn't contain all"
+msgstr "不包含所有"
+
+#: forms.py:78
+msgid "Is between"
+msgstr "在之间"
+
+#: forms.py:276
+msgid "Checked"
+msgstr "选中"
+
+#: forms.py:276
+msgid "Not checked"
+msgstr "未选中"
+
+#: forms.py:299 forms.py:314
+msgid "and"
+msgstr "和"
+
+#: models.py:20
+msgid "Draft"
+msgstr "草稿"
+
+#: models.py:21
+msgid "Published"
+msgstr "已发布"
+
+#: models.py:58
+msgid "Title"
+msgstr "标题"
+
+#: models.py:61
+msgid "Intro"
+msgstr "简介"
+
+#: models.py:62
+msgid "Button text"
+msgstr "按钮文字"
+
+#: models.py:63
+msgid "Submit"
+msgstr "提交"
+
+#: models.py:64
+msgid "Response"
+msgstr "响应内容"
+
+#: models.py:65
+msgid "Redirect url"
+msgstr "重定向URL"
+
+#: models.py:67
+msgid "An alternate URL to redirect to after form submission"
+msgstr "表单提交后备用重定向URL"
+
+#: models.py:68
+msgid "Status"
+msgstr "状态"
+
+#: models.py:70
+msgid "Published from"
+msgstr "发布时间从"
+
+#: models.py:71
+msgid "With published selected, won't be shown until this time"
+msgstr "若选定发布，直到此时才会显示"
+
+#: models.py:73
+msgid "Expires on"
+msgstr "到期"
+
+#: models.py:74
+msgid "With published selected, won't be shown after this time"
+msgstr "若选定发布，此时之后将会隐藏"
+
+#: models.py:76
+msgid "Login required"
+msgstr "需要登录"
+
+#: models.py:77
+msgid "If checked, only logged in users can view the form"
+msgstr "如果选中，只有登录用户可以查看表单"
+
+#: models.py:78
+msgid "Send email"
+msgstr "发电子邮件"
+
+#: models.py:79
+msgid "If checked, the person entering the form will be sent an email"
+msgstr "如果选中，将会发送一封电子邮件给进入该表单的用户"
+
+#: models.py:80
+msgid "From address"
+msgstr "发件人地址"
+
+#: models.py:81
+msgid "The address the email will be sent from"
+msgstr "发件人地址"
+
+#: models.py:82
+msgid "Send copies to"
+msgstr "抄送"
+
+#: models.py:83
+msgid "One or more email addresses, separated by commas"
+msgstr "一个或多个电子邮件地址，以逗号分隔"
+
+#: models.py:85
+msgid "Subject"
+msgstr "邮件主题"
+
+#: models.py:86
+msgid "Message"
+msgstr "邮件内容"
+
+#: models.py:91
+msgid "Form"
+msgstr "表单"
+
+#: models.py:92
+msgid "Forms"
+msgstr "表单"
+
+#: models.py:139
+msgid "View form on site"
+msgstr "在站点查看表单"
+
+#: models.py:140
+msgid "Filter entries"
+msgstr "过滤器的项"
+
+#: models.py:141
+msgid "View all entries"
+msgstr "查看所有条目"
+
+#: models.py:142
+msgid "Export all entries"
+msgstr "导出所有条目"
+
+#: models.py:165
+msgid "Label"
+msgstr "标签"
+
+#: models.py:168
+msgid "Type"
+msgstr "类型"
+
+#: models.py:169
+msgid "Required"
+msgstr "必填"
+
+#: models.py:170
+msgid "Visible"
+msgstr "可见"
+
+#: models.py:171
+msgid "Choices"
+msgstr "选项"
+
+#: models.py:176
+msgid "Default value"
+msgstr "默认值"
+
+#: models.py:178
+msgid "Placeholder Text"
+msgstr "占位文本"
+
+#: models.py:180
+msgid "Help text"
+msgstr "帮助文本"
+
+#: models.py:185 templates/admin/forms/entries.html:88
+msgid "Field"
+msgstr "字段"
+
+#: models.py:186
+msgid "Fields"
+msgstr "字段"
+
+#: models.py:237
+msgid "Form entry"
+msgstr "表单条目"
+
+#: models.py:238
+msgid "Form entries"
+msgstr "表单条目"
+
+#: models.py:252
+msgid "Form field entry"
+msgstr "表单字段项"
+
+#: models.py:253
+msgid "Form field entries"
+msgstr "表单字段条目"
+
+#: models.py:281
+msgid "Order"
+msgstr "顺序"
+
+#: templates/admin/forms/change_form.html:9
+#: templates/admin/forms/entries.html:117
+msgid "View entries"
+msgstr "查看条目"
+
+#: templates/admin/forms/change_form.html:12
+msgid "History"
+msgstr "历史"
+
+#: templates/admin/forms/change_form.html:16
+msgid "View on site"
+msgstr "在站点查看"
+
+#: templates/admin/forms/entries.html:62
+msgid "No entries selected"
+msgstr "没有选择条目"
+
+#: templates/admin/forms/entries.html:65
+msgid "Delete selected entries?"
+msgstr "删除所选条目？"
+
+#: templates/admin/forms/entries.html:74
+msgid "Home"
+msgstr "主页"
+
+#: templates/admin/forms/entries.html:89
+msgid "Include"
+msgstr "包括"
+
+#: templates/admin/forms/entries.html:90
+msgid "Filter by"
+msgstr "过滤"
+
+#: templates/admin/forms/entries.html:108
+msgid "All"
+msgstr "所有"
+
+#: templates/admin/forms/entries.html:116
+#: templates/admin/forms/entries.html:157
+msgid "Back to form"
+msgstr "返回表单"
+
+#: templates/admin/forms/entries.html:118
+msgid "Export CSV"
+msgstr "导出CSV"
+
+#: templates/admin/forms/entries.html:120
+msgid "Export XLS"
+msgstr "出口XLS"
+
+#: templates/admin/forms/entries.html:124
+msgid "Entries"
+msgstr "项"
+
+#: templates/admin/forms/entries.html:158
+msgid "Delete selected"
+msgstr "删除所选"
+
+#: templates/admin/forms/entries.html:162
+msgid "No entries to display"
+msgstr "没有项目可显示"
