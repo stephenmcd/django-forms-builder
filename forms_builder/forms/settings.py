@@ -4,8 +4,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
 
-if not (getattr(settings, "SITE_ID") and
-        "django.contrib.sites" in settings.INSTALLED_APPS):
+if not ("django.contrib.sites" in settings.INSTALLED_APPS):
     raise ImproperlyConfigured("django.contrib.sites is required")
 
 
@@ -28,7 +27,8 @@ UPLOAD_ROOT = getattr(settings, "FORMS_BUILDER_UPLOAD_ROOT", None)
 USE_HTML5 = getattr(settings, "FORMS_BUILDER_USE_HTML5", True)
 
 # Boolean controlling whether forms are associated to Django's Sites framework.
-USE_SITES = getattr(settings, "FORMS_BUILDER_USE_SITES", False)
+USE_SITES = getattr(settings, "FORMS_BUILDER_USE_SITES",
+    hasattr(settings, "SITE_ID"))
 
 # Boolean controlling whether form slugs are editable in the admin.
 EDITABLE_SLUGS = getattr(settings, "FORMS_BUILDER_EDITABLE_SLUGS", False)
