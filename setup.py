@@ -41,6 +41,7 @@ try:
                        "admin users to create their own forms and report "
                        "on their collected data."),
         long_description = open("README.rst").read(),
+        license = "BSD",
         url = "http://github.com/stephenmcd/django-forms-builder",
         zip_safe = False,
         include_package_data = True,
