@@ -17,8 +17,6 @@ TEMPLATE_DIRS = (os.path.join(PROJECT_ROOT, "templates"),)
 SECRET_KEY = "asdfa4wtW#$Gse4aGdfs"
 ADMINS = ()
 
-FORMS_BUILDER_UPLOAD_ROOT = os.path.join(PROJECT_ROOT, "secret")
-
 
 MANAGERS = ADMINS
 if "test" not in sys.argv:
