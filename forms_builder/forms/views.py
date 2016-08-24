@@ -5,7 +5,7 @@ import json
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.core.urlresolvers import reverse
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render_to_response
 from django.template import RequestContext
 from django.utils.http import urlquote
@@ -69,6 +69,9 @@ class FormDetail(TemplateView):
                 "form": context["form_for_form"].as_p(),
                 "message": context["form"].response,
             })
+            if context["form_for_form"].errors:
+                return HttpResponseBadRequest(json_context,
+                    content_type="application/json")
             return HttpResponse(json_context, content_type="application/json")
         return super(FormDetail, self).render_to_response(context, **kwargs)
 
