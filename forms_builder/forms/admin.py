@@ -7,7 +7,7 @@ from os.path import join
 from datetime import datetime
 from io import BytesIO, StringIO
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.contrib import admin
 from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
