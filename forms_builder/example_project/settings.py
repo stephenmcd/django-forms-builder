@@ -1,5 +1,4 @@
 from __future__ import absolute_import, unicode_literals
-from django import VERSION
 
 import os, sys
 
@@ -30,32 +29,26 @@ DATABASES = {
     }
 }
 
-if VERSION > (1, 7):
-    TEMPLATES = [
-        {
-            'BACKEND': 'django.template.backends.django.DjangoTemplates',
-            'DIRS': [
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
             ],
-            'APP_DIRS': True,
-            'OPTIONS': {
-                'context_processors': [
-                    'django.contrib.auth.context_processors.auth',
-                    'django.template.context_processors.debug',
-                    'django.template.context_processors.request',
-                    'django.template.context_processors.i18n',
-                    'django.template.context_processors.media',
-                    'django.template.context_processors.static',
-                    'django.template.context_processors.tz',
-                    'django.contrib.messages.context_processors.messages',
-                ],
-            },
         },
-    ]
-else:
-    TEMPLATE_LOADERS = (
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
-    )
+    },
+]
 
 
 MIDDLEWARE_CLASSES = (
@@ -85,14 +78,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'forms_builder.forms',
 )
-
-if VERSION < (1, 7):
-    try:
-        import south
-    except ImportError:
-        pass
-    else:
-        INSTALLED_APPS += ("south",)
 
 FORMS_BUILDER_EXTRA_FIELDS = (
     (100, "django.forms.BooleanField", "My cool checkbox"),
