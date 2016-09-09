@@ -13,8 +13,7 @@ from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.shortcuts import render, get_object_or_404
 from django.utils.translation import ungettext, ugettext_lazy as _
 
 from forms_builder.forms.forms import EntriesForm
@@ -183,7 +182,7 @@ class FormAdmin(admin.ModelAdmin):
                    "can_delete_entries": can_delete_entries,
                    "submitted": submitted,
                    "xlwt_installed": XLWT_INSTALLED}
-        return render_to_response(template, context, RequestContext(request))
+        return render(request, template, context)
 
     def file_view(self, request, field_entry_id):
         """
