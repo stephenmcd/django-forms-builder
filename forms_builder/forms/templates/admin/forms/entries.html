@@ -90,7 +90,7 @@ $(function() {
             <th class="last" colspan="2">{% trans "Filter by" %}</th>
         </tr>
         {% for include_field, filter_field, filter_option_fields in entries_form %}
-        <tr class="{% cycle on,off as row %}">
+        <tr class="{% cycle "on" "off" as row %}">
             <td class="field">{{ include_field.label_tag }}</td>
             <td class="include">{{ include_field }}</td>
             <td class="filter last">{{ filter_field }}</td>
@@ -134,7 +134,7 @@ $(function() {
             {% endfor %}
         </tr>
     {% endif %}
-        <tr class="{% cycle on,off %}">
+        <tr class="{% cycle "on" "off" %}">
             {% if can_delete_entries %}
             <td class="include">
                 <input type="checkbox" name="selected" value="{{ row.0 }}">
