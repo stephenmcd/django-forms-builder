@@ -84,6 +84,9 @@ class AbstractForm(models.Model):
         max_length=200)
     email_subject = models.CharField(_("Subject"), max_length=200, blank=True)
     email_message = models.TextField(_("Message"), blank=True)
+    template_name = models.CharField(
+        _("Template name"), max_length=200, blank=True,
+        help_text=_("Ovveride default template 'forms/includes/built_form.html' for this form"))
 
     objects = FormManager()
 
