@@ -62,6 +62,9 @@ class AbstractForm(models.Model):
     button_text = models.CharField(_("Button text"), max_length=50,
         default=_("Submit"))
     response = models.TextField(_("Response"), blank=True)
+    template_name = models.CharField(_("Template name"), max_length=200,
+        null=True, blank=True,
+        help_text=_("An alternate template to render form detail."))
     redirect_url = models.CharField(_("Redirect url"), max_length=200,
         null=True, blank=True,
         help_text=_("An alternate URL to redirect to after form submission"))

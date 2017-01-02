@@ -22,11 +22,20 @@ from forms_builder.forms.utils import split_choices
 class FormDetail(TemplateView):
 
     template_name = "forms/form_detail.html"
+    form = None
+
+    def get_template_names(self):
+        if self.form.template_name:
+            return [self.form.template_name]
+        else:
+            return super(FormDetail, self).get_template_names()
+
 
     def get_context_data(self, **kwargs):
         context = super(FormDetail, self).get_context_data(**kwargs)
         published = Form.objects.published(for_user=self.request.user)
-        context["form"] = get_object_or_404(published, slug=kwargs["slug"])
+        self.form = get_object_or_404(published, slug=kwargs["slug"])
+        context["form"] = self.form
         return context
 
     def get(self, request, *args, **kwargs):
@@ -40,8 +49,8 @@ class FormDetail(TemplateView):
 
     def post(self, request, *args, **kwargs):
         published = Form.objects.published(for_user=request.user)
-        form = get_object_or_404(published, slug=kwargs["slug"])
-        form_for_form = FormForForm(form, RequestContext(request),
+        self.form = get_object_or_404(published, slug=kwargs["slug"])
+        form_for_form = FormForForm(self.form, RequestContext(request),
                                     request.POST or None,
                                     request.FILES or None)
         if not form_for_form.is_valid():
@@ -55,11 +64,11 @@ class FormDetail(TemplateView):
                 attachments.append((f.name, f.read()))
             entry = form_for_form.save()
             form_valid.send(sender=request, form=form_for_form, entry=entry)
-            self.send_emails(request, form_for_form, form, entry, attachments)
+            self.send_emails(request, form_for_form, self.form, entry, attachments)
             if not self.request.is_ajax():
-                return redirect(form.redirect_url or
-                    reverse("form_sent", kwargs={"slug": form.slug}))
-        context = {"form": form, "form_for_form": form_for_form}
+                return redirect(self.form.redirect_url or
+                    reverse("form_sent", kwargs={"slug": self.form.slug}))
+        context = {"form": self.form, "form_for_form": form_for_form}
         return self.render_to_response(context)
 
     def render_to_response(self, context, **kwargs):
