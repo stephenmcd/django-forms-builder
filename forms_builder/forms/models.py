@@ -213,12 +213,6 @@ class AbstractField(models.Model):
         if choice:
             yield choice, choice
 
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            slug = slugify(self).replace('-', '_')
-            self.slug = unique_slug(self.form.fields, "slug", slug)
-        return super(AbstractField, self).save(*args, **kwargs)
-
     def is_a(self, *args):
         """
         Helper that returns True if the field's type is given in any arg.
@@ -286,6 +280,9 @@ class Field(AbstractField):
     def save(self, *args, **kwargs):
         if self.order is None:
             self.order = self.form.fields.count()
+        if not self.slug:
+            slug = slugify(self).replace('-', '_')
+            self.slug = unique_slug(self.form.fields, "slug", slug)
         super(Field, self).save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
