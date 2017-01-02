@@ -48,9 +48,9 @@ class FormManager(models.Manager):
 ######################################################################
 
 @python_2_unicode_compatible
-class AbstractForm(models.Model):
+class AbstractFormPage(models.Model):
     """
-    A user-built form.
+    Form page with site reference, and publishable
     """
 
     sites = models.ManyToManyField(Site,
@@ -58,13 +58,6 @@ class AbstractForm(models.Model):
     title = models.CharField(_("Title"), max_length=50)
     slug = models.SlugField(_("Slug"), editable=settings.EDITABLE_SLUGS,
         max_length=100, unique=True)
-    intro = models.TextField(_("Intro"), blank=True)
-    button_text = models.CharField(_("Button text"), max_length=50,
-        default=_("Submit"))
-    response = models.TextField(_("Response"), blank=True)
-    redirect_url = models.CharField(_("Redirect url"), max_length=200,
-        null=True, blank=True,
-        help_text=_("An alternate URL to redirect to after form submission"))
     status = models.IntegerField(_("Status"), choices=STATUS_CHOICES,
         default=STATUS_PUBLISHED)
     publish_date = models.DateTimeField(_("Published from"),
@@ -75,21 +68,10 @@ class AbstractForm(models.Model):
         blank=True, null=True)
     login_required = models.BooleanField(_("Login required"), default=False,
         help_text=_("If checked, only logged in users can view the form"))
-    send_email = models.BooleanField(_("Send email"), default=True, help_text=
-        _("If checked, the person entering the form will be sent an email"))
-    email_from = models.EmailField(_("From address"), blank=True,
-        help_text=_("The address the email will be sent from"))
-    email_copies = models.CharField(_("Send copies to"), blank=True,
-        help_text=_("One or more email addresses, separated by commas"),
-        max_length=200)
-    email_subject = models.CharField(_("Subject"), max_length=200, blank=True)
-    email_message = models.TextField(_("Message"), blank=True)
 
     objects = FormManager()
 
     class Meta:
-        verbose_name = _("Form")
-        verbose_name_plural = _("Forms")
         abstract = True
 
     def __str__(self):
@@ -103,7 +85,43 @@ class AbstractForm(models.Model):
         if not self.slug:
             slug = slugify(self)
             self.slug = unique_slug(self.__class__.objects, "slug", slug)
-        super(AbstractForm, self).save(*args, **kwargs)
+        super(AbstractFormPage, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("form_detail", kwargs={"slug": self.slug})
+
+
+class AbstractBaseForm(models.Model):
+    """
+    A user-built form.
+    """
+
+    intro = models.TextField(_("Intro"), blank=True)
+    button_text = models.CharField(_("Button text"), max_length=50,
+        default=_("Submit"))
+    response = models.TextField(_("Response"), blank=True)
+    redirect_url = models.CharField(_("Redirect url"), max_length=200,
+        null=True, blank=True,
+        help_text=_("An alternate URL to redirect to after form submission"))
+    send_email = models.BooleanField(_("Send email"), default=True, help_text=
+        _("If checked, the person entering the form will be sent an email"))
+    email_from = models.EmailField(_("From address"), blank=True,
+        help_text=_("The address the email will be sent from"))
+    email_copies = models.CharField(_("Send copies to"), blank=True,
+        help_text=_("One or more email addresses, separated by commas"),
+        max_length=200)
+    email_subject = models.CharField(_("Subject"), max_length=200, blank=True)
+    email_message = models.TextField(_("Message"), blank=True)
+
+    class Meta:
+        abstract = True
+
+
+class AbstractForm(AbstractBaseForm, AbstractFormPage):
+    class Meta:
+        verbose_name = _("Form")
+        verbose_name_plural = _("Forms")
+        abstract = True
 
     def published(self, for_user=None):
         """
@@ -128,10 +146,6 @@ class AbstractForm(models.Model):
         """
         return self.total_entries
     total_entries.admin_order_field = "total_entries"
-
-    @models.permalink
-    def get_absolute_url(self):
-        return ("form_detail", (), {"slug": self.slug})
 
     def admin_links(self):
         kw = {"args": (self.id,)}
