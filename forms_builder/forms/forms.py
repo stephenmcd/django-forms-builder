@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from future.builtins import int, range, str
 
@@ -8,7 +9,6 @@ from uuid import uuid4
 import django
 from django import forms
 from django.forms.extras import SelectDateWidget
-from django.core.files.storage import default_storage
 from django.core.urlresolvers import reverse
 from django.template import Template
 from django.utils.safestring import mark_safe
@@ -20,9 +20,10 @@ from forms_builder.forms import settings
 from forms_builder.forms.utils import now, split_choices
 
 
-fs = default_storage
 if settings.UPLOAD_ROOT is not None:
-    fs = default_storage.__class__(location=settings.UPLOAD_ROOT)
+    fs = settings.FILE_STORAGE(location=settings.UPLOAD_ROOT)
+else:
+    fs = settings.FILE_STORAGE()
 
 
 ##############################

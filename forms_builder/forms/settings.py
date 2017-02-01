@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-
+from django.core.files.storage import get_storage_class
 
 if not ("django.contrib.sites" in settings.INSTALLED_APPS):
     raise ImproperlyConfigured("django.contrib.sites is required")
@@ -22,6 +23,9 @@ EXTRA_WIDGETS = getattr(settings, "FORMS_BUILDER_EXTRA_WIDGETS", ())
 
 # The absolute path where files will be uploaded to.
 UPLOAD_ROOT = getattr(settings, "FORMS_BUILDER_UPLOAD_ROOT", None)
+
+# The File Storage class to use, uses default file storage if None
+FILE_STORAGE = get_storage_class(getattr(settings, "FORMS_BUILDER_FILE_STORAGE", None))
 
 # Boolean controlling whether HTML5 form fields are used.
 USE_HTML5 = getattr(settings, "FORMS_BUILDER_USE_HTML5", True)

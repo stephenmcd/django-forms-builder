@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from future.builtins import bytes, open
+import os
 
 from csv import writer
 from mimetypes import guess_type
@@ -18,7 +20,7 @@ from django.utils.translation import ungettext, ugettext_lazy as _
 
 from forms_builder.forms.forms import EntriesForm
 from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry
-from forms_builder.forms.settings import CSV_DELIMITER, UPLOAD_ROOT
+from forms_builder.forms.settings import CSV_DELIMITER, UPLOAD_ROOT, FILE_STORAGE
 from forms_builder.forms.settings import USE_SITES, EDITABLE_SLUGS
 from forms_builder.forms.utils import now, slugify
 
@@ -29,15 +31,17 @@ try:
 except ImportError:
     XLWT_INSTALLED = False
 
-
-fs = FileSystemStorage(location=UPLOAD_ROOT)
+if UPLOAD_ROOT is not None:
+    fs = FileSystemStorage(location=UPLOAD_ROOT)
+else:
+    fs = FILE_STORAGE()
 form_admin_filter_horizontal = ()
 form_admin_fieldsets = [
     (None, {"fields": ("title", ("status", "login_required",),
         ("publish_date", "expiry_date",),
         "intro", "button_text", "response", "redirect_url")}),
     (_("Email"), {"fields": ("send_email", "email_from", "email_copies",
-        "email_subject", "email_message")}),]
+        "email_subject", "email_message")}), ]
 
 if EDITABLE_SLUGS:
     form_admin_fieldsets.append(
@@ -190,10 +194,14 @@ class FormAdmin(admin.ModelAdmin):
         """
         model = self.fieldentry_model
         field_entry = get_object_or_404(model, id=field_entry_id)
-        path = join(fs.location, field_entry.value)
+        if hasattr(fs, 'location'):
+            path = join(fs.location, field_entry.value)
+        else:
+            path = field_entry.value
         response = HttpResponse(content_type=guess_type(path)[0])
-        f = open(path, "r+b")
-        response["Content-Disposition"] = "attachment; filename=%s" % f.name
+        f = fs.open(path, "r+b")
+        filename = os.path.basename(field_entry.value)
+        response["Content-Disposition"] = "attachment; filename=%s" % filename
         response.write(f.read())
         f.close()
         return response

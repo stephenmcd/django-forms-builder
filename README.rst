@@ -126,10 +126,11 @@ in the CSV export. By default these uploaded files are stored in an
 obscured location under your project's ``MEDIA_ROOT`` directory but
 ideally the should be stored somewhere inaccessible to the public. To
 set the location where files are stored to be somewhere outside of your
-project's ``MEDIA_ROOT`` directory you just need to define the
+project's ``MEDIA_ROOT`` directory you just need to define the either the
 ``FORMS_BUILDER_UPLOAD_ROOT`` setting in your project's ``settings``
-module. Its value should be an absolute path on the web server that
-isn't accessible to the public.
+module or the ``FORMS_BUILDER_FILE_STORAGE`` setting. The
+``FORMS_BUILDER_UPLOAD_ROOT`` value should be an absolute path on the web
+server that isn't accessible to the public.
 
 
 Configuration
@@ -146,6 +147,9 @@ module.
   will be added to the form field types. Defaults to ``()``
 * ``FORMS_BUILDER_UPLOAD_ROOT`` - The absolute path where files will
   be uploaded to. Defaults to ``None``
+* ``FORMS_BUILDER_FILE_STORAGE`` - The class path of the Django storage class
+  to use for storing files. Defaults to ``None`` which uses the default file
+  storage.
 * ``FORMS_BUILDER_USE_HTML5`` - Boolean controlling whether HTML5 form
   fields are used. Defaults to ``True``
 * ``FORMS_BUILDER_USE_SITES`` - Boolean controlling whether forms are
