@@ -199,7 +199,7 @@ class FormAdmin(admin.ModelAdmin):
         else:
             path = field_entry.value
         response = HttpResponse(content_type=guess_type(path)[0])
-        f = fs.open(path, "r+b")
+        f = fs.open(path, "rb")
         filename = os.path.basename(field_entry.value)
         response["Content-Disposition"] = "attachment; filename=%s" % filename
         response.write(f.read())
