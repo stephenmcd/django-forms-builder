@@ -119,6 +119,7 @@ date_filter_field = forms.ChoiceField(label=" ", required=False,
 
 class FormForForm(forms.ModelForm):
     field_entry_model = FieldEntry
+    required_css_class = 'required'
 
     class Meta:
         model = FormEntry
