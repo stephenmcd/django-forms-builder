@@ -116,6 +116,8 @@ This allows forms to be displayed without having a form instance, using
 a form's slug or ID, which could be hard-coded in a template, or stored
 in another model instance.
 
+Don't forget to load the template tag before : 
+{% load forms_builder_tags %}
 
 File Uploads
 ============
