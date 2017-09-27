@@ -9,9 +9,9 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext, ugettext_lazy as _
 from future.builtins import str
 
-from forms_builder.forms import fields
-from forms_builder.forms import settings
-from forms_builder.forms.utils import now, slugify, unique_slug
+from . import fields
+from . import settings
+from .utils import now, slugify, unique_slug
 
 
 STATUS_DRAFT = 1
@@ -84,6 +84,9 @@ class AbstractForm(models.Model):
         max_length=200)
     email_subject = models.CharField(_("Subject"), max_length=200, blank=True)
     email_message = models.TextField(_("Message"), blank=True)
+    custom_form_template = models.CharField(_("Render using custom template"), 
+        max_length=200, blank=True, default="forms/includes/built_form.html",
+        help_text=_("If changed it will user diffrent template to render the form"))
 
     objects = FormManager()
 

@@ -8,12 +8,12 @@ from django.http import HttpResponseRedirect
 from django.template import Context, RequestContext, Template
 from django.test import TestCase
 
-from forms_builder.forms.fields import NAMES, FILE
-from forms_builder.forms.forms import FormForForm
-from forms_builder.forms.models import (Form, Field,
+from .fields import NAMES, FILE
+from .forms import FormForForm
+from .models import (Form, Field,
                                         STATUS_DRAFT, STATUS_PUBLISHED)
-from forms_builder.forms.settings import USE_SITES
-from forms_builder.forms.signals import form_invalid, form_valid
+from .settings import USE_SITES
+from .signals import form_invalid, form_valid
 
 
 class Tests(TestCase):

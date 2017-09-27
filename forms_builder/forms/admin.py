@@ -16,11 +16,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import ungettext, ugettext_lazy as _
 
-from forms_builder.forms.forms import EntriesForm
-from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry
-from forms_builder.forms.settings import CSV_DELIMITER, UPLOAD_ROOT
-from forms_builder.forms.settings import USE_SITES, EDITABLE_SLUGS
-from forms_builder.forms.utils import now, slugify
+from .forms import EntriesForm
+from .models import Form, Field, FormEntry, FieldEntry
+from .settings import CSV_DELIMITER, UPLOAD_ROOT
+from .settings import USE_SITES, EDITABLE_SLUGS
+from .utils import now, slugify
 
 try:
     import xlwt
@@ -37,7 +37,8 @@ form_admin_fieldsets = [
         ("publish_date", "expiry_date",),
         "intro", "button_text", "response", "redirect_url")}),
     (_("Email"), {"fields": ("send_email", "email_from", "email_copies",
-        "email_subject", "email_message")}),]
+        "email_subject", "email_message")}),
+    (_("Advanced"), {"fields": ("custom_form_template",)}),]
 
 if EDITABLE_SLUGS:
     form_admin_fieldsets.append(

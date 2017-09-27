@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 
 from django.conf.urls import url
 
-from forms_builder.forms import views
+from . import views
 
 
 urlpatterns = [
