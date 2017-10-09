@@ -21,6 +21,20 @@ for e in exclude:
     except Exception:
         pass
 
+
+version = __import__('forms_builder').__version__
+
+if sys.argv[-1] == 'publish':
+    os.system('python setup.py bdist_wheel upload -r natgeo')
+    print("You probably want to also tag the version now:")
+    print("  python setup.py tag")
+    sys.exit()
+elif sys.argv[-1] == 'tag':
+    cmd = "git tag -a %s -m 'version %s';git push --tags" % (version, version)
+    os.system(cmd)
+    sys.exit()
+
+
 if sys.argv[:2] == ["setup.py", "bdist_wheel"]:
     # Remove previous build dir when creating a wheel build,
     # since if files have been removed from the project,
@@ -33,27 +47,25 @@ if sys.argv[:2] == ["setup.py", "bdist_wheel"]:
 
 try:
     setup(
-        name = "django-forms-builder",
-        version = __import__("forms_builder").__version__,
-        author = "Stephen McDonald",
-        author_email = "stephen.mc@gmail.com",
-        description = ("A Django reusable app providing the ability for "
+        name="django-forms-builder",
+        version=__import__("forms_builder").__version__,
+        author="Stephen McDonald",
+        author_email="stephen.mc@gmail.com",
+        description=("A Django reusable app providing the ability for "
                        "admin users to create their own forms and report "
                        "on their collected data."),
-        long_description = open("README.rst").read(),
-        license = "BSD",
-        url = "http://github.com/stephenmcd/django-forms-builder",
-        zip_safe = False,
-        include_package_data = True,
-        packages = find_packages(),
-        install_requires = [
-            "sphinx-me >= 0.1.2",
+        long_description=open("README.rst").read(),
+        license="BSD",
+        url="http://github.com/stephenmcd/django-forms-builder",
+        zip_safe=False,
+        include_package_data=True,
+        packages=find_packages(exclude="example*"),
+        install_requires=[
             "unidecode",
             "django-email-extras >= 0.2",
-            "django >= 1.8, < 1.11",
-            "future <= 0.15.0",
+            "future >= 0.16.0",
         ],
-        classifiers = [
+        classifiers=[
             "Development Status :: 5 - Production/Stable",
             "Environment :: Web Environment",
             "Intended Audience :: Developers",
