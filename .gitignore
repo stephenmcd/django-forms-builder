@@ -10,3 +10,8 @@ local_settings.py
 build/
 dist/
 forms_builder/example_project/static/
+.tox/
+.cache/
+.coverage
+coverage.xml
+junit*.xml
