@@ -4,6 +4,10 @@
 django-forms-builder
 ====================
 
+** This package was forked to provide a `FILE_STORAGE` setting. **
+
+The `file-storage` branch is the current branch for this.
+
 Created by `Stephen McDonald <http://twitter.com/stephen_mcd>`_
 
 A Django reusable app providing the ability for admin users to create
