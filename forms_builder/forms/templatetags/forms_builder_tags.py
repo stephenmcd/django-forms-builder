@@ -37,7 +37,7 @@ class BuiltFormNode(template.Node):
         context["form"] = form
         form_args = (form, context, post or None, files or None)
         context["form_for_form"] = FormForForm(*form_args)
-        return t.render(context)
+        return t.render(context.flatten())
 
 
 @register.tag
