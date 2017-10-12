@@ -8,7 +8,7 @@ from django.http import HttpResponseRedirect
 from django.template import Context, RequestContext, Template
 from django.test import TestCase
 
-from forms_builder.forms.fields import NAMES, FILE
+from forms_builder.forms.fields import NAMES, FILE, TEXT
 from forms_builder.forms.forms import FormForForm
 from forms_builder.forms.models import (Form, Field,
                                         STATUS_DRAFT, STATUS_PUBLISHED)
@@ -133,6 +133,13 @@ class Tests(TestCase):
         f1 = form.fields.create(label="first field",
                 field_type=NAMES[0][0], order=1)
         self.assertEqual(form.fields.all()[0], f1)
+
+    def test_field_delete(self):
+        form = Form.objects.create(title="Test")
+        field = Field.objects.create(form=form, label="Foo", field_type=TEXT)
+        field.delete()
+        self.assertIsNone(field.pk)
+        self.assertQuerysetEqual(form.fields.all(), [])
 
     def test_form_errors(self):
         from future.builtins import str

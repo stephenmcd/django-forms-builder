@@ -220,6 +220,32 @@ class AbstractField(models.Model):
         return self.field_type in args
 
 
+class AbstractFieldFormOrder(AbstractField):
+    """
+    Base class for implementation of automated field ordering.
+    """
+
+    form = models.ForeignKey("Form", related_name="fields")
+    order = models.IntegerField(_("Order"), null=True, blank=True)
+
+    class Meta(AbstractField.Meta):
+        ordering = ("order",)
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        if self.order is None:
+            self.order = self.form.fields.count()
+        if not self.slug:
+            slug = slugify(self).replace('-', '_')
+            self.slug = unique_slug(self.form.fields, "slug", slug)
+        super(AbstractFieldFormOrder, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        fields_after = self.form.fields.filter(order__gte=self.order)
+        fields_after.update(order=models.F("order") - 1)
+        super(AbstractFieldFormOrder, self).delete(*args, **kwargs)
+
+
 class AbstractFormEntry(models.Model):
     """
     An entry submitted via a user-built form.
@@ -266,26 +292,7 @@ class Form(AbstractForm):
     pass
 
 
-class Field(AbstractField):
+class Field(AbstractFieldFormOrder):
     """
     Implements automated field ordering.
     """
-
-    form = models.ForeignKey("Form", related_name="fields")
-    order = models.IntegerField(_("Order"), null=True, blank=True)
-
-    class Meta(AbstractField.Meta):
-        ordering = ("order",)
-
-    def save(self, *args, **kwargs):
-        if self.order is None:
-            self.order = self.form.fields.count()
-        if not self.slug:
-            slug = slugify(self).replace('-', '_')
-            self.slug = unique_slug(self.form.fields, "slug", slug)
-        super(Field, self).save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        fields_after = self.form.fields.filter(order__gte=self.order)
-        fields_after.update(order=models.F("order") - 1)
-        super(Field, self).delete(*args, **kwargs)
