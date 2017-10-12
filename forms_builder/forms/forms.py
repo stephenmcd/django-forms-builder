@@ -106,16 +106,6 @@ FILTER_FUNCS = {
         lambda val, field: set(val) != set(split_choices(field)),
 }
 
-# Export form fields for each filter type grouping
-text_filter_field = forms.ChoiceField(label=" ", required=False,
-                                      choices=TEXT_FILTER_CHOICES)
-choice_filter_field = forms.ChoiceField(label=" ", required=False,
-                                        choices=CHOICE_FILTER_CHOICES)
-multiple_filter_field = forms.ChoiceField(label=" ", required=False,
-                                          choices=MULTIPLE_FILTER_CHOICES)
-date_filter_field = forms.ChoiceField(label=" ", required=False,
-                                      choices=DATE_FILTER_CHOICES)
-
 
 class FormForForm(forms.ModelForm):
     field_entry_model = FieldEntry
@@ -282,7 +272,8 @@ class EntriesForm(forms.Form):
                 contains_field = forms.MultipleChoiceField(label=" ",
                     choices=choices, widget=forms.CheckboxSelectMultiple(),
                     required=False)
-                self.fields["%s_filter" % field_key] = choice_filter_field
+                self.fields["%s_filter" % field_key] = forms.ChoiceField(label=" ", required=False,
+                                                                         choices=CHOICE_FILTER_CHOICES)
                 self.fields["%s_contains" % field_key] = contains_field
             elif field.is_a(*fields.MULTIPLE):
                 # A fixed set of choices to filter by, with multiple
@@ -291,11 +282,13 @@ class EntriesForm(forms.Form):
                     choices=field.get_choices(),
                     widget=forms.CheckboxSelectMultiple(),
                     required=False)
-                self.fields["%s_filter" % field_key] = multiple_filter_field
+                self.fields["%s_filter" % field_key] = forms.ChoiceField(label=" ", required=False,
+                                                                         choices=MULTIPLE_FILTER_CHOICES)
                 self.fields["%s_contains" % field_key] = contains_field
             elif field.is_a(*fields.DATES):
                 # A date range to filter by.
-                self.fields["%s_filter" % field_key] = date_filter_field
+                self.fields["%s_filter" % field_key] = forms.ChoiceField(label=" ", required=False,
+                                                                         choices=DATE_FILTER_CHOICES)
                 self.fields["%s_from" % field_key] = forms.DateField(
                     label=" ", widget=SelectDateWidget(), required=False)
                 self.fields["%s_to" % field_key] = forms.DateField(
@@ -303,14 +296,16 @@ class EntriesForm(forms.Form):
             else:
                 # Text box for search term to filter by.
                 contains_field = forms.CharField(label=" ", required=False)
-                self.fields["%s_filter" % field_key] = text_filter_field
+                self.fields["%s_filter" % field_key] = forms.ChoiceField(label=" ", required=False,
+                                                                         choices=TEXT_FILTER_CHOICES)
                 self.fields["%s_contains" % field_key] = contains_field
         # Add ``FormEntry.entry_time`` as a field.
         field_key = "field_0"
         label = self.formentry_model._meta.get_field("entry_time").verbose_name
         self.fields["%s_export" % field_key] = forms.BooleanField(
             initial=True, label=label, required=False)
-        self.fields["%s_filter" % field_key] = date_filter_field
+        self.fields["%s_filter" % field_key] = forms.ChoiceField(label=" ", required=False,
+                                                                 choices=DATE_FILTER_CHOICES)
         self.fields["%s_from" % field_key] = forms.DateField(
             label=" ", widget=SelectDateWidget(), required=False)
         self.fields["%s_to" % field_key] = forms.DateField(
