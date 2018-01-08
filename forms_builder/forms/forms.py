@@ -9,7 +9,11 @@ import django
 from django import forms
 from django.forms.extras import SelectDateWidget
 from django.core.files.storage import default_storage
-from django.core.urlresolvers import reverse
+try:
+    from django.urls import reverse
+except ImportError:
+    # For Django 1.8 compatibility
+    from django.conf.urls import reverse
 from django.template import Template
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
