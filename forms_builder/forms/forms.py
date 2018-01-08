@@ -7,7 +7,11 @@ from uuid import uuid4
 
 import django
 from django import forms
-from django.forms.extras import SelectDateWidget
+try:
+    from django.forms import SelectDateWidget
+except ImportError:
+    # For Django 1.8 compatibility
+    from django.forms.extras import SelectDateWidget
 from django.core.files.storage import default_storage
 try:
     from django.urls import reverse
