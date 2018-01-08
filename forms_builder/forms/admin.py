@@ -13,7 +13,8 @@ try:
     from django.urls import reverse, re_path
 except ImportError:
     # For django 1.8 compatiblity
-    from django.conf.urls import reverse, url as re_path
+    from django.conf.urls import url as re_path
+    from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
