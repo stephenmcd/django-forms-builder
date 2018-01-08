@@ -261,11 +261,11 @@ class AbstractFieldEntry(models.Model):
 ###################################################
 
 class FormEntry(AbstractFormEntry):
-    form = models.ForeignKey("Form", related_name="entries")
+    form = models.ForeignKey("Form", related_name="entries", on_delete=models.CASCADE)
 
 
 class FieldEntry(AbstractFieldEntry):
-    entry = models.ForeignKey("FormEntry", related_name="fields")
+    entry = models.ForeignKey("FormEntry", related_name="fields", on_delete=models.CASCADE)
 
 
 class Form(AbstractForm):
@@ -277,7 +277,7 @@ class Field(AbstractField):
     Implements automated field ordering.
     """
 
-    form = models.ForeignKey("Form", related_name="fields")
+    form = models.ForeignKey("Form", related_name="fields", on_delete=models.CASCADE)
     order = models.IntegerField(_("Order"), null=True, blank=True)
 
     class Meta(AbstractField.Meta):
