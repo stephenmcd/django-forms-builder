@@ -50,7 +50,7 @@ try:
             "sphinx-me >= 0.1.2",
             "unidecode",
             "django-email-extras >= 0.2",
-            "django >= 1.8, < 1.11",
+            "django >= 1.8, < 2.0",
             "future <= 0.15.0",
         ],
         classifiers = [
