@@ -1,5 +1,5 @@
 .. image:: https://secure.travis-ci.org/stephenmcd/django-forms-builder.png?branch=master
-   :target: http://travis-ci.org/#!/stephenmcd/django-forms-builder
+   :target: http://travis-ci.org/stephenmcd/django-forms-builder
 
 django-forms-builder
 ====================
