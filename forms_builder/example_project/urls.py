@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+from django.conf.urls.i18n import i18n_patterns
+
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.shortcuts import render
@@ -10,9 +12,9 @@ from forms_builder.forms import urls as form_urls
 
 admin.autodiscover()
 
-urlpatterns = [
+urlpatterns = i18n_patterns(
     url(r'^admin/', include(admin.site.urls)),
     url(r'^forms/', include(form_urls)),
     url(r'^$', lambda request: render(request, "index.html",
                                       {"forms": Form.objects.all()})),
-]
+)

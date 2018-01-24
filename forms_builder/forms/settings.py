@@ -54,3 +54,10 @@ EMAIL_FAIL_SILENTLY = getattr(settings, "FORMS_BUILDER_EMAIL_FAIL_SILENTLY",
 
 # Django SITE_ID - need a default since no longer provided in settings.py.
 SITE_ID = getattr(settings, "SITE_ID", 1)
+
+LANGUAGE_CODE = settings.LANGUAGE_CODE
+
+try:
+    LANGUAGES = settings.LANGUAGES
+except AttributeError:
+    raise ImproperlyConfigured("settings.LANGUAGES is required")

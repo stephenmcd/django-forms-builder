@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 
 import json
 
+from django.utils import translation
+
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.core.urlresolvers import reverse
@@ -26,7 +28,13 @@ class FormDetail(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(FormDetail, self).get_context_data(**kwargs)
         published = Form.objects.published(for_user=self.request.user)
-        context["form"] = get_object_or_404(published, slug=kwargs["slug"])
+        form = get_object_or_404(published, slug=kwargs["slug"])
+
+        # Change the form representation by overwrite values from translation:
+        language_code = translation.get_language()
+        form.activate_translations(language_code)
+
+        context["form"] = form
         return context
 
     def get(self, request, *args, **kwargs):

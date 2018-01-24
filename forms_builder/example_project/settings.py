@@ -54,6 +54,7 @@ TEMPLATES = [
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -81,6 +82,18 @@ INSTALLED_APPS = (
 
 FORMS_BUILDER_EXTRA_FIELDS = (
     (100, "django.forms.BooleanField", "My cool checkbox"),
+)
+
+USE_I18N = True
+USE_L10N = True
+
+LANGUAGE_CODE = 'en' # default language for forms
+
+LANGUAGES = ( # Used for create form translations
+    ('en', 'English'),
+    ('de', 'German'),
+    ('fr', 'French'),
+    # ...
 )
 
 try:
