@@ -338,10 +338,7 @@ class FormTranslationAdmin(admin.ModelAdmin):
             min_num=field_count, validate_min=True
         )
         if request.method == 'POST':
-            field_formset = TranslationFieldFormSet(request.POST, request.FILES,
-                prefix='fields',
-                form_kwargs={"origin_form": origin_form}
-            )
+            field_formset = TranslationFieldFormSet(request.POST, request.FILES, prefix='fields')
             translation_form = FormTranslationForm(request.POST, request.FILES,
                 origin_form=origin_form,
                 instance=instance
