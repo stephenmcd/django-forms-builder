@@ -227,6 +227,9 @@ class FieldTranslationAdmin(admin.ModelAdmin):
     list_filter = (
         "form_translation",
     )
+    def has_add_permission(self, request):
+        # Hide 'add' functionality: The translation view must be used via links from /admin/forms/form/
+        return False
 
 
 @admin.register(FormTranslationModel)
