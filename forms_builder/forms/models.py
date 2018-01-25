@@ -1,5 +1,9 @@
 from __future__ import unicode_literals
 
+from django.shortcuts import get_object_or_404
+
+from django.utils import translation
+
 from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
@@ -37,6 +41,25 @@ class FormManager(models.Manager):
         if settings.USE_SITES:
             filters.append(Q(sites=Site.objects.get_current()))
         return self.filter(*filters)
+
+    def get_or_404(self, slug, language_code, for_user=None):
+        published = self.published(for_user=for_user)
+        if language_code == settings.LANGUAGE_CODE:
+            # There are no translations for default language
+            return get_object_or_404(published, slug=slug)
+
+        try:
+            form_translation = FormTranslationModel.objects.all().get(
+                form__in=published,
+                language_code=language_code,
+                slug=slug,
+            )
+        except FormTranslationModel.DoesNotExist:
+            # Translation doesn't exist, try non-translated:
+            return get_object_or_404(published, slug=slug)
+        else:
+            return form_translation.form
+
 
 
 ######################################################################
@@ -131,7 +154,13 @@ class AbstractForm(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ("form_detail", (), {"slug": self.slug})
+        form_translations = self.get_translation()
+        if form_translations is not None:
+            slug = form_translations.slug or self.slug
+        else:
+            slug = self.slug
+
+        return ("form_detail", (), {"slug": slug})
 
     def admin_links(self):
         kw = {"args": (self.id,)}
@@ -175,32 +204,35 @@ class AbstractForm(models.Model):
     admin_links.allow_tags = True
     admin_links.short_description = ""
 
-    def get_translation(self, language_code):
+    def get_translation(self, language_code=None):
         """
         returns the corresponding translated FormTranslationModel instance, if exist
         """
+        if language_code is None:
+            language_code = translation.get_language()
+
+        if language_code == settings.LANGUAGE_CODE:
+            # The default language must not be translated ;)
+            return
+
         try:
             return FormTranslationModel.objects.all().get(form=self, language_code=language_code)
         except FormTranslationModel.DoesNotExist:
             # not translated, yet
             return None
 
-    def activate_translations(self, language_code):
+    def activate_translations(self):
         """
         'Overwrite' field values with translation, if exists.
         So the rendering in template will display the translations.
         """
-        if language_code == settings.LANGUAGE_CODE:
-            # The default language must not be translated ;)
-            return
-
-        form_translations = self.get_translation(language_code)
+        form_translations = self.get_translation()
         if form_translations is None:
-            # not translated, yet
+            # default language is active or not translated, yet.
             return
 
         for field in form_translations._meta.get_fields():
-            if field.name in ("id", "form", "language_code", "translation"):
+            if field.name in ("id", "form", "language_code", "fields"):
                 # Don't change 'internal' fields
                 continue
 
@@ -288,15 +320,42 @@ class AbstractField(CommaSeparatedChoiceMixin, models.Model):
         """
         return self.field_type in args
 
-    def get_translation(self, language_code):
+    def get_translation(self, language_code=None):
         """
         returns the corresponding translated FieldTranslationModel instance, if exist
         """
+        if language_code is None:
+            language_code = translation.get_language()
+
+        if language_code == settings.LANGUAGE_CODE:
+            # The default language must not be translated ;)
+            return
+
         try:
             return FieldTranslationModel.objects.get(field=self, language_code=language_code)
         except FieldTranslationModel.DoesNotExist:
             # not translated, yet.
             return None
+
+    def activate_translations(self):
+        """
+        'Overwrite' field values with translation, if exists.
+        So the rendering in template will display the translations.
+        """
+        field_translations = self.get_translation()
+        if field_translations is None:
+            # default language is active or not translated, yet.
+            return
+
+        for field in field_translations._meta.get_fields():
+            if field.name in ("id", "form_translation", "field", "language_code"):
+                # Don't change 'internal' fields
+                continue
+
+            # Use translations like 'title', 'slug', 'intro' etc.:
+            value = getattr(field_translations, field.name)
+            if value:
+                setattr(self, field.name, value)
 
 
 class AbstractFormEntry(models.Model):
@@ -385,6 +444,8 @@ class FormTranslationModel(models.Model):
     language_code = models.CharField(_("Language"), editable=False, choices=settings.LANGUAGES, max_length=15, db_index=True)
 
     # Followed fields are the same as in origin Form model, but they are all 'optional':
+    # TODO: Create create a base class to merge all double code for Form and FormTranslationModel
+    # e.g.: all fields, the "slugify" stuff and get_choices()
 
     title = models.CharField(_("Title"), max_length=50, null=True, blank=True)
     slug = models.SlugField(_("Slug"), null=True, blank=True, editable=settings.EDITABLE_SLUGS, max_length=100, unique=True)
@@ -405,6 +466,15 @@ class FormTranslationModel(models.Model):
     def __str__(self):
         return "%s (%s: %s)" % (self.form, self.language_code, self.title)
 
+    def save(self, *args, **kwargs):
+        """
+        Set unique slug from self.title
+        """
+        if not self.slug and self.title:
+            slug = slugify(self.title)
+            self.slug = unique_slug(self.__class__.objects, "slug", slug)
+        super(FormTranslationModel, self).save(*args, **kwargs)
+
     class Meta:
         verbose_name = _("Form translation")
         verbose_name_plural = _("Form translations")
@@ -424,7 +494,7 @@ class FieldTranslationModel(CommaSeparatedChoiceMixin, models.Model):
         - assert len(choices) == origin len(choices)
     """
     form_translation = models.ForeignKey(
-        FormTranslationModel, related_name="translation", editable=False,
+        FormTranslationModel, related_name="fields", editable=False,
         on_delete=models.CASCADE
     )
     field = models.ForeignKey(Field, related_name="translation", editable=False,
@@ -435,7 +505,6 @@ class FieldTranslationModel(CommaSeparatedChoiceMixin, models.Model):
     # Followed fields are the same as in origin Field model, but they are all 'optional':
 
     label = models.CharField(_("Label"), null=True, blank=True, max_length=settings.LABEL_MAX_LENGTH)
-    slug = models.SlugField(_('Slug'), max_length=100, blank=True, default="")
 
     choices = models.CharField(_("Choices"), max_length=settings.CHOICES_MAX_LENGTH, null=True, blank=True,
         help_text="Comma separated options where applicable. If an option "

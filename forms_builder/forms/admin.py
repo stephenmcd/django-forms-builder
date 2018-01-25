@@ -280,20 +280,6 @@ class FormTranslationAdmin(admin.ModelAdmin):
         ]
         return extra_urls + urls
 
-    # def get_form(self, request, obj=None, **kwargs):
-    #
-    #     origin_form = request.origin_form
-    #
-    #     form = super(FormTranslationAdmin, self).get_form(request, obj=obj, **kwargs)
-    #     for name, field in form.base_fields.items():
-    #         origin_field = getattr(origin_form, name)
-    #         print(origin_field)
-    #         print(dir(origin_field))
-    #
-    #         # print(origin_form.fields[name])
-    #
-    #     return form
-
     def has_add_permission(self, request):
         # Hide 'add' functionality: The translation view must be used via links from /admin/forms/form/
         return False
