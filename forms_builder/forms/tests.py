@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+from django.utils import translation
+
 from django.conf import settings
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
@@ -11,7 +13,7 @@ from django.test import TestCase
 from forms_builder.forms.fields import NAMES, FILE
 from forms_builder.forms.forms import FormForForm
 from forms_builder.forms.models import (Form, Field,
-                                        STATUS_DRAFT, STATUS_PUBLISHED)
+    STATUS_DRAFT, STATUS_PUBLISHED, FormTranslationModel, FieldTranslationModel)
 from forms_builder.forms.settings import USE_SITES
 from forms_builder.forms.signals import form_invalid, form_valid
 
@@ -158,3 +160,69 @@ class Tests(TestCase):
         self.assertEqual(response["location"], redirect_url)
         response = self.client.post(form_absolute_url, {'field': 'bar'})
         self.assertFalse(isinstance(response, HttpResponseRedirect))
+
+    def test_translation(self):
+        form = Form.objects.create(title='The title in English.', status=STATUS_PUBLISHED)
+        if USE_SITES:
+            form.sites.add(self._site)
+            form.save()
+
+        f1 = form.fields.create(label="field no. 1 in English",
+            field_type=NAMES[0][0], # "Single line text"
+            order=1
+        )
+        f2 = form.fields.create(label="field no. 2 in English",
+            field_type=NAMES[0][0], # "Single line text"
+            order=2
+        )
+        form_translation = FormTranslationModel.objects.create(
+            form=form,
+            language_code="de",
+            title="Der Titel in Deutsch."
+        )
+        FieldTranslationModel.objects.create(
+            form_translation = form_translation,
+            field=f1,
+            language_code="de",
+            label="Feld Nr. 1 in Deutsch"
+        )
+        FieldTranslationModel.objects.create(
+            form_translation = form_translation,
+            field=f2,
+            language_code="de",
+            label="Feld Nr. 2 in Deutsch"
+        )
+
+
+        # request and assert form in english:
+
+        with translation.override("en"):
+            form_absolute_url_en = form.get_absolute_url()
+
+        self.assertEqual(form_absolute_url_en, "/en/forms/the-title-in-english/")
+
+        response = self.client.get(form_absolute_url_en, HTTP_ACCEPT_LANGUAGE="en")
+        content = response.content.decode("utf-8")
+        # print(content)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertInHTML('<h1>The title in English.</h1>', content)
+        self.assertInHTML('<label for="id_field_no_1_in_english">field no. 1 in English:</label>', content)
+        self.assertInHTML('<label for="id_field_no_2_in_english">field no. 2 in English:</label>', content)
+
+
+        # request and assert form in german:
+
+        with translation.override("de"):
+            form_absolute_url_de = form.get_absolute_url()
+
+        self.assertEqual(form_absolute_url_de, "/de/forms/the-title-in-english/") # FIXME: Should we translate url, too?
+
+        response = self.client.get(form_absolute_url_de, HTTP_ACCEPT_LANGUAGE="de")
+        content = response.content.decode("utf-8")
+        # print(content)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertInHTML('<h1>Der Titel in Deutsch.</h1>', content)
+        self.assertInHTML('<label for="id_field_no_1_in_english">Feld Nr. 1 in Deutsch:</label>', content)
+        self.assertInHTML('<label for="id_field_no_2_in_english">Feld Nr. 2 in Deutsch:</label>', content)
