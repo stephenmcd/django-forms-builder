@@ -11,6 +11,8 @@ from django.db import models
 from django.db.models import Q
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext, ugettext_lazy as _
+from django.conf import settings as django_settings
+
 from future.builtins import str
 
 from forms_builder.forms import fields
@@ -44,7 +46,7 @@ class FormManager(models.Manager):
 
     def get_or_404(self, slug, language_code, for_user=None):
         published = self.published(for_user=for_user)
-        if language_code == settings.LANGUAGE_CODE:
+        if language_code == django_settings.LANGUAGE_CODE:
             # There are no translations for default language
             return get_object_or_404(published, slug=slug)
 
@@ -174,8 +176,8 @@ class AbstractForm(models.Model):
             links[i] = "<a href='%s'>%s</a>" % (url, ugettext(text))
 
         translate_links = []
-        for language_code, language_name in settings.LANGUAGES:
-            if language_code == settings.LANGUAGE_CODE:
+        for language_code, language_name in django_settings.LANGUAGES:
+            if language_code == django_settings.LANGUAGE_CODE:
                 # The default language must not be translated ;)
                 continue
 
@@ -211,7 +213,7 @@ class AbstractForm(models.Model):
         if language_code is None:
             language_code = translation.get_language()
 
-        if language_code == settings.LANGUAGE_CODE:
+        if language_code == django_settings.LANGUAGE_CODE:
             # The default language must not be translated ;)
             return
 
@@ -327,7 +329,7 @@ class AbstractField(CommaSeparatedChoiceMixin, models.Model):
         if language_code is None:
             language_code = translation.get_language()
 
-        if language_code == settings.LANGUAGE_CODE:
+        if language_code == django_settings.LANGUAGE_CODE:
             # The default language must not be translated ;)
             return
 
@@ -441,7 +443,7 @@ class FormTranslationModel(models.Model):
     form = models.ForeignKey(Form, editable=False, related_name="translations",
         on_delete=models.CASCADE
     )
-    language_code = models.CharField(_("Language"), editable=False, choices=settings.LANGUAGES, max_length=15, db_index=True)
+    language_code = models.CharField(_("Language"), editable=False, choices=django_settings.LANGUAGES, max_length=15, db_index=True)
 
     # Followed fields are the same as in origin Form model, but they are all 'optional':
     # TODO: Create create a base class to merge all double code for Form and FormTranslationModel
@@ -500,7 +502,7 @@ class FieldTranslationModel(CommaSeparatedChoiceMixin, models.Model):
     field = models.ForeignKey(Field, related_name="translation", editable=False,
         on_delete=models.CASCADE
     )
-    language_code = models.CharField(_("Language"), editable=False, choices=settings.LANGUAGES, max_length=15, db_index=True)
+    language_code = models.CharField(_("Language"), editable=False, choices=django_settings.LANGUAGES, max_length=15, db_index=True)
 
     # Followed fields are the same as in origin Field model, but they are all 'optional':
 

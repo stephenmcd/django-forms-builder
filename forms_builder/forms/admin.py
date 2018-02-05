@@ -308,11 +308,11 @@ class FormTranslationAdmin(admin.ModelAdmin):
         # Display form in destination language (e.g.: Translate label, help text etc.)
         translation.activate(language_code)
 
-        language_dict = dict(settings.LANGUAGES)
+        language_dict = dict(django_settings.LANGUAGES)
         try:
             language_name = language_dict[language_code]
         except KeyError:
-            raise Http404("Language code %r not in settings.LANGUAGES" % language_code)
+            raise Http404("Language code %r not in django_settings.LANGUAGES" % language_code)
 
         origin_form = get_object_or_404(Form, id=form_id)
         origin_fields = origin_form.fields.all()
