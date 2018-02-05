@@ -1,4 +1,12 @@
 from __future__ import unicode_literals
+
+from django.http.response import Http404
+from django.utils import translation
+from django.template.response import TemplateResponse
+from django.forms.formsets import formset_factory
+from django.forms.models import BaseInlineFormSet
+from django.conf import settings as django_settings
+
 from future.builtins import bytes, open
 
 from csv import writer
@@ -8,7 +16,7 @@ from datetime import datetime
 from io import BytesIO, StringIO
 
 from django.conf.urls import url
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.core.files.storage import FileSystemStorage
 from django.core.urlresolvers import reverse
 from django.db.models import Count
@@ -16,8 +24,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import ungettext, ugettext_lazy as _
 
-from forms_builder.forms.forms import EntriesForm
-from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry
+from forms_builder.forms.forms import EntriesForm, TranslationFieldForm, FormTranslationForm
+from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry, FormTranslationModel, FieldTranslationModel
+from forms_builder.forms import settings
 from forms_builder.forms.settings import CSV_DELIMITER, UPLOAD_ROOT
 from forms_builder.forms.settings import USE_SITES, EDITABLE_SLUGS
 from forms_builder.forms.utils import now, slugify
@@ -184,6 +193,13 @@ class FormAdmin(admin.ModelAdmin):
                    "xlwt_installed": XLWT_INSTALLED}
         return render(request, template, context)
 
+    def render_change_form(self, request, context, **kwargs):
+        if django_settings.USE_I18N:
+            default_language_code = django_settings.LANGUAGE_CODE
+            default_language_name = dict(django_settings.LANGUAGES)[default_language_code]
+            context["default_language_name"]=default_language_name
+        return super().render_change_form(request, context, **kwargs)
+
     def file_view(self, request, field_entry_id):
         """
         Output the file for the requested field entry.
@@ -200,3 +216,178 @@ class FormAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Form, FormAdmin)
+
+
+
+class FieldTranslationInlineAdmin(admin.TabularInline):
+    model = FieldTranslationModel
+    can_delete = False
+    extra = 0
+
+
+
+@admin.register(FieldTranslationModel)
+class FieldTranslationAdmin(admin.ModelAdmin):
+    list_display = ("form_translation", "field", "language_code", "label")#
+    list_filter = (
+        "form_translation",
+    )
+    def has_add_permission(self, request):
+        # Hide 'add' functionality: The translation view must be used via links from /admin/forms/form/
+        return False
+
+
+@admin.register(FormTranslationModel)
+class FormTranslationAdmin(admin.ModelAdmin):
+    inlines = (FieldTranslationInlineAdmin,)
+    list_display = ("form", "language_code", "title", "field_info")
+
+    def field_info(self, obj):
+        origin_form = obj.form
+        language_code = obj.language_code
+
+        translated_fields = FieldTranslationModel.objects.all().filter(
+            field__form=origin_form,
+            language_code = language_code
+        )
+        html = "<br>".join([str(field) for field in translated_fields])
+        return html
+
+    field_info.allow_tags = True
+    field_info.short_description = "field info"
+
+    def get_inline_instances(self, request, obj=None):
+        """
+        Set FieldTranslationInlineAdmin min/max depend on field count.
+        """
+        inline_instances = super(FormTranslationAdmin, self).get_inline_instances(request, obj=obj)
+
+        if obj is not None:
+            # obj is forms_builder.forms.models.FormTranslationModel instance
+            origin_form = obj.form # forms_builder.forms.models.Form instance
+            field_count = origin_form.fields.all().count()
+
+            field_translation_admin = inline_instances[0] # forms_builder.forms.admin.FieldTranslationAdmin instance
+            field_translation_admin.min_num = field_count
+            field_translation_admin.max_num = field_count
+
+        return inline_instances
+
+    def get_urls(self):
+        """
+        Add the entries view to urls.
+        """
+        urls = super(FormTranslationAdmin, self).get_urls()
+        extra_urls = [
+            url(r"^translate/(?P<form_id>\d+)/(?P<language_code>[\w-]+)/$",
+                self.admin_site.admin_view(self.translate),
+                name="translate"),
+        ]
+        return extra_urls + urls
+
+    def has_add_permission(self, request):
+        # Hide 'add' functionality: The translation view must be used via links from /admin/forms/form/
+        return False
+
+    def add_view(self, request, form_url='', extra_context=None):
+        messages.error(request, "Using add is not allowed! Use translation links!")
+        return HttpResponseRedirect("..")
+
+    def change_view(self, request, object_id, **kwargs):
+        instance = get_object_or_404(FormTranslationModel, id=object_id)
+        language_code = instance.language_code
+
+        # Display form in destination language (e.g.: Translate label, help text etc.)
+        translation.activate(language_code)
+
+        messages.warning(request, "TODO: Change form like translate view.") # TODO
+
+        return super(FormTranslationAdmin, self).change_view(request, object_id, **kwargs)
+
+    def translate(self, request, form_id, language_code):
+        # Display form in destination language (e.g.: Translate label, help text etc.)
+        translation.activate(language_code)
+
+        language_dict = dict(django_settings.LANGUAGES)
+        try:
+            language_name = language_dict[language_code]
+        except KeyError:
+            raise Http404("Language code %r not in django_settings.LANGUAGES" % language_code)
+
+        origin_form = get_object_or_404(Form, id=form_id)
+        origin_fields = origin_form.fields.all()
+
+        field_count = len(origin_fields)
+
+        try:
+            instance = FormTranslationModel.objects.get(form=origin_form, language_code=language_code)
+        except FormTranslationModel.DoesNotExist:
+            instance = None
+
+        TranslationFieldFormSet = formset_factory(
+            TranslationFieldForm,
+            extra=0,
+            can_order=False, can_delete=False,
+            max_num=field_count, validate_max=True,
+            min_num=field_count, validate_min=True
+        )
+        if request.method == 'POST':
+            field_formset = TranslationFieldFormSet(request.POST, request.FILES, prefix='fields')
+            translation_form = FormTranslationForm(request.POST, request.FILES,
+                origin_form=origin_form,
+                instance=instance
+            )
+            if field_formset.is_valid() and translation_form.is_valid():
+                form_translation_instance = translation_form.save(commit=False)
+                form_translation_instance.form = origin_form
+                form_translation_instance.language_code = language_code
+                form_translation_instance.save()
+
+                for origin_field, translation_field_form in zip(origin_fields, field_formset):
+                    instance = translation_field_form.save(commit=False)
+                    instance.form_translation = form_translation_instance
+                    instance.field = origin_field
+                    instance.language_code = language_code
+                    instance.save()
+
+                messages.success(request, _("Translation in %s created,") % language_name)
+                return HttpResponseRedirect("#TODO")
+        else:
+            # if instance is None:
+            initial=[{"field": origin_field} for origin_field in origin_fields]
+            # else:
+            #     field_instances = FieldTranslationModel.objects.all().filter(
+            #         form_translation=instance,
+            #         language_code=language_code
+            #     )
+            #     initial=[{"field": field} for field in field_instances]
+
+            field_formset = TranslationFieldFormSet(
+                prefix='fields',
+                initial=initial,
+            )
+
+            translation_form = FormTranslationForm(
+                origin_form=origin_form,
+                instance=instance
+            )
+
+        opts = self.model._meta
+        context = {
+            "language_code": language_code,
+            "language_name": language_name,
+            'field_formset': field_formset,
+            'translation_form': translation_form,
+            'opts': opts,
+            'change': False,
+            'is_popup': False,
+            'save_as': False,
+            'has_delete_permission': self.has_delete_permission(request),
+            'has_add_permission': self.has_add_permission(request),
+            'has_change_permission': self.has_change_permission(request),
+        }
+        return TemplateResponse(request, 'admin/forms/translate_form.html', context)
+
+
+
+

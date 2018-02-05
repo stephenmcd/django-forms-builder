@@ -1,4 +1,8 @@
 from __future__ import unicode_literals
+
+from django.utils import translation
+
+from django.forms import widgets
 from future.builtins import int, range, str
 
 from datetime import date, datetime
@@ -15,7 +19,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from forms_builder.forms import fields
-from forms_builder.forms.models import FormEntry, FieldEntry
+from forms_builder.forms.models import FormEntry, FieldEntry, FieldTranslationModel, FormTranslationModel
 from forms_builder.forms import settings
 from forms_builder.forms.utils import now, split_choices
 
@@ -139,22 +143,52 @@ class FormForForm(forms.ModelForm):
             for field_entry in kwargs["instance"].fields.all():
                 field_entries[field_entry.field_id] = field_entry.value
         super(FormForForm, self).__init__(*args, **kwargs)
+
+        language_code = translation.get_language()
+
         # Create the form fields.
         for field in self.form_fields:
             field_key = field.slug
             field_class = fields.CLASSES[field.field_type]
             field_widget = fields.WIDGETS.get(field.field_type)
-            field_args = {"label": field.label, "required": field.required,
-                          "help_text": field.help_text}
+
             arg_names = field_class.__init__.__code__.co_varnames
+
+            # Use translation if exist for e.g.: 'label', 'help_text' etc.:
+            try:
+                field_translations = FieldTranslationModel.objects.get(field=field, language_code=language_code)
+            except FieldTranslationModel.DoesNotExist:
+                label = field.label
+                help_text = field.help_text
+                placeholder_text = field.placeholder_text
+                if "choices" in arg_names:
+                    choices = field.get_choices()
+            else:
+                label = field_translations.label or field.label
+                help_text = field_translations.help_text or field.help_text
+                placeholder_text = field_translations.placeholder_text or field.placeholder_text
+                if "choices" in arg_names:
+                    if field_translations.choices:
+                        choices = field_translations.get_choices()
+                    else:
+                        choices = field.get_choices()
+
+            field_args = {
+                "label": label,
+                "required": field.required,
+                "help_text": help_text
+            }
+
             if "max_length" in arg_names:
                 field_args["max_length"] = settings.FIELD_MAX_LENGTH
+
             if "choices" in arg_names:
-                choices = list(field.get_choices())
+                choices = list(choices)
                 if (field.field_type == fields.SELECT and
                         field.default not in [c[0] for c in choices]):
-                    choices.insert(0, ("", field.placeholder_text))
+                    choices.insert(0, ("", placeholder_text))
                 field_args["choices"] = choices
+
             if field_widget is not None:
                 field_args["widget"] = field_widget
             #
@@ -197,9 +231,8 @@ class FormForForm(forms.ModelForm):
                     field.field_type != fields.CHECKBOX_MULTIPLE):
                     self.fields[field_key].widget.attrs["required"] = ""
             self.fields[field_key].widget.attrs["class"] = css_class
-            if field.placeholder_text and not field.default:
-                text = field.placeholder_text
-                self.fields[field_key].widget.attrs["placeholder"] = text
+            if placeholder_text and not field.default:
+                self.fields[field_key].widget.attrs["placeholder"] = placeholder_text
 
     def save(self, **kwargs):
         """
@@ -448,3 +481,68 @@ class EntriesForm(forms.Form):
             if not csv:
                 current_row.insert(0, current_entry)
             yield current_row
+
+
+class TranslationFieldForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        """
+        Fill field stuff:
+         - set initial value if we edit a existing translation
+         - add 'origin value' to help text, for easier translation
+         - hide field, if the origin field is empty
+        """
+        super(TranslationFieldForm, self).__init__(*args, **kwargs)
+
+        if "initial" in kwargs:
+            initial = kwargs["initial"]
+            origin_field = initial["field"] # ModelChoiceField instance to forms_builder.forms.models.Field
+            language_code = translation.get_language()
+            translated_field = origin_field.get_translation(language_code)
+
+            for field_name, field in self.fields.items():
+                origin_value = getattr(origin_field, field_name)
+                if origin_value:
+                    if translated_field is not None:
+                        # We change a existing translation:
+                        # set initial value from old translated entry
+                        field.initial = getattr(translated_field, field_name)
+
+                    # Append the origin value to help text:
+                    if field.help_text:
+                        field.help_text = "origin: '%s' (%s)" % (origin_value, field.help_text)
+                    else:
+                        field.help_text = "origin: '%s'" % origin_value
+                else:
+                    # Hide all emtpy fields:
+                    field.widget=widgets.HiddenInput()
+
+    class Meta:
+        model = FieldTranslationModel
+        exclude=()
+
+
+class FormTranslationForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        """
+        Setup form:
+         - add 'origin value' to help text, for easier translation
+         - hide field, if the origin field is empty
+        """
+        origin_form = kwargs.pop("origin_form")
+        super(FormTranslationForm, self).__init__(*args, **kwargs)
+
+        for field_name, field in self.fields.items():
+            origin_value = getattr(origin_form, field_name)
+            if origin_value:
+                # Append the origin value to help text:
+                if field.help_text:
+                    field.help_text = "origin: '%s' (%s)" % (origin_value, field.help_text)
+                else:
+                    field.help_text = "origin: '%s'" % origin_value
+            else:
+                # Hide all emtpy fields:
+                field.widget=widgets.HiddenInput()
+
+    class Meta:
+        model = FormTranslationModel
+        exclude=()

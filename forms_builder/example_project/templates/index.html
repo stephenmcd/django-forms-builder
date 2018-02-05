@@ -1,4 +1,5 @@
 <!doctype html>
+<html>
 <head>
     <meta charset="utf-8">
     <title>{{ form.title }}</title>
@@ -11,8 +12,9 @@
 </head>
 <body>
     <h1>Forms</h1>
-    {% for form in forms %}
+    {% for form in forms %}{{ form.activate_translations }}
     <p><a href="{{ form.get_absolute_url }}">{{ form.title }}</a></p>
+    <p>Go to the <a href="/admin/">admin</a></p>
     {% empty %}
     <p>No forms created. Go to the <a href="/admin/">admin</a> to create a form.</p>
     {% endfor %}

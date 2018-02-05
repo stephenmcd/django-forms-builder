@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+from django.utils import translation
+
 from django.conf import settings
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
@@ -11,7 +13,7 @@ from django.test import TestCase
 from forms_builder.forms.fields import NAMES, FILE
 from forms_builder.forms.forms import FormForForm
 from forms_builder.forms.models import (Form, Field,
-                                        STATUS_DRAFT, STATUS_PUBLISHED)
+    STATUS_DRAFT, STATUS_PUBLISHED, FormTranslationModel, FieldTranslationModel, FieldEntry)
 from forms_builder.forms.settings import USE_SITES
 from forms_builder.forms.signals import form_invalid, form_valid
 
@@ -158,3 +160,124 @@ class Tests(TestCase):
         self.assertEqual(response["location"], redirect_url)
         response = self.client.post(form_absolute_url, {'field': 'bar'})
         self.assertFalse(isinstance(response, HttpResponseRedirect))
+
+    def test_translation(self):
+        form = Form.objects.create(title='The title in English.', status=STATUS_PUBLISHED)
+        if USE_SITES:
+            form.sites.add(self._site)
+            form.save()
+
+        f1 = form.fields.create(label="field no. 1 in English",
+            field_type=NAMES[0][0], # "Single line text"
+            order=1
+        )
+        f2 = form.fields.create(label="field no. 2 in English",
+            field_type=NAMES[0][0], # "Single line text"
+            order=2
+        )
+        form_translation = FormTranslationModel.objects.create(
+            form=form,
+            language_code="de",
+            title="Der Titel in Deutsch."
+        )
+        self.assertEqual(form_translation.slug, "der-titel-in-deutsch")
+        FieldTranslationModel.objects.create(
+            form_translation = form_translation,
+            field=f1,
+            language_code="de",
+            label="Feld Nr. 1 in Deutsch"
+        )
+        FieldTranslationModel.objects.create(
+            form_translation = form_translation,
+            field=f2,
+            language_code="de",
+            label="Feld Nr. 2 in Deutsch"
+        )
+
+        # Check form url in english:
+
+        with translation.override("en"):
+            form_absolute_url_en = form.get_absolute_url()
+
+        self.assertEqual(form_absolute_url_en, "/en/forms/the-title-in-english/")
+
+        # Check link and title on index page in english:
+
+        response = self.client.get("/en/", HTTP_ACCEPT_LANGUAGE="en")
+        content = response.content.decode("utf-8")
+        # print(content)
+        self.assertEqual(response.status_code, 200)
+        self.assertInHTML('<a href="/en/forms/the-title-in-english/">The title in English.</a>', content)
+
+        # request and assert form in english:
+
+        response = self.client.get(form_absolute_url_en, HTTP_ACCEPT_LANGUAGE="en")
+        content = response.content.decode("utf-8")
+        # print(content)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertInHTML('<h1>The title in English.</h1>', content)
+        self.assertInHTML('<label for="id_field_no_1_in_english">field no. 1 in English:</label>', content)
+        self.assertInHTML('<label for="id_field_no_2_in_english">field no. 2 in English:</label>', content)
+
+        # Fill the form in english:
+
+        response = self.client.post(form_absolute_url_en,
+            data={
+                "field_no_1_in_english": "a value for field no. 1",
+                "field_no_2_in_english": "a value for field no. 2",
+            },
+            HTTP_ACCEPT_LANGUAGE="en"
+        )
+        # print(response.content.decode("utf-8"))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            list(FieldEntry.objects.values_list("value", flat=True)), [
+                "a value for field no. 1",
+                "a value for field no. 2"
+        ])
+
+        # Check link and title on index page in german:
+
+        response = self.client.get("/de/", HTTP_ACCEPT_LANGUAGE="de")
+        content = response.content.decode("utf-8")
+        # print(content)
+        self.assertEqual(response.status_code, 200)
+        self.assertInHTML('<a href="/de/forms/der-titel-in-deutsch/">Der Titel in Deutsch.</a>', content)
+
+        # Check form url in german:
+
+        with translation.override("de"):
+            form_absolute_url_de = form.get_absolute_url()
+
+        self.assertEqual(form_absolute_url_de, "/de/forms/der-titel-in-deutsch/") # FIXME: Should we translate url, too?
+
+        # request and assert form in german:
+
+        response = self.client.get(form_absolute_url_de, HTTP_ACCEPT_LANGUAGE="de")
+        content = response.content.decode("utf-8")
+        # print(content)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertInHTML('<h1>Der Titel in Deutsch.</h1>', content)
+        self.assertInHTML('<label for="id_field_no_1_in_english">Feld Nr. 1 in Deutsch:</label>', content)
+        self.assertInHTML('<label for="id_field_no_2_in_english">Feld Nr. 2 in Deutsch:</label>', content)
+
+        # Fill the form in german:
+
+        response = self.client.post(form_absolute_url_de,
+            data={
+                "field_no_1_in_english": "Ein Eintrag im Feld Nr.1",
+                "field_no_2_in_english": "Ein Eintrag im Feld Nr.2",
+            },
+            HTTP_ACCEPT_LANGUAGE="de"
+        )
+        # print(response.content.decode("utf-8"))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(
+            list(FieldEntry.objects.values_list("value", flat=True)), [
+                "a value for field no. 1",
+                "a value for field no. 2",
+                "Ein Eintrag im Feld Nr.1",
+                "Ein Eintrag im Feld Nr.2",
+        ])

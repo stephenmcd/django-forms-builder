@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 
 import json
 
+from django.utils import translation
+
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.core.urlresolvers import reverse
@@ -13,10 +15,20 @@ from django.views.generic.base import TemplateView
 from email_extras.utils import send_mail_template
 
 from forms_builder.forms.forms import FormForForm
-from forms_builder.forms.models import Form
+from forms_builder.forms.models import Form, FormTranslationModel
 from forms_builder.forms.settings import EMAIL_FAIL_SILENTLY
 from forms_builder.forms.signals import form_invalid, form_valid
 from forms_builder.forms.utils import split_choices
+
+
+def get_form_or_404(user, slug):
+    form = Form.objects.get_or_404(
+        slug=slug,
+        language_code=translation.get_language(),
+        for_user=user
+    )
+    form.activate_translations()
+    return form
 
 
 class FormDetail(TemplateView):
@@ -25,11 +37,12 @@ class FormDetail(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(FormDetail, self).get_context_data(**kwargs)
-        published = Form.objects.published(for_user=self.request.user)
-        context["form"] = get_object_or_404(published, slug=kwargs["slug"])
+        form = get_form_or_404(user=self.request.user, slug=kwargs["slug"])
+        context["form"] = form
         return context
 
     def get(self, request, *args, **kwargs):
+        # TODO: redirect if form requested with slug in other language
         context = self.get_context_data(**kwargs)
         login_required = context["form"].login_required
         if login_required and not request.user.is_authenticated():
@@ -39,8 +52,7 @@ class FormDetail(TemplateView):
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        published = Form.objects.published(for_user=request.user)
-        form = get_object_or_404(published, slug=kwargs["slug"])
+        form = get_form_or_404(user=self.request.user, slug=kwargs["slug"])
         form_for_form = FormForForm(form, RequestContext(request),
                                     request.POST or None,
                                     request.FILES or None)
@@ -114,6 +126,6 @@ def form_sent(request, slug, template="forms/form_sent.html"):
     """
     Show the response message.
     """
-    published = Form.objects.published(for_user=request.user)
-    context = {"form": get_object_or_404(published, slug=slug)}
+    form = get_form_or_404(user=request.user, slug=slug)
+    context = {"form": form}
     return render_to_response(template, context, RequestContext(request))
