@@ -229,19 +229,18 @@ class AbstractForm(models.Model):
         So the rendering in template will display the translations.
         """
         form_translations = self.get_translation()
-        if form_translations is None:
-            # default language is active or not translated, yet.
-            return
+        if form_translations is not None:
+            for field in form_translations._meta.get_fields():
+                if field.name in ("id", "form", "language_code", "fields"):
+                    # Don't change 'internal' fields
+                    continue
 
-        for field in form_translations._meta.get_fields():
-            if field.name in ("id", "form", "language_code", "fields"):
-                # Don't change 'internal' fields
-                continue
+                # Use translations like 'title', 'slug', 'intro' etc.:
+                value = getattr(form_translations, field.name)
+                if value:
+                    setattr(self, field.name, value)
 
-            # Use translations like 'title', 'slug', 'intro' etc.:
-            value = getattr(form_translations, field.name)
-            if value:
-                setattr(self, field.name, value)
+        return ""  # Don't return None if used by template: {{ form.activate_translations }}
 
 
 class FieldManager(models.Manager):
