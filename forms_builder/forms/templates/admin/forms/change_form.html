@@ -3,7 +3,11 @@
 {% load i18n %}
 
 {% block object-tools %}
-    {% if default_language_name %}<h2>{% trans "Please fill in: {{ default_language_name }}" %}</h2>{% endif %}
+    {% if default_language_name %}
+    <h2>
+        {% blocktrans %}Please fill in: {{ default_language_name }}{% endblocktrans %}
+    </h2>
+    {% endif %}
     {{ block.super }}
 {% endblock %}
 
