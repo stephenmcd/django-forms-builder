@@ -1,14 +1,12 @@
 from __future__ import unicode_literals
 
 from django.http.response import Http404
-
 from django.utils import translation
-
 from django.template.response import TemplateResponse
-
 from django.forms.formsets import formset_factory
-
 from django.forms.models import BaseInlineFormSet
+from django.conf import settings as django_settings
+
 from future.builtins import bytes, open
 
 from csv import writer
@@ -194,6 +192,13 @@ class FormAdmin(admin.ModelAdmin):
                    "submitted": submitted,
                    "xlwt_installed": XLWT_INSTALLED}
         return render(request, template, context)
+
+    def render_change_form(self, request, context, **kwargs):
+        if django_settings.USE_I18N:
+            default_language_code = django_settings.LANGUAGE_CODE
+            default_language_name = dict(django_settings.LANGUAGES)[default_language_code]
+            context["default_language_name"]=default_language_name
+        return super().render_change_form(request, context, **kwargs)
 
     def file_view(self, request, field_entry_id):
         """
