@@ -5,7 +5,7 @@ except ImportError:
     # For Django 1.8 compatibility
     from django.conf.urls import url as re_path
 
-from forms_builder.forms import views
+from . import views
 
 
 urlpatterns = [

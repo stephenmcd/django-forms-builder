@@ -9,8 +9,8 @@ except ImportError:
     from django.forms.extras import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
 
-from forms_builder.forms.settings import USE_HTML5, EXTRA_FIELDS, EXTRA_WIDGETS
-from forms_builder.forms.utils import html5_field, import_attr
+from .settings import USE_HTML5, EXTRA_FIELDS, EXTRA_WIDGETS
+from .utils import html5_field, import_attr
 
 
 # Constants for all available field types.

@@ -22,10 +22,10 @@ from django.template import Template
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
-from forms_builder.forms import fields
-from forms_builder.forms.models import FormEntry, FieldEntry
-from forms_builder.forms import settings
-from forms_builder.forms.utils import now, split_choices
+from . import fields
+from . import settings
+from .models import FormEntry, FieldEntry
+from .utils import now, split_choices
 
 
 fs = default_storage

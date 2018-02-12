@@ -33,7 +33,7 @@ class BuiltFormNode(template.Node):
         if (not issubclass(form.__class__, AbstractForm)
                 or not form.published(for_user=user)):
             return ""
-        t = get_template("forms/includes/built_form.html")
+        t = get_template(form.custom_form_template)
         context["form"] = form
         form_args = (form, context, post or None, files or None)
         context["form_for_form"] = FormForForm(*form_args)
