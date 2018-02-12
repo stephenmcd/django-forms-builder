@@ -1,8 +1,15 @@
 from __future__ import unicode_literals
 
+from django import VERSION as DJANGO_VERSION
 from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import reverse
+
+try:
+    from django.urls import reverse
+except ImportError:
+    # For Django 1.8 compatibility
+    from django.core.urlresolvers import reverse
+
 from django.db import models
 from django.db.models import Q
 from django.utils.encoding import python_2_unicode_compatible
@@ -117,7 +124,10 @@ class AbstractForm(models.Model):
         status = self.status == STATUS_PUBLISHED
         publish_date = self.publish_date is None or self.publish_date <= now()
         expiry_date = self.expiry_date is None or self.expiry_date >= now()
-        authenticated = for_user is not None and for_user.is_authenticated()
+        authenticated = for_user is not None and for_user.is_authenticated
+        if DJANGO_VERSION <= (1, 9):
+            # Django 1.8 compatibility, is_authenticated has to be called as a method.
+            authenticated = for_user is not None and for_user.is_authenticated()
         login_required = (not self.login_required or authenticated)
         return status and publish_date and expiry_date and login_required
 
@@ -255,11 +265,11 @@ class AbstractFieldEntry(models.Model):
 ###################################################
 
 class FormEntry(AbstractFormEntry):
-    form = models.ForeignKey("Form", related_name="entries")
+    form = models.ForeignKey("Form", related_name="entries", on_delete=models.CASCADE)
 
 
 class FieldEntry(AbstractFieldEntry):
-    entry = models.ForeignKey("FormEntry", related_name="fields")
+    entry = models.ForeignKey("FormEntry", related_name="fields", on_delete=models.CASCADE)
 
 
 class Form(AbstractForm):
@@ -271,7 +281,7 @@ class Field(AbstractField):
     Implements automated field ordering.
     """
 
-    form = models.ForeignKey("Form", related_name="fields")
+    form = models.ForeignKey("Form", related_name="fields", on_delete=models.CASCADE)
     order = models.IntegerField(_("Order"), null=True, blank=True)
 
     class Meta(AbstractField.Meta):

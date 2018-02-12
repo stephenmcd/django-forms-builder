@@ -7,10 +7,14 @@ from os.path import join
 from datetime import datetime
 from io import BytesIO, StringIO
 
-from django.conf.urls import url
 from django.contrib import admin
 from django.core.files.storage import FileSystemStorage
-from django.core.urlresolvers import reverse
+try:
+    from django.urls import reverse, re_path
+except ImportError:
+    # For django 1.8 compatiblity
+    from django.conf.urls import url as re_path
+    from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
@@ -84,16 +88,16 @@ class FormAdmin(admin.ModelAdmin):
         """
         urls = super(FormAdmin, self).get_urls()
         extra_urls = [
-            url("^(?P<form_id>\d+)/entries/$",
+            re_path("^(?P<form_id>\d+)/entries/$",
                 self.admin_site.admin_view(self.entries_view),
                 name="form_entries"),
-            url("^(?P<form_id>\d+)/entries/show/$",
+            re_path("^(?P<form_id>\d+)/entries/show/$",
                 self.admin_site.admin_view(self.entries_view),
                 {"show": True}, name="form_entries_show"),
-            url("^(?P<form_id>\d+)/entries/export/$",
+            re_path("^(?P<form_id>\d+)/entries/export/$",
                 self.admin_site.admin_view(self.entries_view),
                 {"export": True}, name="form_entries_export"),
-            url("^file/(?P<field_entry_id>\d+)/$",
+            re_path("^file/(?P<field_entry_id>\d+)/$",
                 self.admin_site.admin_view(self.file_view),
                 name="form_file"),
         ]

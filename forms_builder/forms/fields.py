@@ -2,7 +2,11 @@ from __future__ import unicode_literals
 
 from django.core.exceptions import ImproperlyConfigured
 from django import forms
-from django.forms.extras import SelectDateWidget
+try:
+    from django.forms import SelectDateWidget
+except ImportError:
+    # For Django 1.8 compatibility
+    from django.forms.extras import SelectDateWidget
 from django.utils.translation import ugettext_lazy as _
 
 from forms_builder.forms.settings import USE_HTML5, EXTRA_FIELDS, EXTRA_WIDGETS
