@@ -159,9 +159,12 @@ class FormForForm(forms.ModelForm):
                 field_args["max_length"] = settings.FIELD_MAX_LENGTH
             if "choices" in arg_names:
                 choices = list(field.get_choices())
-                if (field.field_type == fields.SELECT and
-                        field.default not in [c[0] for c in choices]):
-                    choices.insert(0, ("", field.placeholder_text))
+                if field.field_type == fields.SELECT and not (field.required and field.default):
+                    # The first OPTION with attr. value="" display only if...
+                    #   1. ...the field is not required.
+                    #   2. ...the field is required and the default is not set.
+                    text = "" if field.placeholder_text is None else field.placeholder_text
+                    choices.insert(0, ("", text))
                 field_args["choices"] = choices
             if field_widget is not None:
                 field_args["widget"] = field_widget
@@ -201,11 +204,15 @@ class FormForForm(forms.ModelForm):
             css_class = field_class.__name__.lower()
             if field.required:
                 css_class += " required"
-                if (settings.USE_HTML5 and
-                    field.field_type != fields.CHECKBOX_MULTIPLE):
-                    self.fields[field_key].widget.attrs["required"] = ""
+                if settings.USE_HTML5:
+                    # Except Django version 1.10 this is necessary for all versions from 1.8 to 1.11.
+                    self.fields[field_key].widget.attrs["required"] = "required"
+
             self.fields[field_key].widget.attrs["class"] = css_class
-            if field.placeholder_text and not field.default:
+            if field.placeholder_text and not field.default and field.field_type != fields.SELECT:
+                # Attribute `placeholder` not allowed on element `select` at this point.
+                # See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/select
+                # or check the code in https://validator.w3.org.
                 text = field.placeholder_text
                 self.fields[field_key].widget.attrs["placeholder"] = text
 

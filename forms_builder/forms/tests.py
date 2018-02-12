@@ -4,11 +4,11 @@ from django.conf import settings
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context, RequestContext, Template
 from django.test import TestCase
 
-from forms_builder.forms.fields import NAMES, FILE
+from forms_builder.forms.fields import NAMES, FILE, SELECT
 from forms_builder.forms.forms import FormForForm
 from forms_builder.forms.models import (Form, Field,
                                         STATUS_DRAFT, STATUS_PUBLISHED)
@@ -158,3 +158,76 @@ class Tests(TestCase):
         self.assertEqual(response["location"], redirect_url)
         response = self.client.post(form_absolute_url, {'field': 'bar'})
         self.assertFalse(isinstance(response, HttpResponseRedirect))
+
+    def test_input_dropdown_not_required(self):
+        form = Form.objects.create(title="Test")
+        form.fields.create(label="Foo", field_type=SELECT, required=False, choices="one, two, three")
+        form_for_form = FormForForm(form, Context())
+        self.assertContains(HttpResponse(form_for_form), """
+            <select name="foo" class="choicefield" id="id_foo">
+                <option value="" selected></option>
+                <option value="one">one</option>
+                <option value="two">two</option>
+                <option value="three">three</option>
+            </select>""", html=True)
+
+    def test_input_dropdown_not_required_with_placeholder(self):
+        form = Form.objects.create(title="Test")
+        form.fields.create(label="Foo", placeholder_text="choose item", field_type=SELECT,
+                           required=False, choices="one, two, three")
+        form_for_form = FormForForm(form, Context())
+        self.assertContains(HttpResponse(form_for_form), """
+            <select name="foo" class="choicefield" id="id_foo">
+                <option value="" selected>choose item</option>
+                <option value="one">one</option>
+                <option value="two">two</option>
+                <option value="three">three</option>
+            </select>""", html=True)
+
+    def test_input_dropdown_required(self):
+        form = Form.objects.create(title="Test")
+        form.fields.create(label="Foo", field_type=SELECT, choices="one, two, three")
+        form_for_form = FormForForm(form, Context())
+        self.assertContains(HttpResponse(form_for_form), """
+            <select name="foo" required class="choicefield required" id="id_foo">
+                <option value="" selected></option>
+                <option value="one">one</option>
+                <option value="two">two</option>
+                <option value="three">three</option>
+            </select>""", html=True)
+
+    def test_input_dropdown_required_with_placeholder(self):
+        form = Form.objects.create(title="Test")
+        form.fields.create(label="Foo", placeholder_text="choose item", field_type=SELECT,
+                           choices="one, two, three")
+        form_for_form = FormForForm(form, Context())
+        self.assertContains(HttpResponse(form_for_form), """
+            <select name="foo" required class="choicefield required" id="id_foo">
+                <option value="" selected>choose item</option>
+                <option value="one">one</option>
+                <option value="two">two</option>
+                <option value="three">three</option>
+            </select>""", html=True)
+
+    def test_input_dropdown_required_with_placeholder_and_default(self):
+        form = Form.objects.create(title="Test")
+        form.fields.create(label="Foo", placeholder_text="choose item", field_type=SELECT,
+                           choices="one, two, three", default="two")
+        form_for_form = FormForForm(form, Context())
+        self.assertContains(HttpResponse(form_for_form), """
+            <select name="foo" required class="choicefield required" id="id_foo">
+                <option value="one">one</option>
+                <option value="two" selected>two</option>
+                <option value="three">three</option>
+            </select>""", html=True)
+
+    def test_input_dropdown_required_with_default(self):
+        form = Form.objects.create(title="Test")
+        form.fields.create(label="Foo", field_type=SELECT, choices="one, two, three", default="two")
+        form_for_form = FormForForm(form, Context())
+        self.assertContains(HttpResponse(form_for_form), """
+            <select name="foo" required class="choicefield required" id="id_foo">
+                <option value="one">one</option>
+                <option value="two" selected>two</option>
+                <option value="three">three</option>
+            </select>""", html=True)
