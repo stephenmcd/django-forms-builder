@@ -6,10 +6,10 @@ from django.contrib.sites.models import Site
 from django.db import IntegrityError
 from django.http import HttpResponseRedirect
 from django.template import Context, RequestContext, Template
-from django.test import TestCase
+from django.test import RequestFactory, TestCase
 
-from forms_builder.forms.fields import NAMES, FILE
-from forms_builder.forms.forms import FormForForm
+from forms_builder.forms.fields import DATE, NAMES, FILE
+from forms_builder.forms.forms import EntriesForm, FormForForm
 from forms_builder.forms.models import (Form, Field,
                                         STATUS_DRAFT, STATUS_PUBLISHED)
 from forms_builder.forms.settings import USE_SITES
@@ -86,7 +86,8 @@ class Tests(TestCase):
         tag all work.
         """
         form = Form.objects.create(title="Tags", status=STATUS_PUBLISHED)
-        request = type(str(""), (), {"META": {}, "user": AnonymousUser()})()
+        request = RequestFactory().request()
+        request.user = AnonymousUser()
         context = RequestContext(request, {"form": form})
         template = "{%% load forms_builder_tags %%}{%% render_built_form %s %%}"
         formats = ("form", "form=form", "id=form.id", "slug=form.slug")
@@ -158,3 +159,10 @@ class Tests(TestCase):
         self.assertEqual(response["location"], redirect_url)
         response = self.client.post(form_absolute_url, {'field': 'bar'})
         self.assertFalse(isinstance(response, HttpResponseRedirect))
+
+    def test_entries_form_unique_instance(self):
+        form = Form.objects.create(title="Test")
+        Field.objects.create(form=form, label="Foo", field_type=DATE)
+        entries_form = EntriesForm(form, RequestFactory().request())
+        field_instances = [id(field) for field in entries_form.fields.values()]
+        self.assertEqual(len(field_instances), len(set(field_instances)))
