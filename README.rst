@@ -40,12 +40,16 @@ Installation
 ============
 
 The easiest way to install django-forms-builder is directly from PyPi
-using `pip`_ by running the command below::
+using `pip`_ by running the command below:
+
+.. code-block:: bash
 
     $ pip install -U django-forms-builder
 
 Otherwise you can download django-forms-builder and install it directly
-from source::
+from source:
+
+.. code-block:: bash
 
     $ python setup.py install
 
@@ -53,7 +57,9 @@ Once installed you can configure your project to use
 django-forms-builder with the following steps.
 
 Add ``forms_builder.forms`` to ``INSTALLED_APPS`` in your project's
-``settings`` module::
+``settings`` module:
+
+.. code-block:: python
 
     INSTALLED_APPS = (
         # other apps
@@ -62,7 +68,9 @@ Add ``forms_builder.forms`` to ``INSTALLED_APPS`` in your project's
 
 If you haven't already, ensure ``django.core.context_processors.request``
 is in the ``TEMPLATE_CONTEXT_PROCESSORS`` setting in your project's
-``settings`` module::
+``settings`` module:
+
+.. code-block:: python
 
     TEMPLATE_CONTEXT_PROCESSORS = (
         # other context processors
@@ -72,7 +80,9 @@ is in the ``TEMPLATE_CONTEXT_PROCESSORS`` setting in your project's
     )
 
 Then add ``forms_builder.forms.urls`` to your project's ``urls``
-module::
+module:
+
+.. code-block:: python
 
     from django.conf.urls.defaults import patterns, include, url
     import forms_builder.forms.urls # add this import
@@ -86,12 +96,16 @@ module::
         url(r'^forms/', include(forms_builder.forms.urls)),
     )
 
-Finally, sync your database::
+Finally, sync your database:
+
+.. code-block:: bash
 
     $ python manage.py syncdb
 
 As of version 0.5, django-forms-builder provides `South`_ migrations.
-If you use south in your project, you'll also need to run migrations::
+If you use south in your project, you'll also need to run migrations:
+
+.. code-block:: bash
 
     $ python manage.py migrate forms
 
@@ -105,7 +119,9 @@ you can create and edit forms. Forms are then each viewable with their
 own URLs. A template tag ``render_built_form`` is also available for
 displaying forms outside of the main form view provided. It will
 display a form when given an argument in one of the following
-formats, where ``form_instance`` is an instance of the ``Form`` model::
+formats, where ``form_instance`` is an instance of the ``Form`` model:
+
+.. code-block:: html+django
 
     {% load forms_builder_tags %}
 
@@ -179,7 +195,9 @@ Each field in the sequence should be a three-item sequence containing
 an ID, a dotted import path for the field class, and a field name, for
 each custom field type. The ID is simply a numeric constant for the
 field, but cannot be a value already used, so choose a high number
-such as 100 or greater to avoid conflicts::
+such as 100 or greater to avoid conflicts:
+
+.. code-block:: python
 
   FORMS_BUILDER_EXTRA_FIELDS = (
       (100, "django.forms.BooleanField", "My cool checkbox"),
@@ -190,7 +208,9 @@ You can also define custom widget classes for any of the existing or
 custom form fields via the ``FORMS_BUILDER_EXTRA_WIDGETS`` setting.
 Each field in the sequence should be a two-item sequence containing
 the same ID referred to above for the form field class, and a dotted
-import path for the widget class::
+import path for the widget class:
+
+.. code-block:: python
 
   FORMS_BUILDER_EXTRA_WIDGETS = (
       (100, "my_module.MyCoolWidget"),
@@ -252,7 +272,9 @@ causing validation errors with the form, or a pipeline of events to
 occur on successful form submissions. Suppose we wanted to store a
 logged in user's username against each form when submitted, given
 a form containing a field with the label ``Username`` with its
-field_type set to ``Hidden``::
+field_type set to ``Hidden``:
+
+.. code-block:: python
 
     from django.dispatch import receiver
     from forms_builder.forms.signals import form_valid
@@ -281,7 +303,9 @@ XLS Export
 
 By default, django-forms-builder provides export of form entries via
 CSV file. You can also enable export via XLS file (Microsoft Excel)
-by installing the `xlwt`_ package::
+by installing the `xlwt`_ package:
+
+.. code-block:: bash
 
   $ pip install xlwt
 
