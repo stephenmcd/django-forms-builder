@@ -202,7 +202,10 @@ class FormForForm(forms.ModelForm):
 
             # Add identifying CSS classes to the field.
             css_class = field_class.__name__.lower()
-            if field.required:
+            # Do not add the 'required' field to the CheckboxSelectMultiple because it will 
+            # mean that all checkboxes have to be checked instead of the usual use case of
+            # "at least one".  
+            if field.required and (field_widget != forms.CheckboxSelectMultiple):
                 css_class += " required"
                 if settings.USE_HTML5:
                     # Except Django version 1.10 this is necessary for all versions from 1.8 to 1.11.
