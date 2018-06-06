@@ -36,7 +36,7 @@ class FormDetail(TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         login_required = context["form"].login_required
-        if login_required and not request.user.is_authenticated():
+        if login_required and not request.user.is_authenticated:
             path = urlquote(request.get_full_path())
             bits = (settings.LOGIN_URL, REDIRECT_FIELD_NAME, path)
             return redirect("%s?%s=%s" % bits)
