@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 
 from django import VERSION as DJANGO_VERSION
 from django.contrib.sites.models import Site
-from django.core.exceptions import ValidationError
 
 try:
     from django.urls import reverse
