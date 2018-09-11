@@ -126,6 +126,14 @@ class Tests(TestCase):
         except IntegrityError:
             self.fail("Slugs were not auto-unique")
 
+    def test_field_validate_slug_length(self):
+        max_slug_length = 2000
+        form = Form.objects.create(title="Test")
+        field = Field(form=form,
+                      label='x' * (max_slug_length + 1), field_type=NAMES[0][0])
+        field.save()
+        self.assertLessEqual(len(field.slug), max_slug_length)
+
     def test_field_default_ordering(self):
         form = Form.objects.create(title="Test")
         form.fields.create(label="second field",
