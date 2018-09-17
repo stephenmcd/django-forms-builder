@@ -5,14 +5,20 @@ env:
   - DJANGO_VERSION=https://github.com/django/django/archive/stable/1.10.x.zip
   - DJANGO_VERSION=https://github.com/django/django/archive/stable/1.11.x.zip
   - DJANGO_VERSION=https://github.com/django/django/archive/stable/2.0.x.zip
+  - DJANGO_VERSION=https://github.com/django/django/archive/stable/2.1.x.zip
 python:
   - "2.7"
   - "3.4"
   - "3.5"
+  - "3.6"
 matrix:
   exclude:
     - python: "2.7"
       env: DJANGO_VERSION=https://github.com/django/django/archive/stable/2.0.x.zip
+    - python: "2.7"
+      env: DJANGO_VERSION=https://github.com/django/django/archive/stable/2.1.x.zip
+    - python: "3.4"
+      env: DJANGO_VERSION=https://github.com/django/django/archive/stable/2.1.x.zip
 install:
   - pip install $DJANGO_VERSION
   - pip install .

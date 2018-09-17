@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 
 from django import VERSION as DJANGO_VERSION
 from django.contrib.sites.models import Site
-from django.core.exceptions import ValidationError
 
 try:
     from django.urls import reverse
@@ -139,9 +138,8 @@ class AbstractForm(models.Model):
         return self.total_entries
     total_entries.admin_order_field = "total_entries"
 
-    @models.permalink
     def get_absolute_url(self):
-        return ("form_detail", (), {"slug": self.slug})
+        return reverse("form_detail", kwargs={"slug": self.slug})
 
     def admin_links(self):
         kw = {"args": (self.id,)}
