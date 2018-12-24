@@ -171,7 +171,7 @@ class AbstractField(models.Model):
     """
 
     label = models.CharField(_("Label"), max_length=settings.LABEL_MAX_LENGTH)
-    slug = models.SlugField(_('Slug'), max_length=2000, blank=True,
+    slug = models.SlugField(_('Slug'), max_length=settings.LABEL_MAX_LENGTH, blank=True,
             default="")
     field_type = models.IntegerField(_("Type"), choices=fields.NAMES)
     required = models.BooleanField(_("Required"), default=True)
