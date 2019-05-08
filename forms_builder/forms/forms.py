@@ -285,6 +285,8 @@ class EntriesForm(forms.Form):
         self.form_fields = form.fields.all()
         self.entry_time_name = str(self.formentry_model._meta.get_field(
             "entry_time").verbose_name)
+        this_year = date.today().year
+        self.years = range(this_year - 10, this_year + 1)
         super(EntriesForm, self).__init__(*args, **kwargs)
         for field in self.form_fields:
             field_key = "field_%s" % field.id
@@ -330,9 +332,9 @@ class EntriesForm(forms.Form):
             initial=True, label=label, required=False)
         self.fields["%s_filter" % field_key] = date_filter_field
         self.fields["%s_from" % field_key] = forms.DateField(
-            label=" ", widget=SelectDateWidget(), required=False)
+            label=" ", widget=SelectDateWidget(years=self.years), required=False)
         self.fields["%s_to" % field_key] = forms.DateField(
-            label=_("and"), widget=SelectDateWidget(), required=False)
+            label=_("and"), widget=SelectDateWidget(years=self.years), required=False)
 
     def __iter__(self):
         """
