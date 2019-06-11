@@ -63,6 +63,7 @@ Add ``forms_builder.forms`` to ``INSTALLED_APPS`` in your project's
 
     INSTALLED_APPS = (
         # other apps
+        'django.contrib.sites',  # ensure this is present
         'forms_builder.forms',
     )
 
