@@ -119,5 +119,5 @@ def form_sent(request, slug, template="forms/form_sent.html"):
     Show the response message.
     """
     published = Form.objects.published(for_user=request.user)
-    context = RequestContext(request, {"form": form})
+    context = {"form": get_object_or_404(published, slug=slug)}
     return render(request, template, context=context)
