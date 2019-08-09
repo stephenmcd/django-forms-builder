@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django import VERSION as DJANGO_VERSION
 from django.contrib.sites.models import Site
+from django.utils.html import format_html_join
 
 try:
     from django.urls import reverse
@@ -142,16 +143,13 @@ class AbstractForm(models.Model):
         return reverse("form_detail", kwargs={"slug": self.slug})
 
     def admin_links(self):
-        kw = {"args": (self.id,)}
-        links = [
+        kw = {"args": (self.id, )}
+        return format_html_join("\n", "<div><a href='{1}'>{0}</a></div>", (
             (_("View form on site"), self.get_absolute_url()),
             (_("Filter entries"), reverse("admin:form_entries", **kw)),
             (_("View all entries"), reverse("admin:form_entries_show", **kw)),
             (_("Export all entries"), reverse("admin:form_entries_export", **kw)),
-        ]
-        for i, (text, url) in enumerate(links):
-            links[i] = "<a href='%s'>%s</a>" % (url, ugettext(text))
-        return "<br>".join(links)
+        ))
     admin_links.allow_tags = True
     admin_links.short_description = ""
 
