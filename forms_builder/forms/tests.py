@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+from django.utils.safestring import SafeText
 from django.conf import settings
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.sites.models import Site
@@ -239,3 +240,14 @@ class Tests(TestCase):
                 <option value="two" selected>two</option>
                 <option value="three">three</option>
             </select>""", html=True)
+
+    def test_admin_link(self):
+        form = Form.objects.create(title="Test")
+        content = form.admin_links()
+        self.assertIsInstance(content, SafeText)
+        self.assertInHTML(content, """
+            <div><a href='/forms/test/'>View form on site</a></div>
+            <div><a href='/admin/forms/form/1/entries/'>Filter entries</a></div>
+            <div><a href='/admin/forms/form/1/entries/show/'>View all entries</a></div>
+            <div><a href='/admin/forms/form/1/entries/export/'>Export all entries</a></div>
+        """)
