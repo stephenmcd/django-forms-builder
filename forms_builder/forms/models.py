@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django import VERSION as DJANGO_VERSION
 from django.contrib.sites.models import Site
+from django.utils.safestring import mark_safe
 
 try:
     from django.urls import reverse
@@ -151,7 +152,7 @@ class AbstractForm(models.Model):
         ]
         for i, (text, url) in enumerate(links):
             links[i] = "<a href='%s'>%s</a>" % (url, ugettext(text))
-        return "<br>".join(links)
+        return mark_safe("<br>".join(links))
     admin_links.allow_tags = True
     admin_links.short_description = ""
 
