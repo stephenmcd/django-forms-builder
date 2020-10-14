@@ -52,6 +52,7 @@ try:
             "django-email-extras >= 0.2",
             "django >= 2.0",
             "future <= 0.15.0",
+            "six"
         ],
         classifiers = [
             "Development Status :: 5 - Production/Stable",
