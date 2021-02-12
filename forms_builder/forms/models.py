@@ -140,7 +140,7 @@ class AbstractForm(models.Model):
     total_entries.admin_order_field = "total_entries"
 
     def get_absolute_url(self):
-        return reverse("form_detail", kwargs={"slug": self.slug})
+        return reverse("forms:form_detail", kwargs={"slug": self.slug})
 
     def admin_links(self):
         kw = {"args": (self.id,)}
