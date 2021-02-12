@@ -97,7 +97,7 @@ class AbstractForm(models.Model):
         verbose_name = _("Form")
         verbose_name_plural = _("Forms")
         abstract = True
-        app_label = "Form"
+        app_label = "forms"
 
     def __str__(self):
         return str(self.title)
@@ -194,7 +194,7 @@ class AbstractField(models.Model):
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
         abstract = True
-        app_label = "Field"
+        app_label = "forms"
 
     def __str__(self):
         return str(self.label)
@@ -241,7 +241,7 @@ class AbstractFormEntry(models.Model):
         verbose_name = _("Form entry")
         verbose_name_plural = _("Form entries")
         abstract = True
-        app_label = "Form entry"
+        app_label = "forms"
 
 
 class AbstractFieldEntry(models.Model):
@@ -257,7 +257,7 @@ class AbstractFieldEntry(models.Model):
         verbose_name = _("Form field entry")
         verbose_name_plural = _("Form field entries")
         abstract = True
-        app_label = "Form field entry"
+        app_label = "forms"
 
 
 ###################################################
