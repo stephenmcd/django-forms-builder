@@ -62,7 +62,7 @@ class FormDetail(TemplateView):
             self.send_emails(request, form_for_form, form, entry, attachments)
             if not self.request.is_ajax():
                 return redirect(form.redirect_url or
-                        reverse("forms:form_sent", kwargs={"slug": form.slug}))
+                        reverse("form_sent", kwargs={"slug": form.slug}))
         context = {"form": form, "form_for_form": form_for_form}
         return self.render_to_response(context)
 

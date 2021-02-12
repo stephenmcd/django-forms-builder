@@ -1,15 +1,12 @@
 from __future__ import unicode_literals
-try:
-    from django.urls import re_path
-except ImportError:
-    # For Django 1.8 compatibility
-    from django.conf.urls import url as re_path
+
+from django.conf.urls import url
 
 from forms_builder.forms import views
 
 app_name="forms"
 
 urlpatterns = [
-    re_path(r"(?P<slug>.*)/sent/$", views.form_sent, name="form_sent"),
-    re_path(r"(?P<slug>.*)/$", views.form_detail, name="form_detail"),
+    url(r"(?P<slug>.*)/sent/$", views.form_sent, name="form_sent"),
+    url(r"(?P<slug>.*)/$", views.form_detail, name="form_detail"),
 ]
