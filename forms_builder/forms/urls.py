@@ -7,6 +7,7 @@ except ImportError:
 
 from forms_builder.forms import views
 
+app_name="forms"
 
 urlpatterns = [
     re_path(r"(?P<slug>.*)/sent/$", views.form_sent, name="form_sent"),
