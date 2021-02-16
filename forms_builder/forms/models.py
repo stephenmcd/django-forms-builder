@@ -13,6 +13,7 @@ from django.db import models
 from django.db.models import Q
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.html import format_html
 from future.builtins import str
 
 from forms_builder.forms import fields
@@ -152,8 +153,7 @@ class AbstractForm(models.Model):
         ]
         for i, (text, url) in enumerate(links):
             links[i] = "<a href='%s'>%s</a>" % (url, ugettext(text))
-        return "<br>".join(links)
-    admin_links.allow_tags = True
+        return format_html("<br>".join(links))
     admin_links.short_description = ""
 
 
