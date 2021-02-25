@@ -9,7 +9,7 @@ from io import BytesIO, StringIO
 
 from django.contrib import admin
 from django.core.files.storage import FileSystemStorage
-from django.urls import reverse, re_path
+from django.urls import reverse, url
 from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
@@ -83,16 +83,16 @@ class FormAdmin(admin.ModelAdmin):
         """
         urls = super(FormAdmin, self).get_urls()
         extra_urls = [
-            re_path("^(?P<form_id>\d+)/entries/$",
+            url("^(?P<form_id>\d+)/entries/$",
                 self.admin_site.admin_view(self.entries_view),
                 name="form_entries"),
-            re_path("^(?P<form_id>\d+)/entries/show/$",
+            url("^(?P<form_id>\d+)/entries/show/$",
                 self.admin_site.admin_view(self.entries_view),
                 {"show": True}, name="form_entries_show"),
-            re_path("^(?P<form_id>\d+)/entries/export/$",
+            url("^(?P<form_id>\d+)/entries/export/$",
                 self.admin_site.admin_view(self.entries_view),
                 {"export": True}, name="form_entries_export"),
-            re_path("^file/(?P<field_entry_id>\d+)/$",
+            url("^file/(?P<field_entry_id>\d+)/$",
                 self.admin_site.admin_view(self.file_view),
                 name="form_file"),
         ]
