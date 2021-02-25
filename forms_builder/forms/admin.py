@@ -9,11 +9,12 @@ from io import BytesIO, StringIO
 
 from django.contrib import admin
 from django.core.files.storage import FileSystemStorage
-from django.urls import reverse, url
+from django.conf.urls import url
 from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import ungettext, ugettext_lazy as _
+from django.urls import reverse
 
 from forms_builder.forms.forms import EntriesForm
 from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry

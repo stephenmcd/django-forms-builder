@@ -1,8 +1,9 @@
 from __future__ import unicode_literals
 
-from django.urls import url, include
+from django.conf.urls import url
 from django.contrib import admin
 from django.shortcuts import render
+from django.urls import include
 
 from forms_builder.forms.models import Form
 from forms_builder.forms import urls as form_urls
