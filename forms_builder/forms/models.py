@@ -1,13 +1,8 @@
 from __future__ import unicode_literals
 
-from django import VERSION as DJANGO_VERSION
 from django.contrib.sites.models import Site
 
-try:
-    from django.urls import reverse
-except ImportError:
-    # For Django 1.8 compatibility
-    from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from django.db import models
 from django.db.models import Q
@@ -125,9 +120,6 @@ class AbstractForm(models.Model):
         publish_date = self.publish_date is None or self.publish_date <= now()
         expiry_date = self.expiry_date is None or self.expiry_date >= now()
         authenticated = for_user is not None and for_user.is_authenticated
-        if DJANGO_VERSION <= (1, 9):
-            # Django 1.8 compatibility, is_authenticated has to be called as a method.
-            authenticated = for_user is not None and for_user.is_authenticated()
         login_required = (not self.login_required or authenticated)
         return status and publish_date and expiry_date and login_required
 

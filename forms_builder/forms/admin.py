@@ -9,12 +9,7 @@ from io import BytesIO, StringIO
 
 from django.contrib import admin
 from django.core.files.storage import FileSystemStorage
-try:
-    from django.urls import reverse, re_path
-except ImportError:
-    # For django 1.8 compatiblity
-    from django.conf.urls import url as re_path
-    from django.core.urlresolvers import reverse
+from django.urls import reverse, re_path
 from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404

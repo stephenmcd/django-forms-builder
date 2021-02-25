@@ -4,11 +4,7 @@ import json
 
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
-try:
-    from django.urls import reverse
-except ImportError:
-    # For Django 1.8 compatibility
-    from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render_to_response, render
 from django.template import RequestContext
