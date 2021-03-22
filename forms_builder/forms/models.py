@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-from django import version as DJANGO_VERSION
+from django import VERSION as DJANGO_VERSION
 from django.contrib.sites.models import Site
 
 try:
