@@ -10,5 +10,4 @@ local_settings.py
 build/
 dist/
 forms_builder/example_project/static/
-myvenv/
 formproject/
