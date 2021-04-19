@@ -10,7 +10,7 @@ except ImportError:
     # For Django 1.8 compatibility
     from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.shortcuts import get_object_or_404, redirect, render_to_response
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template import RequestContext
 from django.utils.http import urlquote
 from django.views.generic.base import TemplateView
@@ -36,7 +36,7 @@ class FormDetail(TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         login_required = context["form"].login_required
-        if login_required and not request.user.is_authenticated:
+        if login_required and not request.user.is_authenticated():
             path = urlquote(request.get_full_path())
             bits = (settings.LOGIN_URL, REDIRECT_FIELD_NAME, path)
             return redirect("%s?%s=%s" % bits)
@@ -120,4 +120,5 @@ def form_sent(request, slug, template="forms/form_sent.html"):
     """
     published = Form.objects.published(for_user=request.user)
     context = {"form": get_object_or_404(published, slug=slug)}
-    return render_to_response(template, context, RequestContext(request))
+    # return render(template, context)
+    return HttpResponse("Form submitted")

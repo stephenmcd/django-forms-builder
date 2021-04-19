@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django import VERSION as DJANGO_VERSION
 from django.contrib.sites.models import Site
+from django.core.exceptions import ValidationError
 
 try:
     from django.urls import reverse
@@ -11,7 +12,7 @@ except ImportError:
 
 from django.db import models
 from django.db.models import Q
-from django.utils.encoding import python_2_unicode_compatible
+from six import python_2_unicode_compatible
 from django.utils.translation import ugettext, ugettext_lazy as _
 from future.builtins import str
 
@@ -138,8 +139,9 @@ class AbstractForm(models.Model):
         return self.total_entries
     total_entries.admin_order_field = "total_entries"
 
+    # @models.permalink
     def get_absolute_url(self):
-        return reverse("form_detail", kwargs={"slug": self.slug})
+        return reverse("form_detail", args=(self.slug,))
 
     def admin_links(self):
         kw = {"args": (self.id,)}
@@ -171,7 +173,7 @@ class AbstractField(models.Model):
     """
 
     label = models.CharField(_("Label"), max_length=settings.LABEL_MAX_LENGTH)
-    slug = models.SlugField(_('Slug'), max_length=2000, blank=True,
+    slug = models.SlugField(_('Slug'), max_length=100, blank=True,
             default="")
     field_type = models.IntegerField(_("Type"), choices=fields.NAMES)
     required = models.BooleanField(_("Required"), default=True)
