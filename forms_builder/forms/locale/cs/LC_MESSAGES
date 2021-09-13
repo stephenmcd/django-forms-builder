@@ -30,7 +30,7 @@ msgstr "Stránky"
 msgid "1 entry deleted"
 msgid_plural "%(count)s entries deleted"
 msgstr "Smazán 1 záznam"
-msgstr_plural "Smazané záznamy: %(count)s"
+msgstr_plural "Smazané odpovědi: %(count)s"
 
 #: admin.py:121
 msgid "View Entries"
