@@ -10,7 +10,7 @@ except ImportError:
     # For Django 1.8 compatibility
     from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseBadRequest
-from django.shortcuts import get_object_or_404, redirect, render_to_response, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template import RequestContext
 from django.utils.http import urlquote
 from django.views.generic.base import TemplateView
@@ -40,7 +40,7 @@ class FormDetail(TemplateView):
             path = urlquote(request.get_full_path())
             bits = (settings.LOGIN_URL, REDIRECT_FIELD_NAME, path)
             return redirect("%s?%s=%s" % bits)
-        return self.render_to_response(context)
+        return self.render(request, context)
 
     def post(self, request, *args, **kwargs):
         published = Form.objects.published(for_user=request.user)
@@ -64,9 +64,9 @@ class FormDetail(TemplateView):
                 return redirect(form.redirect_url or
                         reverse("forms:form_sent", kwargs={"slug": form.slug}))
         context = {"form": form, "form_for_form": form_for_form}
-        return self.render_to_response(context)
+        return self.render(request, context)
 
-    def render_to_response(self, context, **kwargs):
+    def render(self, request, context, **kwargs):
         if self.request.method == "POST" and self.request.is_ajax():
             json_context = json.dumps({
                 "errors": context["form_for_form"].errors,
@@ -77,7 +77,7 @@ class FormDetail(TemplateView):
                 return HttpResponseBadRequest(json_context,
                     content_type="application/json")
             return HttpResponse(json_context, content_type="application/json")
-        return super(FormDetail, self).render_to_response(context, **kwargs)
+        return super(FormDetail, self).render(request, context, **kwargs)
 
     def send_emails(self, request, form_for_form, form, entry, attachments):
         subject = form.email_subject
