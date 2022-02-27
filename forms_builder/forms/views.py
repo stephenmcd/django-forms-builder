@@ -77,7 +77,7 @@ class FormDetail(TemplateView):
                 return HttpResponseBadRequest(json_context,
                     content_type="application/json")
             return HttpResponse(json_context, content_type="application/json")
-        return super(FormDetail, self).render(request, context, **kwargs)
+        return super(FormDetail, self).render_to_response(context, **kwargs)
 
     def send_emails(self, request, form_for_form, form, entry, attachments):
         subject = form.email_subject
