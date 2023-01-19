@@ -10,6 +10,12 @@ from django.shortcuts import render
 
 from forms_builder.forms.models import Form
 from forms_builder.forms import urls as form_urls
+# from django.urls import path, include
+
+# urlpatterns = [
+#     path('admin/', admin.site.urls),
+#     path("forms", include("forms.urls"))
+# ]
 
 
 admin.autodiscover()

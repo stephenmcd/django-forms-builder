@@ -10,3 +10,6 @@ local_settings.py
 build/
 dist/
 forms_builder/example_project/static/
+forms_builder/example_project/
+*.sqlite3
+

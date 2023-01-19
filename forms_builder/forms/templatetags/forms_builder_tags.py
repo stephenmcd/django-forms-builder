@@ -1,12 +1,8 @@
-from __future__ import unicode_literals
-from future.builtins import str
-
 from django import template
 from django.template.loader import get_template
 
 from forms_builder.forms.forms import FormForForm
 from forms_builder.forms.models import Form, AbstractForm
-
 
 register = template.Library()
 
