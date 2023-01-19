@@ -1,19 +1,8 @@
-from __future__ import unicode_literals
-
-from django import VERSION as DJANGO_VERSION
-from django.contrib.sites.models import Site
-
-try:
-    from django.urls import reverse
-except ImportError:
-    # For Django 1.8 compatibility
-    from django.core.urlresolvers import reverse
-
 from django.db import models
 from django.db.models import Q
-
-from django.utils.translation import ugettext, ugettext_lazy as _
-from future.builtins import str
+from django.urls import reverse
+from django.contrib.sites.models import Site
+from django.utils.translation import gettext, gettext_lazy as _
 
 from forms_builder.forms import fields
 from forms_builder.forms import settings
@@ -176,10 +165,6 @@ class AbstractForm(models.Model):
         publish_date = self.publish_date is None or self.publish_date <= now()
         expiry_date = self.expiry_date is None or self.expiry_date >= now()
         authenticated = for_user is not None and for_user.is_authenticated
-        if DJANGO_VERSION <= (1, 9):
-            # Django 1.8 compatibility, is_authenticated has to be called as a method.
-            authenticated = for_user is not None and for_user.is_authenticated(
-            )
         login_required = (not self.login_required or authenticated)
         return status and publish_date and expiry_date and login_required
 
@@ -205,7 +190,7 @@ class AbstractForm(models.Model):
                                               **kw)),
         ]
         for i, (text, url) in enumerate(links):
-            links[i] = "<a href='%s'>%s</a>" % (url, ugettext(text))
+            links[i] = "<a href='%s'>%s</a>" % (url, gettext(text))
         return "<br>".join(links)
 
     admin_links.allow_tags = True
@@ -327,9 +312,11 @@ class AbstractFieldEntry(models.Model):
 
 
 class FormEntry(AbstractFormEntry):
-    form = models.ForeignKey("Form",
-                             related_name="entries",
-                             on_delete=models.CASCADE)
+    form = models.ForeignKey(
+        to="Form",
+        related_name="entries",
+        on_delete=models.CASCADE,
+    )
 
 
 class FieldEntry(AbstractFieldEntry):

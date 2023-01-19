@@ -1,37 +1,23 @@
-from __future__ import unicode_literals
-from future.builtins import int, range, str
-
-from datetime import date, datetime
-from os.path import join, split
 from uuid import uuid4
+from os.path import join, split
+from datetime import date, datetime
 
-import django
 from django import forms
-try:
-    from django.forms import SelectDateWidget
-except ImportError:
-    # For Django 1.8 compatibility
-    from django.forms.extras import SelectDateWidget
-from django.core.files.storage import default_storage
-try:
-    from django.urls import reverse
-except ImportError:
-    # For Django 1.8 compatibility
-    from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.template import Template
+from django.forms import SelectDateWidget
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
+from django.core.files.storage import default_storage
 
 from forms_builder.forms import fields
 from forms_builder.forms.models import FormEntry, FieldEntry
 from forms_builder.forms import settings
 from forms_builder.forms.utils import now, split_choices
 
-
 fs = default_storage
 if settings.UPLOAD_ROOT is not None:
     fs = default_storage.__class__(location=settings.UPLOAD_ROOT)
-
 
 ##############################
 # Each type of export filter #
@@ -92,36 +78,38 @@ DATE_FILTER_CHOICES = (
 # The filter function for each filter type
 FILTER_FUNCS = {
     FILTER_CHOICE_CONTAINS:
-        lambda val, field: val.lower() in field.lower(),
+    lambda val, field: val.lower() in field.lower(),
     FILTER_CHOICE_DOESNT_CONTAIN:
-        lambda val, field: val.lower() not in field.lower(),
+    lambda val, field: val.lower() not in field.lower(),
     FILTER_CHOICE_EQUALS:
-        lambda val, field: val.lower() == field.lower(),
+    lambda val, field: val.lower() == field.lower(),
     FILTER_CHOICE_DOESNT_EQUAL:
-        lambda val, field: val.lower() != field.lower(),
+    lambda val, field: val.lower() != field.lower(),
     FILTER_CHOICE_BETWEEN:
-        lambda val_from, val_to, field: (
-            (not val_from or val_from <= field) and
-            (not val_to or val_to >= field)
-        ),
+    lambda val_from, val_to, field:
+    ((not val_from or val_from <= field) and (not val_to or val_to >= field)),
     FILTER_CHOICE_CONTAINS_ANY:
-        lambda val, field: set(val) & set(split_choices(field)),
+    lambda val, field: set(val) & set(split_choices(field)),
     FILTER_CHOICE_CONTAINS_ALL:
-        lambda val, field: set(val) == set(split_choices(field)),
+    lambda val, field: set(val) == set(split_choices(field)),
     FILTER_CHOICE_DOESNT_CONTAIN_ANY:
-        lambda val, field: not set(val) & set(split_choices(field)),
+    lambda val, field: not set(val) & set(split_choices(field)),
     FILTER_CHOICE_DOESNT_CONTAIN_ALL:
-        lambda val, field: set(val) != set(split_choices(field)),
+    lambda val, field: set(val) != set(split_choices(field)),
 }
 
 # Export form fields for each filter type grouping
-text_filter_field = forms.ChoiceField(label=" ", required=False,
+text_filter_field = forms.ChoiceField(label=" ",
+                                      required=False,
                                       choices=TEXT_FILTER_CHOICES)
-choice_filter_field = forms.ChoiceField(label=" ", required=False,
+choice_filter_field = forms.ChoiceField(label=" ",
+                                        required=False,
                                         choices=CHOICE_FILTER_CHOICES)
-multiple_filter_field = forms.ChoiceField(label=" ", required=False,
+multiple_filter_field = forms.ChoiceField(label=" ",
+                                          required=False,
                                           choices=MULTIPLE_FILTER_CHOICES)
-date_filter_field = forms.ChoiceField(label=" ", required=False,
+date_filter_field = forms.ChoiceField(label=" ",
+                                      required=False,
                                       choices=DATE_FILTER_CHOICES)
 
 
@@ -152,14 +140,18 @@ class FormForForm(forms.ModelForm):
             field_key = field.slug
             field_class = fields.CLASSES[field.field_type]
             field_widget = fields.WIDGETS.get(field.field_type)
-            field_args = {"label": field.label, "required": field.required,
-                          "help_text": field.help_text}
+            field_args = {
+                "label": field.label,
+                "required": field.required,
+                "help_text": field.help_text
+            }
             arg_names = field_class.__init__.__code__.co_varnames
             if "max_length" in arg_names:
                 field_args["max_length"] = settings.FIELD_MAX_LENGTH
             if "choices" in arg_names:
                 choices = list(field.get_choices())
-                if field.field_type == fields.SELECT and not (field.required and field.default):
+                if field.field_type == fields.SELECT and not (
+                        field.required and field.default):
                     # The first OPTION with attr. value="" display only if...
                     #   1. ...the field is not required.
                     #   2. ...the field is required and the default is not set.
@@ -202,14 +194,16 @@ class FormForForm(forms.ModelForm):
 
             # Add identifying CSS classes to the field.
             css_class = field_class.__name__.lower()
-            # Do not add the 'required' field to the CheckboxSelectMultiple because it will 
+            # Do not add the 'required' field to the CheckboxSelectMultiple because it will
             # mean that all checkboxes have to be checked instead of the usual use case of
-            # "at least one".  
-            if field.required and (field_widget != forms.CheckboxSelectMultiple):
+            # "at least one".
+            if field.required and (field_widget !=
+                                   forms.CheckboxSelectMultiple):
                 css_class += " required"
                 if settings.USE_HTML5:
                     # Except Django version 1.10 this is necessary for all versions from 1.8 to 1.11.
-                    self.fields[field_key].widget.attrs["required"] = "required"
+                    self.fields[field_key].widget.attrs[
+                        "required"] = "required"
 
             self.fields[field_key].widget.attrs["class"] = css_class
             if field.placeholder_text and not field.default and field.field_type != fields.SELECT:
@@ -245,11 +239,7 @@ class FormForForm(forms.ModelForm):
                 new = {"entry": entry, "field_id": field.id, "value": value}
                 new_entry_fields.append(self.field_entry_model(**new))
         if new_entry_fields:
-            if django.VERSION >= (1, 4, 0):
-                self.field_entry_model.objects.bulk_create(new_entry_fields)
-            else:
-                for field_entry in new_entry_fields:
-                    field_entry.save()
+            self.field_entry_model.objects.bulk_create(new_entry_fields)
         return entry
 
     def email_to(self):
@@ -268,8 +258,13 @@ class EntriesForm(forms.Form):
     filter entries for the given ``forms.models.Form`` instance.
     """
 
-    def __init__(self, form, request, formentry_model=FormEntry,
-                 fieldentry_model=FieldEntry, *args, **kwargs):
+    def __init__(self,
+                 form,
+                 request,
+                 formentry_model=FormEntry,
+                 fieldentry_model=FieldEntry,
+                 *args,
+                 **kwargs):
         """
         Iterate through the fields of the ``forms.models.Form`` instance and
         create the form fields required to control including the field in
@@ -283,8 +278,8 @@ class EntriesForm(forms.Form):
         self.formentry_model = formentry_model
         self.fieldentry_model = fieldentry_model
         self.form_fields = form.fields.all()
-        self.entry_time_name = str(self.formentry_model._meta.get_field(
-            "entry_time").verbose_name)
+        self.entry_time_name = str(
+            self.formentry_model._meta.get_field("entry_time").verbose_name)
         super(EntriesForm, self).__init__(*args, **kwargs)
         for field in self.form_fields:
             field_key = "field_%s" % field.id
@@ -297,15 +292,18 @@ class EntriesForm(forms.Form):
                     choices = ((True, _("Checked")), (False, _("Not checked")))
                 else:
                     choices = field.get_choices()
-                contains_field = forms.MultipleChoiceField(label=" ",
-                    choices=choices, widget=forms.CheckboxSelectMultiple(),
+                contains_field = forms.MultipleChoiceField(
+                    label=" ",
+                    choices=choices,
+                    widget=forms.CheckboxSelectMultiple(),
                     required=False)
                 self.fields["%s_filter" % field_key] = choice_filter_field
                 self.fields["%s_contains" % field_key] = contains_field
             elif field.is_a(*fields.MULTIPLE):
                 # A fixed set of choices to filter by, with multiple
                 # possible values in the entry field.
-                contains_field = forms.MultipleChoiceField(label=" ",
+                contains_field = forms.MultipleChoiceField(
+                    label=" ",
                     choices=field.get_choices(),
                     widget=forms.CheckboxSelectMultiple(),
                     required=False)
@@ -340,8 +338,10 @@ class EntriesForm(forms.Form):
         """
         for field_id in [f.id for f in self.form_fields] + [0]:
             prefix = "field_%s_" % field_id
-            fields = [f for f in super(EntriesForm, self).__iter__()
-                      if f.name.startswith(prefix)]
+            fields = [
+                f for f in super(EntriesForm, self).__iter__()
+                if f.name.startswith(prefix)
+            ]
             yield fields[0], fields[1], fields[2:]
 
     def posted_data(self, field):
@@ -360,8 +360,10 @@ class EntriesForm(forms.Form):
         """
         Returns the list of selected column names.
         """
-        fields = [f.label for f in self.form_fields
-                  if self.posted_data("field_%s_export" % f.id)]
+        fields = [
+            f.label for f in self.form_fields
+            if self.posted_data("field_%s_export" % f.id)
+        ]
         if self.posted_data("field_0_export"):
             fields.append(self.entry_time_name)
         return fields
@@ -393,8 +395,8 @@ class EntriesForm(forms.Form):
         # Get the field entries for the given form and filter by entry_time
         # if specified.
         model = self.fieldentry_model
-        field_entries = model.objects.filter(entry__form=self.form
-            ).order_by("-entry__id").select_related("entry")
+        field_entries = model.objects.filter(entry__form=self.form).order_by(
+            "-entry__id").select_related("entry")
         if self.posted_data("field_0_filter") == FILTER_CHOICE_BETWEEN:
             time_from = self.posted_data("field_0_from")
             time_to = self.posted_data("field_0_to")
@@ -451,7 +453,7 @@ class EntriesForm(forms.Form):
                     valid_row = False
             # Create download URL for file fields.
             if field_entry.value and field_id in file_field_ids:
-                url = reverse("admin:form_file", args=(field_entry.id,))
+                url = reverse("admin:form_file", args=(field_entry.id, ))
                 field_value = self.request.build_absolute_uri(url)
                 if not csv:
                     parts = (field_value, split(field_entry.value)[1])

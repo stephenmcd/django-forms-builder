@@ -2,7 +2,7 @@
    :target: http://travis-ci.org/stephenmcd/django-forms-builder
    
 Comptible with Django v4 and backward comptible with older versions like v3
-
+add 'django.contrib.sites' to installed apps 
 advance-django-forms-builder 
 ====================
 
