@@ -13,7 +13,7 @@ from django.conf.urls import url
 from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.utils.translation import ungettext, ugettext_lazy as _
+from django.utils.translation import ngettext, gettext_lazy as _
 try:
     from django.urls import reverse
 except ImportError:
@@ -176,7 +176,7 @@ class FormAdmin(admin.ModelAdmin):
                     count = entries.count()
                     if count > 0:
                         entries.delete()
-                        message = ungettext("1 entry deleted",
+                        message = ngettext("1 entry deleted",
                                             "%(count)s entries deleted", count)
                         info(request, message % {"count": count})
         template = "admin/forms/entries.html"

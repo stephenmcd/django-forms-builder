@@ -12,7 +12,7 @@ except ImportError:
 from django.db import models
 from django.db.models import Q
 from six import python_2_unicode_compatible
-from django.utils.translation import ugettext, ugettext_lazy as _
+from django.utils.translation import gettext, gettext_lazy as _
 from django.utils.html import format_html
 from future.builtins import str
 
@@ -153,7 +153,7 @@ class AbstractForm(models.Model):
             (_("Export all entries"), reverse("admin:form_entries_export", **kw)),
         ]
         for i, (text, url) in enumerate(links):
-            links[i] = "<a href='%s'>%s</a>" % (url, ugettext(text))
+            links[i] = "<a href='%s'>%s</a>" % (url, gettext(text))
         return format_html("<br>".join(links))
     admin_links.short_description = ""
 

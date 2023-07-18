@@ -20,7 +20,7 @@ except ImportError:
     from django.core.urlresolvers import reverse
 from django.template import Template
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from forms_builder.forms import fields
 from forms_builder.forms.models import FormEntry, FieldEntry
@@ -202,9 +202,9 @@ class FormForForm(forms.ModelForm):
 
             # Add identifying CSS classes to the field.
             css_class = field_class.__name__.lower()
-            # Do not add the 'required' field to the CheckboxSelectMultiple because it will 
+            # Do not add the 'required' field to the CheckboxSelectMultiple because it will
             # mean that all checkboxes have to be checked instead of the usual use case of
-            # "at least one".  
+            # "at least one".
             if field.required and (field_widget != forms.CheckboxSelectMultiple):
                 css_class += " required"
                 if settings.USE_HTML5:

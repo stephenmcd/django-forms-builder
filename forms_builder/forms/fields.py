@@ -7,7 +7,7 @@ try:
 except ImportError:
     # For Django 1.8 compatibility
     from django.forms.extras import SelectDateWidget
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from forms_builder.forms.settings import USE_HTML5, EXTRA_FIELDS, EXTRA_WIDGETS
 from forms_builder.forms.utils import html5_field, import_attr
