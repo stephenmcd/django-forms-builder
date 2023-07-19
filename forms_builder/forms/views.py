@@ -12,9 +12,9 @@ except ImportError:
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
 from django.template import RequestContext
-from django.utils.http import urlquote
 from django.views.generic.base import TemplateView
 from email_extras.utils import send_mail_template
+from urllib.parse import quote
 
 from forms_builder.forms.forms import FormForForm
 from forms_builder.forms.models import Form
@@ -37,7 +37,7 @@ class FormDetail(TemplateView):
         context = self.get_context_data(**kwargs)
         login_required = context["form"].login_required
         if login_required and not request.user.is_authenticated:
-            path = urlquote(request.get_full_path())
+            path = quote(request.get_full_path())
             bits = (settings.LOGIN_URL, REDIRECT_FIELD_NAME, path)
             return redirect("%s?%s=%s" % bits)
         return self.render(request, context)
