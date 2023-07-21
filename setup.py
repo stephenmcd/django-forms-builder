@@ -51,7 +51,7 @@ try:
             "unidecode",
             "django-email-extras >= 0.2",
             "django >= 1.9, <4.2",
-            "future <= 0.15.0",
+            "future >= 0.18.3",
         ],
         classifiers = [
             "Development Status :: 5 - Production/Stable",
