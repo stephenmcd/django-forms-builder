@@ -9,17 +9,16 @@ from io import BytesIO, StringIO
 
 from django.contrib import admin
 from django.core.files.storage import FileSystemStorage
-try:
-    from django.urls import reverse, re_path
-except ImportError:
-    # For django 1.8 compatiblity
-    from django.conf.urls import url as re_path
-    from django.core.urlresolvers import reverse
+from django.urls import re_path
 from django.db.models import Count
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
-from django.utils.translation import ungettext, ugettext_lazy as _
-
+from django.utils.translation import ngettext, gettext_lazy as _
+try:
+    from django.urls import reverse
+except ImportError:
+    # For Django 1.8 compatibility
+    from django.core.urlresolvers import reverse
 from forms_builder.forms.forms import EntriesForm
 from forms_builder.forms.models import Form, Field, FormEntry, FieldEntry
 from forms_builder.forms.settings import CSV_DELIMITER, UPLOAD_ROOT
@@ -177,7 +176,7 @@ class FormAdmin(admin.ModelAdmin):
                     count = entries.count()
                     if count > 0:
                         entries.delete()
-                        message = ungettext("1 entry deleted",
+                        message = ngettext("1 entry deleted",
                                             "%(count)s entries deleted", count)
                         info(request, message % {"count": count})
         template = "admin/forms/entries.html"

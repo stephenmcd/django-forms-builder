@@ -11,8 +11,9 @@ except ImportError:
 
 from django.db import models
 from django.db.models import Q
-from django.utils.encoding import python_2_unicode_compatible
-from django.utils.translation import ugettext, ugettext_lazy as _
+from six import python_2_unicode_compatible
+from django.utils.translation import gettext, gettext_lazy as _
+from django.utils.html import format_html
 from future.builtins import str
 
 from forms_builder.forms import fields
@@ -97,6 +98,7 @@ class AbstractForm(models.Model):
         verbose_name = _("Form")
         verbose_name_plural = _("Forms")
         abstract = True
+        app_label = "forms"
 
     def __str__(self):
         return str(self.title)
@@ -123,8 +125,9 @@ class AbstractForm(models.Model):
         status = self.status == STATUS_PUBLISHED
         publish_date = self.publish_date is None or self.publish_date <= now()
         expiry_date = self.expiry_date is None or self.expiry_date >= now()
-        authenticated = for_user is not None and for_user.is_authenticated
-        if DJANGO_VERSION <= (1, 9):
+        if DJANGO_VERSION >= (1, 9):
+            authenticated = for_user is not None and for_user.is_authenticated
+        else:
             # Django 1.8 compatibility, is_authenticated has to be called as a method.
             authenticated = for_user is not None and for_user.is_authenticated()
         login_required = (not self.login_required or authenticated)
@@ -139,7 +142,7 @@ class AbstractForm(models.Model):
     total_entries.admin_order_field = "total_entries"
 
     def get_absolute_url(self):
-        return reverse("form_detail", kwargs={"slug": self.slug})
+        return reverse("forms:form_detail", kwargs={"slug": self.slug})
 
     def admin_links(self):
         kw = {"args": (self.id,)}
@@ -150,9 +153,8 @@ class AbstractForm(models.Model):
             (_("Export all entries"), reverse("admin:form_entries_export", **kw)),
         ]
         for i, (text, url) in enumerate(links):
-            links[i] = "<a href='%s'>%s</a>" % (url, ugettext(text))
-        return "<br>".join(links)
-    admin_links.allow_tags = True
+            links[i] = "<a href='%s'>%s</a>" % (url, gettext(text))
+        return format_html("<br>".join(links))
     admin_links.short_description = ""
 
 
@@ -193,6 +195,7 @@ class AbstractField(models.Model):
         verbose_name = _("Field")
         verbose_name_plural = _("Fields")
         abstract = True
+        app_label = "forms"
 
     def __str__(self):
         return str(self.label)
@@ -239,6 +242,7 @@ class AbstractFormEntry(models.Model):
         verbose_name = _("Form entry")
         verbose_name_plural = _("Form entries")
         abstract = True
+        app_label = "forms"
 
 
 class AbstractFieldEntry(models.Model):
@@ -254,6 +258,7 @@ class AbstractFieldEntry(models.Model):
         verbose_name = _("Form field entry")
         verbose_name_plural = _("Form field entries")
         abstract = True
+        app_label = "forms"
 
 
 ###################################################
